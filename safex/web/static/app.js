@@ -1436,4 +1436,46 @@ async function submitModalFeedback() {
   }
 }
 
+// 3-Dots More Options Menu Handlers
+function toggleMoreMenu(event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const dropdown = document.getElementById('more-menu-dropdown');
+  const btn = document.getElementById('more-menu-btn');
+  if (!dropdown) return;
+
+  const isHidden = dropdown.classList.contains('hidden');
+  if (isHidden) {
+    dropdown.classList.remove('hidden');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+  } else {
+    dropdown.classList.add('hidden');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function closeMoreMenu() {
+  const dropdown = document.getElementById('more-menu-dropdown');
+  const btn = document.getElementById('more-menu-btn');
+  if (dropdown) dropdown.classList.add('hidden');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+// Auto-close 3-dots dropdown when clicking outside or pressing Escape
+document.addEventListener('click', (event) => {
+  const container = document.getElementById('more-menu-container');
+  if (container && !container.contains(event.target)) {
+    closeMoreMenu();
+  }
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeMoreMenu();
+  }
+});
+
+
 
