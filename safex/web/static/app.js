@@ -278,17 +278,19 @@ function loadScenario(key) {
 
   // Reset preset button styling
   document.querySelectorAll('.preset-pill').forEach(btn => {
-    btn.className = 'preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2';
+    btn.className = 'preset-pill p-3.5 rounded-xl border bg-[#0c0e14] border-[#232d40] text-left transition-all hover:border-slate-500 hover:bg-[#121622] flex flex-col justify-between gap-2 shadow-sm';
   });
 
   const activeBtn = document.getElementById('btn-preset-' + key);
   if (activeBtn) {
     if (key === 'high') {
-      activeBtn.className = 'preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-rose-500/15 border-rose-500/40 text-rose-300 font-semibold shadow-sm flex items-center gap-2';
+      activeBtn.className = 'preset-pill p-3.5 rounded-xl border bg-rose-500/15 border-rose-500/50 text-left transition-all flex flex-col justify-between gap-2 shadow-sm ring-1 ring-rose-500/30';
     } else if (key === 'medium') {
-      activeBtn.className = 'preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold shadow-sm flex items-center gap-2';
+      activeBtn.className = 'preset-pill p-3.5 rounded-xl border bg-amber-500/15 border-amber-500/50 text-left transition-all flex flex-col justify-between gap-2 shadow-sm ring-1 ring-amber-500/30';
+    } else if (key === 'lookalike') {
+      activeBtn.className = 'preset-pill p-3.5 rounded-xl border bg-emerald-500/15 border-emerald-500/50 text-left transition-all flex flex-col justify-between gap-2 shadow-sm ring-1 ring-emerald-500/30';
     } else {
-      activeBtn.className = 'preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold shadow-sm flex items-center gap-2';
+      activeBtn.className = 'preset-pill p-3.5 rounded-xl border bg-cyan-500/15 border-cyan-500/50 text-left transition-all flex flex-col justify-between gap-2 shadow-sm ring-1 ring-cyan-500/30';
     }
   }
 
@@ -694,8 +696,10 @@ async function runStandaloneLinkCheck() {
       sigContainer.appendChild(item);
     });
 
-    // Scroll to results
-    document.getElementById('url-discrepancy-card').scrollIntoView({ behavior: 'smooth' });
+    // Show links tab & scroll to results
+    switchContentTab('links');
+    const discCard = document.getElementById('url-discrepancy-card');
+    if (discCard) discCard.scrollIntoView({ behavior: 'smooth' });
 
   } catch (err) {
     alert('Failed to analyze link: ' + err.message);
@@ -1040,8 +1044,18 @@ function renderLiveApiResponse(a) {
     guideSteps.innerHTML = stepsHtml;
   }
 
+  // Switch to relevant content tab
+  if (atts && atts.length > 0) {
+    switchContentTab('attachment');
+  } else if (a.links && a.links.length > 0) {
+    switchContentTab('links');
+  } else {
+    switchContentTab('email');
+  }
+
   // Scroll smoothly to results
-  document.getElementById('verdict-card').scrollIntoView({ behavior: 'smooth' });
+  const vCard = document.getElementById('verdict-card');
+  if (vCard) vCard.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Prefill Samples
@@ -1102,16 +1116,24 @@ function clearCustomInput() {
 }
 
 function toggleCustomSection() {
+  switchTopInput('email');
   const card = document.getElementById('custom-workbench-card');
-  card.scrollIntoView({ behavior: 'smooth' });
-  document.getElementById('live-email-input').focus();
+  if (card) card.scrollIntoView({ behavior: 'smooth' });
+  const text = document.getElementById('live-email-input');
+  if (text) text.focus();
 }
 
 function switchMainTab(tab) {
   if (tab === 'links') {
-    document.getElementById('detected-links-container').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('standalone-url-input').focus();
+    switchTopInput('url');
+    switchContentTab('links');
+    const input = document.getElementById('standalone-url-input');
+    if (input) {
+      input.scrollIntoView({ behavior: 'smooth' });
+      input.focus();
+    }
   } else {
+    switchTopInput('scenarios');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
@@ -1254,28 +1276,69 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-// Switch between Single URL mode and Full Email/Attachment mode
-function switchInputMode(mode) {
+// Switch Top Input Mode (Sample Tests, Link Inspection, or Full Email/Files)
+function switchTopInput(mode) {
+  const panelScenarios = document.getElementById('panel-top-scenarios');
   const panelUrl = document.getElementById('panel-mode-url');
   const panelEmail = document.getElementById('panel-mode-email');
+
+  const tabScenarios = document.getElementById('tab-top-scenarios');
   const tabUrl = document.getElementById('tab-mode-url');
   const tabEmail = document.getElementById('tab-mode-email');
 
+  const activeCls = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 shadow-sm';
+  const inactiveCls = 'px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+
+  if (panelScenarios) panelScenarios.classList.toggle('hidden', mode !== 'scenarios');
+  if (panelUrl) panelUrl.classList.toggle('hidden', mode !== 'url');
+  if (panelEmail) panelEmail.classList.toggle('hidden', mode !== 'email');
+
+  if (tabScenarios) tabScenarios.className = mode === 'scenarios' ? activeCls : inactiveCls;
+  if (tabUrl) tabUrl.className = mode === 'url' ? activeCls : inactiveCls;
+  if (tabEmail) tabEmail.className = mode === 'email' ? activeCls : inactiveCls;
+
   if (mode === 'url') {
-    panelUrl.classList.remove('hidden');
-    panelEmail.classList.add('hidden');
-    tabUrl.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm';
-    tabEmail.className = 'px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
     const input = document.getElementById('standalone-url-input');
     if (input) input.focus();
-  } else {
-    panelUrl.classList.add('hidden');
-    panelEmail.classList.remove('hidden');
-    tabEmail.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 shadow-sm';
-    tabUrl.className = 'px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+  } else if (mode === 'email') {
     const text = document.getElementById('live-email-input');
     if (text) text.focus();
   }
+}
+
+// Backward compatibility alias
+function switchInputMode(mode) {
+  switchTopInput(mode);
+}
+
+// Content Inspection Tab Switcher
+function switchContentTab(tab) {
+  const pEmail = document.getElementById('content-panel-email');
+  const pLinks = document.getElementById('content-panel-links');
+  const pAttachment = document.getElementById('content-panel-attachment');
+
+  const tEmail = document.getElementById('tab-content-email');
+  const tLinks = document.getElementById('tab-content-links');
+  const tAttachment = document.getElementById('tab-content-attachment');
+  const tAll = document.getElementById('tab-content-all');
+
+  const activeCls = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 transition-all shadow-sm';
+  const inactiveCls = 'px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all';
+
+  if (tab === 'all') {
+    if (pEmail) pEmail.classList.remove('hidden');
+    if (pLinks) pLinks.classList.remove('hidden');
+    if (pAttachment) pAttachment.classList.remove('hidden');
+  } else {
+    if (pEmail) pEmail.classList.toggle('hidden', tab !== 'email');
+    if (pLinks) pLinks.classList.toggle('hidden', tab !== 'links');
+    if (pAttachment) pAttachment.classList.toggle('hidden', tab !== 'attachment');
+  }
+
+  if (tEmail) tEmail.className = tab === 'email' ? activeCls : inactiveCls;
+  if (tLinks) tLinks.className = tab === 'links' ? activeCls : inactiveCls;
+  if (tAttachment) tAttachment.className = tab === 'attachment' ? activeCls : inactiveCls;
+  if (tAll) tAll.className = tab === 'all' ? activeCls : inactiveCls;
 }
 
 // 1-Click Paste from Clipboard directly into the single URL input

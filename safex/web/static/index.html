@@ -195,65 +195,86 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 max-w-[1640px] w-full mx-auto px-6 lg:px-8 py-8 flex flex-col gap-6">
+  <main class="flex-1 max-w-[1640px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-    <!-- Hero / Title & Preset Selector -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm">
-      <div class="space-y-1">
-        <h1 class="text-2xl font-bold text-white tracking-tight">Email, Link &amp; File Safety Checker</h1>
-        <p class="text-sm text-slate-400">Safely test suspicious emails, fake links, and disguised files without opening or running dangerous code.</p>
-      </div>
-      <!-- Quick Scenario Pill Tabs -->
-      <div class="flex flex-wrap items-center gap-2">
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-rose-500/15 border-rose-500/40 text-rose-300 font-semibold shadow-sm flex items-center gap-2" id="btn-preset-high" onclick="loadScenario('high')">
-          <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-          Dangerous File (.exe as .pdf)
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2" id="btn-preset-medium" onclick="loadScenario('medium')">
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-          Fake Password Reset (Scam Link)
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2" id="btn-preset-lookalike" onclick="loadScenario('lookalike')">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          Safe Company Notice
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2" id="btn-preset-clean" onclick="loadScenario('clean')">
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-          Safe Vendor Bill
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400 flex items-center gap-2" id="btn-preset-toggle-custom" onclick="toggleCustomSection()">
-          <span class="material-symbols-outlined text-[16px]">edit_note</span>
-          Test Your Own Link or Email
-        </button>
-      </div>
-    </div>
-
-    <!-- SEPARATELY VISIBLE CUSTOM INPUT WORKBENCH (Collapsible & Directly on page) -->
-    <section id="custom-workbench-card" class="bg-[#161b26] border border-purple-500/30 rounded-2xl p-6 shadow-xl space-y-5">
-      <!-- Header & Mode Tabs -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#232d40]">
-        <div class="flex items-center gap-2.5">
-          <span class="material-symbols-outlined text-purple-400 text-xl">terminal</span>
-          <h2 class="text-base font-semibold text-white">Check Any Link, Email, or File</h2>
-          <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">Safe Scanner</span>
+    <!-- 1. Sleek Unified Scanner Hero (Compact, Aesthetic, Multi-Tab) -->
+    <section id="custom-workbench-card" class="bg-[#161b26] border border-[#232d40] rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+      <!-- Top Bar: Title & Input Mode Switcher -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#232d40]">
+        <div class="space-y-0.5">
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Email, Link &amp; File Safety Checker</h1>
+            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">100% Static &amp; Safe</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-400">Safely test suspicious messages, URLs, and files without opening or running dangerous code.</p>
         </div>
 
-        <!-- Mode Switcher: Single URL vs Full Email -->
-        <div class="flex items-center bg-[#0c0e14] border border-[#232d40] rounded-xl p-1 gap-1">
-          <button id="tab-mode-url" onclick="switchInputMode('url')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm">
-            <span class="material-symbols-outlined text-sm">link</span> Check a Web Link
+        <!-- Segmented Mode Switcher -->
+        <div class="flex items-center bg-[#0c0e14] border border-[#232d40] rounded-xl p-1 gap-1 self-start md:self-auto shrink-0">
+          <button id="tab-top-scenarios" onclick="switchTopInput('scenarios')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-sm">science</span> Sample Tests
           </button>
-          <button id="tab-mode-email" onclick="switchInputMode('email')" class="px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm">mail</span> Check Full Email &amp; Files
+          <button id="tab-mode-url" onclick="switchTopInput('url')" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">link</span> Check a Link
+          </button>
+          <button id="tab-mode-email" onclick="switchTopInput('email')" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">mail</span> Test Email / Files
           </button>
         </div>
       </div>
 
-      <!-- MODE 1: SINGLE URL INSPECTOR (One Single Clean Bar) -->
-      <div id="panel-mode-url" class="space-y-3">
+      <!-- PANE 1: Quick Scenario Cards (Default view) -->
+      <div id="panel-top-scenarios" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+        <button class="preset-pill p-3.5 rounded-xl border bg-rose-500/10 border-rose-500/40 text-left transition-all hover:bg-rose-500/15 flex flex-col justify-between gap-2 shadow-sm" id="btn-preset-high" onclick="loadScenario('high')">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">Dangerous</span>
+            <span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+          </div>
+          <div>
+            <div class="font-semibold text-xs text-white">Disguised Executable</div>
+            <div class="text-[11px] text-slate-400 mt-0.5 font-mono">invoice_98201.pdf.exe</div>
+          </div>
+        </button>
+
+        <button class="preset-pill p-3.5 rounded-xl border bg-[#0c0e14] border-[#232d40] text-left transition-all hover:border-amber-500/40 hover:bg-[#121622] flex flex-col justify-between gap-2 shadow-sm" id="btn-preset-medium" onclick="loadScenario('medium')">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">High Risk</span>
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </div>
+          <div>
+            <div class="font-semibold text-xs text-white">Fake Password Reset</div>
+            <div class="text-[11px] text-slate-400 mt-0.5 font-mono">Deceptive bank login link</div>
+          </div>
+        </button>
+
+        <button class="preset-pill p-3.5 rounded-xl border bg-[#0c0e14] border-[#232d40] text-left transition-all hover:border-emerald-500/40 hover:bg-[#121622] flex flex-col justify-between gap-2 shadow-sm" id="btn-preset-lookalike" onclick="loadScenario('lookalike')">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Safe</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          </div>
+          <div>
+            <div class="font-semibold text-xs text-white">Safe Company Notice</div>
+            <div class="text-[11px] text-slate-400 mt-0.5 font-mono">Benign internal email</div>
+          </div>
+        </button>
+
+        <button class="preset-pill p-3.5 rounded-xl border bg-[#0c0e14] border-[#232d40] text-left transition-all hover:border-cyan-500/40 hover:bg-[#121622] flex flex-col justify-between gap-2 shadow-sm" id="btn-preset-clean" onclick="loadScenario('clean')">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Safe</span>
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          </div>
+          <div>
+            <div class="font-semibold text-xs text-white">Safe Vendor Bill</div>
+            <div class="text-[11px] text-slate-400 mt-0.5 font-mono">Verified PDF invoice</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- PANE 2: Single URL Inspector Bar -->
+      <div id="panel-mode-url" class="hidden space-y-3 pt-1">
         <label class="text-xs font-medium text-slate-300 flex items-center justify-between">
-          <span>Paste any link to test if it's safe:</span>
-          <span class="text-[11px] font-mono text-cyan-400">Checks fake letters, hidden redirects, and scam websites</span>
+          <span>Enter or paste any link to inspect safety:</span>
+          <span class="text-[11px] font-mono text-cyan-400">Checks optical anchor mismatches, fake letters, and IP literals</span>
         </label>
         
         <div class="flex flex-col sm:flex-row items-stretch gap-2.5">
@@ -286,38 +307,35 @@
           </button>
         </div>
 
-        <!-- Quick 1-click test URLs for convenience -->
         <div class="flex flex-wrap items-center gap-2 pt-1">
           <span class="text-[11px] text-slate-500 font-medium">Try test links:</span>
-          <button onclick="setQuickUrl('http://185.192.1.44:8080/auth/login.php')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-rose-300 hover:border-rose-500/40 transition-colors">Raw Numbers Address (Scam)</button>
+          <button onclick="setQuickUrl('http://185.192.1.44:8080/auth/login.php')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-rose-300 hover:border-rose-500/40 transition-colors">Raw IP Port :8080</button>
           <button onclick="setQuickUrl('https://pаypal.com/verify-account')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-amber-300 hover:border-amber-500/40 transition-colors">Lookalike Letters (Fake PayPal)</button>
-          <button onclick="setQuickUrl('https://bit.ly/3xSecAlert')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-purple-300 hover:border-purple-500/40 transition-colors">Shortened Link (Hidden Target)</button>
-          <button onclick="setQuickUrl('https://confluence.acme-corp.com/display/IT/VPN')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-cyan-300 hover:border-cyan-500/40 transition-colors">Normal Safe Link</button>
+          <button onclick="setQuickUrl('https://bit.ly/3xSecAlert')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-purple-300 hover:border-purple-500/40 transition-colors">Shortened URL</button>
+          <button onclick="setQuickUrl('https://confluence.acme-corp.com/display/IT/VPN')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-cyan-300 hover:border-cyan-500/40 transition-colors">Clean Normal Link</button>
         </div>
       </div>
 
-      <!-- MODE 2: FULL EMAIL & ATTACHMENTS (Visible when Email tab is selected) -->
-      <div id="panel-mode-email" class="hidden space-y-4">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <!-- Left: Paste Email / Raw Text -->
+      <!-- PANE 3: Full Email & File Ingestion -->
+      <div id="panel-mode-email" class="hidden space-y-4 pt-1">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div class="lg:col-span-8 flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <label class="text-xs font-medium text-slate-400">Paste the email text or headers here:</label>
+              <label class="text-xs font-medium text-slate-400">Paste email text, headers, or raw source:</label>
               <div class="flex items-center gap-1.5">
-                <button onclick="prefillSample('mismatch')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Deceptive Link Sample</button>
-                <button onclick="prefillSample('vishing')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Phone Scam Sample</button>
+                <button onclick="prefillSample('mismatch')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Deceptive Link</button>
+                <button onclick="prefillSample('vishing')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Phone Scam</button>
                 <button onclick="clearCustomInput()" class="text-[11px] text-rose-400 hover:text-rose-300 ml-1">Clear</button>
               </div>
             </div>
-            <textarea id="live-email-input" rows="6" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-400" placeholder="From: security@paypal-verify.com&#10;To: victim@example.com&#10;Subject: URGENT: Your account has been suspended!&#10;Authentication-Results: spf=fail; dkim=none&#10;&#10;Please verify your credentials immediately:&#10;<a href='http://185.192.1.44:8080/auth/login.php'>https://www.paypal.com/security-verify</a>"></textarea>
+            <textarea id="live-email-input" rows="5" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-400" placeholder="From: security@paypal-verify.com&#10;Subject: URGENT: Account Suspension Warning&#10;Authentication-Results: spf=fail; dkim=none&#10;&#10;Please verify your account immediately:&#10;<a href='http://185.192.1.44:8080/auth/login.php'>https://www.paypal.com/security-verify</a>"></textarea>
           </div>
 
-          <!-- Right: File Upload -->
           <div class="lg:col-span-4 flex flex-col justify-between">
             <div id="live-dropzone" class="border-2 border-dashed border-[#232d40] hover:border-purple-400/60 rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#0c0e14] h-full flex flex-col items-center justify-center">
               <span class="material-symbols-outlined text-2xl text-purple-400">upload_file</span>
-              <p class="text-xs font-medium text-slate-200 mt-2">Drop an email (.eml) or attachment here</p>
-              <p class="text-[10px] text-slate-500 mt-0.5">Safe check: We inspect files without opening or running them</p>
+              <p class="text-xs font-medium text-slate-200 mt-2">Drop .eml or attachment here</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Static inspection only (never opened or executed)</p>
               <input type="file" id="live-file-input" multiple class="hidden">
               <div id="live-file-list" class="mt-2 space-y-1 w-full text-left"></div>
             </div>
@@ -327,310 +345,352 @@
         <div class="flex items-center justify-between pt-2 border-t border-[#232d40]">
           <div class="text-xs text-slate-400 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-emerald-400 text-sm">lock</span>
-            <span>100% Safe &amp; Private &bull; Files never leave your browser</span>
+            <span>100% Private &bull; Static inspection in memory</span>
           </div>
           <button id="btn-run-live" onclick="executeLiveAnalysis()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 flex items-center gap-2 transition-all">
             <span class="material-symbols-outlined text-base">play_arrow</span>
-            Scan This Email &amp; Attachments Now
+            Scan This Email &amp; Attachments
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Primary 2-Column Clean Workspace -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- LEFT COLUMN: Inspected Sample & Evidence (7 Cols) -->
-      <div class="lg:col-span-7 flex flex-col gap-6">
+    <!-- 2. EXECUTIVE SUMMARY: Verdict Card + 4-Way Component Risk Breakdown (Requirement 1) -->
+    <section class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-xl" id="verdict-card">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         
-        <!-- 1. Header & Sender Card -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm">
-          <div class="flex items-center justify-between pb-4 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">alternate_email</span>
-              <h2 class="text-base font-semibold text-white">Sender Check (Did this really come from who it says?)</h2>
-            </div>
-            <!-- Auth Status Badges -->
-            <div class="flex items-center gap-2 font-mono text-xs">
-              <span class="px-2.5 py-1 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-spf">SPF: FAIL</span>
-              <span class="px-2.5 py-1 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-dkim">DKIM: FAIL</span>
-              <span class="px-2.5 py-1 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-dmarc">DMARC: FAIL</span>
+        <!-- Left: Circular Gauge, Verdict Title & Action Buttons -->
+        <div class="lg:col-span-5 flex flex-col sm:flex-row items-center gap-5 sm:border-r sm:border-[#232d40] sm:pr-6">
+          <div class="relative flex items-center justify-center w-28 h-28 shrink-0">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <circle class="stroke-[#0c0e14]" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+              <circle class="stroke-rose-500 transition-all duration-700" cx="50" cy="50" fill="transparent" id="verdict-circle-bar" r="40" stroke-dasharray="251.2" stroke-dashoffset="30" stroke-linecap="round" stroke-width="8" style="stroke-dashoffset: 30.144;"></circle>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-3xl font-extrabold text-white font-mono tracking-tight" id="verdict-score">88</span>
+              <span class="text-[10px] text-slate-400 uppercase font-semibold">/ 100</span>
             </div>
           </div>
-          <div class="mt-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm">
-            <div class="sm:col-span-3 text-slate-400 font-medium">Who it claims to be (From):</div>
-            <div class="sm:col-span-9 text-slate-100 font-mono text-xs break-all" id="header-from">"Accounts Payable" &lt;invoicing@finance-vendor-portal.com&gt;</div>
-            <div class="sm:col-span-3 text-slate-400 font-medium">Where replies go (Reply-To):</div>
-            <div class="sm:col-span-9 text-slate-300 font-mono text-xs break-all" id="header-reply-to">stealth-collection@anonymous-drop.ru</div>
-            <div class="sm:col-span-3 text-slate-400 font-medium">Bounced mail route:</div>
-            <div class="sm:col-span-9 text-slate-300 font-mono text-xs break-all" id="header-return-path">bounce-gateway@unknown-vps.net</div>
-            <div class="sm:col-span-3 text-slate-400 font-medium">Security check details:</div>
-            <div class="sm:col-span-9 text-purple-300 font-mono text-xs break-all" id="header-auth-results">spf=softfail (ip=185.192.1.44) dkim=fail dmarc=fail</div>
+
+          <div class="space-y-2 text-center sm:text-left flex-1">
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Overall Safety Verdict</span>
+            <h2 class="text-2xl font-black tracking-tight text-rose-400" id="verdict-label">DANGEROUS SCAM</h2>
+            <div>
+              <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="verdict-sublabel">Do not click anything or open files</span>
+            </div>
+            <!-- Action Buttons Strip -->
+            <div class="pt-2 flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+              <button class="py-1.5 px-3 rounded-lg bg-rose-600/25 hover:bg-rose-600/40 text-rose-300 border border-rose-500/40 text-[11px] font-semibold flex items-center gap-1.5 transition-all" onclick="triggerAction('quarantine')">
+                <span class="material-symbols-outlined text-[15px]">shield</span> Quarantine
+              </button>
+              <button class="py-1.5 px-3 rounded-lg bg-[#0c0e14] hover:bg-[#1a2130] border border-[#232d40] text-slate-200 text-[11px] font-medium flex items-center gap-1.5 transition-all" onclick="triggerAction('export')">
+                <span class="material-symbols-outlined text-[15px]">download</span> Export Report
+              </button>
+              <button class="py-1.5 px-3 rounded-lg bg-purple-600/25 hover:bg-purple-600/40 text-purple-300 border border-purple-500/40 text-[11px] font-semibold flex items-center gap-1.5 transition-all" onclick="openFeedbackModal()">
+                <span class="material-symbols-outlined text-[15px]">reviews</span> Feedback
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- 2. Email Content Card -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-cyan-400 text-xl">mail</span>
-              <h2 class="text-base font-semibold text-white">Email Preview</h2>
-            </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Safe Preview (Dangerous scripts disabled)
+        <!-- Right: 4-Way Component Risk Breakdown (Requirement 1) -->
+        <div class="lg:col-span-7 flex flex-col justify-center space-y-3.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-purple-400 text-base">pie_chart</span>
+              Risk Breakdown by Category
             </span>
+            <span class="text-[11px] text-slate-400 font-mono">Transparent scoring contribution</span>
           </div>
 
-          <!-- Email Preview Box -->
-          <div class="bg-[#0c0e14] border border-[#232d40] rounded-xl overflow-hidden">
-            <div class="px-5 py-3.5 bg-[#121622] border-b border-[#232d40] flex items-center justify-between">
-              <div>
-                <span class="text-xs text-slate-400 block font-medium">Subject</span>
-                <h3 class="text-sm font-semibold text-white mt-0.5" id="email-subject">URGENT: Past Due Invoice #INV-98201 - Immediate Suspension Warning</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- 1. Sender Check -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-purple-400 shrink-0"></span> Sender &amp; Headers
+                </span>
+                <span class="text-purple-300 font-bold font-mono" id="score-sender-text">25 pts</span>
               </div>
-              <span class="text-xs font-mono text-slate-500">2 min ago</span>
-            </div>
-            <!-- Email Body Text -->
-            <div class="p-6 text-[15px] text-slate-200 leading-relaxed font-normal space-y-4" id="email-body-content">
-              Dear Partner,<br/><br/>
-              Your corporate account has been flagged for <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.5 rounded font-medium">IMMEDIATE SUSPENSION</span> due to failure of payment for Invoice #98201.<br/><br/>
-              Please review the attached invoice manifest immediately. If your system requires decrypting the bundle, the temporary passkey is: <span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-mono text-xs">SafeDec992!</span><br/><br/>
-              You may also reconcile directly via our authorized billing terminal:<br/>
-              <a class="text-cyan-400 underline font-mono text-sm" href="#">https://portal.bank-billing.com/secure-login</a><br/><br/>
-              Failure to remit within 2 hours will initiate full credential invalidation.<br/><br/>
-              Sincerely,<br/>
-              Central Accounts Triage Team
-            </div>
-          </div>
-
-          <!-- Optical Anchor Discrepancy Box -->
-          <div class="rounded-xl bg-[#0c0e14] border border-rose-500/30 p-5 shadow-sm" id="url-discrepancy-card">
-            <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-rose-400 text-lg">link_off</span>
-                <span class="text-sm font-semibold text-rose-300">Fake Link Alert (What you see is NOT where it goes!)</span>
+              <div class="w-full h-1.5 rounded-full bg-[#161b26] overflow-hidden">
+                <div class="h-full bg-purple-400 rounded-full transition-all duration-500" id="score-sender-bar" style="width: 55%;"></div>
               </div>
-              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="url-status-tag">DANGEROUS MISMATCH</span>
+              <div class="text-[10px] text-slate-500">SPF/DKIM/DMARC &amp; reply mismatch</div>
             </div>
-            <p class="text-xs text-slate-400 mt-2.5 mb-3 leading-relaxed">
-              The sender is trying to trick you: the text shows a familiar company name, but clicking it actually takes you to an untrusted, dangerous website.
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="p-3.5 rounded-lg bg-[#161b26] border border-[#232d40]">
-                <span class="text-xs text-slate-400 block font-medium mb-1">What the link text says:</span>
-                <span class="text-xs font-mono text-cyan-300 font-semibold break-all" id="url-visible-text">https://portal.bank-billing.com/secure-login</span>
+
+            <!-- 2. Email Body -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span> Email Body
+                </span>
+                <span class="text-amber-300 font-bold font-mono" id="score-body-text">18 pts</span>
               </div>
-              <div class="p-3.5 rounded-lg bg-rose-950/20 border border-rose-500/30">
-                <span class="text-xs text-rose-400 block font-medium mb-1">Where the link actually takes you:</span>
-                <span class="text-xs font-mono text-rose-300 font-bold break-all" id="url-actual-dest">http://185.192.1.44:8080/auth/login.php?ref=spoof</span>
+              <div class="w-full h-1.5 rounded-full bg-[#161b26] overflow-hidden">
+                <div class="h-full bg-amber-400 rounded-full transition-all duration-500" id="score-body-bar" style="width: 40%;"></div>
               </div>
+              <div class="text-[10px] text-slate-500">Urgency phrases &amp; scam patterns</div>
             </div>
-          </div>
-        </div>
 
-        <!-- 3. ALL DETECTED HYPERLINKS & URL RISK FACTOR MATRIX (NEW & COMPREHENSIVE) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">hub</span>
-              <h2 class="text-base font-semibold text-white">All Web Links Found in this Email</h2>
-            </div>
-            <span class="text-xs font-mono text-slate-400" id="links-count-pill">1 Link Found</span>
-          </div>
-
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Every web link is checked to make sure it doesn't lead to fake login pages, lookalike scam websites, or hidden dangerous servers.
-          </p>
-
-          <!-- Links Table / Cards -->
-          <div class="space-y-3" id="detected-links-container">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- 4. ADVANCED PHISHING VECTOR TELEMETRY (NEW) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-amber-400 text-xl">radar</span>
-              <h2 class="text-base font-semibold text-white">Extra Scam Checks</h2>
-            </div>
-            <span class="text-xs font-mono text-slate-400">Results</span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="advanced-phishing-badges">
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Lookalike Letters (e.g. Russian 'а' replacing English 'a'):</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-homoglyph">NEGATIVE</span>
-            </div>
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Fake Phone Scam (Urges you to call a fake number):</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-vishing">NEGATIVE</span>
-            </div>
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Hidden Invisible Text (Tricks spam filters):</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-hidden">NEGATIVE</span>
-            </div>
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Fake QR Code Scam (Tells you to scan with phone):</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-quishing">NEGATIVE</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Per-Attachment Report Card (Requirement 2 & 8) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">description</span>
-              <div>
-                <h2 class="text-base font-semibold text-white">Attachment Safety Report Card</h2>
-                <span class="text-[11px] text-slate-400 font-mono">Safe static check (Inspected without opening or running)</span>
+            <!-- 3. Web Links -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span> Web Links (URLs)
+                </span>
+                <span class="text-cyan-300 font-bold font-mono" id="score-url-text">32 pts</span>
               </div>
-            </div>
-            <span class="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40" id="attachment-severity-pill">Dangerous: Hidden Program (.exe)</span>
-          </div>
-
-          <!-- File details -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="text-xs text-slate-400 block font-medium">Filename</span>
-              <p class="font-mono text-xs font-bold text-slate-100 mt-1 break-all" id="file-name">invoice_98201.pdf.exe</p>
-              <p class="text-[11px] text-rose-400 mt-1.5" id="file-ext-alert">Disguised double extension: .pdf.exe</p>
-            </div>
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="text-xs text-slate-400 block font-medium">Pretends to be vs What it really is</span>
-              <p class="text-xs text-slate-300 mt-1">Pretends to be: <span class="font-semibold text-slate-200" id="file-mime">PDF Document</span></p>
-              <p class="text-xs text-rose-300 font-bold mt-0.5" id="file-magic">Actually is: Windows Computer Program (.exe)</p>
-            </div>
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="text-xs text-slate-400 block font-medium">File Size &amp; Structure</span>
-              <p class="text-xs text-slate-200 mt-1" id="file-size">1.42 MB</p>
-              <p class="text-xs text-amber-300 mt-0.5" id="file-entropy">Compressed byte structure</p>
-            </div>
-          </div>
-
-          <!-- Per-Attachment Recommended Action Box (Requirement 2 & 3) -->
-          <div class="p-4 rounded-xl bg-[#0c0e14] border border-rose-500/30 flex items-start gap-3.5" id="attachment-action-box">
-            <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center shrink-0 mt-0.5">
-              <span class="material-symbols-outlined text-lg" id="attachment-action-icon">block</span>
-            </div>
-            <div class="flex-1 space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-rose-300 uppercase tracking-wider" id="attachment-action-title">What You Should Do With This File</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30" id="attachment-risk-badge">DANGEROUS FILE</span>
+              <div class="w-full h-1.5 rounded-full bg-[#161b26] overflow-hidden">
+                <div class="h-full bg-cyan-400 rounded-full transition-all duration-500" id="score-url-bar" style="width: 70%;"></div>
               </div>
-              <p class="text-xs text-slate-200 font-medium" id="attachment-action-text">
-                DO NOT OPEN THIS FILE! Quarantine or delete it immediately. It could harm your computer.
-              </p>
-              <p class="text-[11px] text-slate-400">
-                Safe option: If you need to view it for work, ask IT to open it in a safe isolated viewer.
-              </p>
+              <div class="text-[10px] text-slate-500">Optical mismatch &amp; IP hosts</div>
             </div>
-          </div>
 
-          <!-- SHA-256 Hash with copy button -->
-          <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2 overflow-hidden">
-              <span class="text-xs text-slate-400 font-medium shrink-0">File Fingerprint (SHA-256):</span>
-              <span class="text-xs font-mono text-purple-300 truncate" id="file-sha256">9f83a45c8192fb0172e2aa3958cc10915a1e809312b9cf440268a2bf624243ef</span>
+            <!-- 4. Attachments -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-rose-400 shrink-0"></span> Attached Files
+                </span>
+                <span class="text-rose-300 font-bold font-mono" id="score-attach-text">48 pts</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-[#161b26] overflow-hidden">
+                <div class="h-full bg-rose-500 rounded-full transition-all duration-500" id="score-attach-bar" style="width: 95%;"></div>
+              </div>
+              <div class="text-[10px] text-slate-500">Disguised programs &amp; magic bytes</div>
             </div>
-            <button class="shrink-0 px-3 py-1.5 rounded-lg bg-[#161b26] hover:bg-[#202738] border border-[#232d40] text-xs font-medium text-slate-200 hover:text-white flex items-center gap-1.5 transition-colors" onclick="copySha256()">
-              <span class="material-symbols-outlined text-sm">content_copy</span> Copy Fingerprint
-            </button>
-          </div>
-
-          <!-- Plain English explanation -->
-          <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 leading-relaxed" id="attachment-summary-box">
-            <strong class="text-purple-300 font-semibold block mb-0.5">Simple Explanation:</strong>
-            This file pretends to be a harmless PDF document, but it is actually a Windows computer program (.exe). Because Windows often hides file extensions, clicking it would run harmful code instead of opening an invoice.
           </div>
         </div>
 
       </div>
+    </section>
 
-      <!-- RIGHT COLUMN: Triage Verdict, 4-Way Risk Breakdown & Action Plan (5 Cols) -->
-      <div class="lg:col-span-5 flex flex-col gap-6">
+    <!-- 3. BALANCED 2-COLUMN WORKSPACE: Inspection Details (Left) + Evidence & Guidance (Right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- LEFT COLUMN: Content & Inspection (7 Cols) with Clean Tabbed Navigation -->
+      <div class="lg:col-span-7 flex flex-col gap-5">
         
-        <!-- 1. Prominent Risk Score Card with 4-Way Component Breakdown (Requirement 1) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-5" id="verdict-card">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Overall Safety Result</span>
-              <h3 class="text-2xl font-bold tracking-tight mt-1 text-rose-400" id="verdict-label">DANGEROUS SCAM</h3>
-              <span class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="verdict-sublabel">Do not click anything or open files</span>
+        <!-- Inspection Container Card -->
+        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col gap-5">
+          
+          <!-- Segmented Tab Navigation for Content -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#232d40]">
+            <div class="flex items-center gap-1 bg-[#0c0e14] border border-[#232d40] rounded-xl p-1">
+              <button id="tab-content-email" onclick="switchContentTab('email')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">mail</span> Email Message
+              </button>
+              <button id="tab-content-links" onclick="switchContentTab('links')" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+                <span class="material-symbols-outlined text-[16px]">link</span> Web Links
+              </button>
+              <button id="tab-content-attachment" onclick="switchContentTab('attachment')" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+                <span class="material-symbols-outlined text-[16px]">description</span> Attachment Card
+              </button>
+              <button id="tab-content-all" onclick="switchContentTab('all')" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="View all panels simultaneously">
+                <span class="material-symbols-outlined text-[15px]">view_agenda</span> All
+              </button>
             </div>
-            <!-- Score Circular Display -->
-            <div class="relative flex items-center justify-center w-24 h-24">
-              <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle class="stroke-[#0c0e14]" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
-                <circle class="stroke-rose-500 transition-all duration-700" cx="50" cy="50" fill="transparent" id="verdict-circle-bar" r="40" stroke-dasharray="251.2" stroke-dashoffset="30" stroke-linecap="round" stroke-width="8" style="stroke-dashoffset: 30.144;"></circle>
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-2xl font-bold text-white font-mono" id="verdict-score">88</span>
-                <span class="text-[10px] text-slate-400 uppercase font-medium">/ 100</span>
+
+            <!-- Dynamic Pill Info -->
+            <div class="flex items-center gap-2">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Safe Static Inspection
+              </span>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL 1: EMAIL & SENDER CHECK -->
+          <div id="content-panel-email" class="space-y-4">
+            <!-- Sender Check Bar -->
+            <div class="p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1b2333]">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-purple-400 text-lg">alternate_email</span>
+                  <span class="text-xs font-bold text-white uppercase tracking-wider">Sender Verification</span>
+                </div>
+                <!-- Auth Badges -->
+                <div class="flex items-center gap-1.5 font-mono text-[11px]">
+                  <span class="px-2 py-0.5 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-spf">SPF: FAIL</span>
+                  <span class="px-2 py-0.5 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-dkim">DKIM: FAIL</span>
+                  <span class="px-2 py-0.5 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-dmarc">DMARC: FAIL</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
+                <div class="sm:col-span-3 text-slate-400 font-medium">Claims to be (From):</div>
+                <div class="sm:col-span-9 text-slate-100 font-mono text-xs break-all" id="header-from">"Accounts Payable" &lt;invoicing@finance-vendor-portal.com&gt;</div>
+                <div class="sm:col-span-3 text-slate-400 font-medium">Replies go to (Reply-To):</div>
+                <div class="sm:col-span-9 text-slate-300 font-mono text-xs break-all" id="header-reply-to">stealth-collection@anonymous-drop.ru</div>
+                <div class="sm:col-span-3 text-slate-400 font-medium">Return route:</div>
+                <div class="sm:col-span-9 text-slate-300 font-mono text-xs break-all" id="header-return-path">bounce-gateway@unknown-vps.net</div>
+                <div class="sm:col-span-3 text-slate-400 font-medium">Auth details:</div>
+                <div class="sm:col-span-9 text-purple-300 font-mono text-xs break-all" id="header-auth-results">spf=softfail (ip=185.192.1.44) dkim=fail dmarc=fail</div>
+              </div>
+            </div>
+
+            <!-- Email Message Preview Box -->
+            <div class="bg-[#0c0e14] border border-[#232d40] rounded-xl overflow-hidden">
+              <div class="px-4 py-3 bg-[#121622] border-b border-[#232d40] flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-medium uppercase tracking-wider">Subject</span>
+                  <h3 class="text-sm font-semibold text-white mt-0.5" id="email-subject">URGENT: Past Due Invoice #INV-98201 - Immediate Suspension Warning</h3>
+                </div>
+                <span class="text-xs font-mono text-slate-500">Safe Preview</span>
+              </div>
+              <div class="p-5 text-sm text-slate-200 leading-relaxed space-y-3 font-normal" id="email-body-content">
+                Dear Partner,<br/><br/>
+                Your corporate account has been flagged for <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.5 rounded font-medium">IMMEDIATE SUSPENSION</span> due to failure of payment for Invoice #98201.<br/><br/>
+                Please review the attached invoice manifest immediately. If your system requires decrypting the bundle, the temporary passkey is: <span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-mono text-xs">SafeDec992!</span><br/><br/>
+                You may also reconcile directly via our authorized billing terminal:<br/>
+                <a class="text-cyan-400 underline font-mono text-sm" href="#">https://portal.bank-billing.com/secure-login</a><br/><br/>
+                Failure to remit within 2 hours will initiate full credential invalidation.<br/><br/>
+                Sincerely,<br/>
+                Central Accounts Triage Team
+              </div>
+            </div>
+
+            <!-- Phishing Vectors Telemetry Strip -->
+            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-2">
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Advanced Phishing Vectors</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="advanced-phishing-badges">
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between text-xs">
+                  <span class="text-slate-300">Lookalike Letters:</span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-homoglyph">NEGATIVE</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between text-xs">
+                  <span class="text-slate-300">Fake Phone Scam:</span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-vishing">NEGATIVE</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between text-xs">
+                  <span class="text-slate-300">Invisible Text:</span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-hidden">NEGATIVE</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between text-xs">
+                  <span class="text-slate-300">QR Code Prompt:</span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-quishing">NEGATIVE</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 4-Component Risk Contribution Breakdown (Requirement 1) -->
-          <div class="space-y-3 pt-3 border-t border-[#232d40]">
-            <span class="text-xs font-semibold text-slate-300 block">What makes this email risky? (Risk Breakdown):</span>
-            
-            <!-- 1. Sender & Auth -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-400"></span> 1. Sender Check (Fake sender address)</span>
-                <span class="text-purple-300 font-bold font-mono" id="score-sender-text">25 pts</span>
+          <!-- SUB-PANEL 2: WEB LINKS INSPECTION -->
+          <div id="content-panel-links" class="hidden space-y-4">
+            <!-- Optical Anchor Discrepancy Card -->
+            <div class="rounded-xl bg-[#0c0e14] border border-rose-500/30 p-4 shadow-sm" id="url-discrepancy-card">
+              <div class="flex items-center justify-between pb-2 border-b border-[#232d40]">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-rose-400 text-base">link_off</span>
+                  <span class="text-xs font-bold text-rose-300 uppercase tracking-wider">Fake Link Alert (Text vs Destination)</span>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="url-status-tag">DANGEROUS MISMATCH</span>
               </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-purple-400 rounded-full transition-all duration-500" id="score-sender-bar" style="width: 55%;"></div>
-              </div>
-            </div>
-
-            <!-- 2. Email Body -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> 2. Email Message (Urgent &amp; threatening words)</span>
-                <span class="text-amber-300 font-bold font-mono" id="score-body-text">18 pts</span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-amber-400 rounded-full transition-all duration-500" id="score-body-bar" style="width: 40%;"></div>
-              </div>
-            </div>
-
-            <!-- 3. URLs -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> 3. Web Links (Misleading or scam websites)</span>
-                <span class="text-cyan-300 font-bold font-mono" id="score-url-text">32 pts</span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-cyan-400 rounded-full transition-all duration-500" id="score-url-bar" style="width: 70%;"></div>
+              <p class="text-xs text-slate-400 my-2 leading-relaxed">
+                The visible text looks like a trusted domain, but clicking it takes you to an untrusted or suspicious server.
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                <div class="p-3 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block font-medium uppercase mb-0.5">What the link text says:</span>
+                  <span class="font-mono text-cyan-300 font-semibold break-all" id="url-visible-text">https://portal.bank-billing.com/secure-login</span>
+                </div>
+                <div class="p-3 rounded-lg bg-rose-950/20 border border-rose-500/30">
+                  <span class="text-[10px] text-rose-400 block font-medium uppercase mb-0.5">Where it actually takes you:</span>
+                  <span class="font-mono text-rose-300 font-bold break-all" id="url-actual-dest">http://185.192.1.44:8080/auth/login.php?ref=spoof</span>
+                </div>
               </div>
             </div>
 
-            <!-- 4. Attachments -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> 4. Attached Files (Disguised or dangerous programs)</span>
-                <span class="text-rose-300 font-bold font-mono" id="score-attach-text">48 pts</span>
+            <!-- Detected Links Table -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">All Web Links Inventory</span>
+                <span class="text-[11px] font-mono text-cyan-400" id="links-count-pill">1 Link Found</span>
               </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-rose-500 rounded-full transition-all duration-500" id="score-attach-bar" style="width: 95%;"></div>
+              <div class="space-y-2.5" id="detected-links-container">
+                <!-- Dynamically filled by app.js -->
               </div>
             </div>
           </div>
+
+          <!-- SUB-PANEL 3: ATTACHMENT REPORT CARD (Requirement 2 & 8) -->
+          <div id="content-panel-attachment" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-purple-400 text-lg">description</span>
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Per-Attachment Report Card</span>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40" id="attachment-severity-pill">Dangerous: Hidden Program (.exe)</span>
+            </div>
+
+            <!-- File Details Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold block">Filename</span>
+                <p class="font-mono text-xs font-bold text-slate-100 mt-1 break-all" id="file-name">invoice_98201.pdf.exe</p>
+                <p class="text-[11px] text-rose-400 mt-1" id="file-ext-alert">Disguised double extension: .pdf.exe</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold block">Declared vs Actual Type</span>
+                <p class="text-xs text-slate-300 mt-1">Declared: <span class="font-semibold text-slate-200" id="file-mime">PDF Document</span></p>
+                <p class="text-xs text-rose-300 font-bold mt-0.5" id="file-magic">Actually is: Windows Computer Program (.exe)</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold block">Size &amp; Structure</span>
+                <p class="text-xs text-slate-200 mt-1 font-mono" id="file-size">1.42 MB</p>
+                <p class="text-xs text-amber-300 mt-0.5" id="file-entropy">Compressed byte structure</p>
+              </div>
+            </div>
+
+            <!-- Recommended Action Box (Requirement 2 & 3) -->
+            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-rose-500/30 flex items-start gap-3" id="attachment-action-box">
+              <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-lg" id="attachment-action-icon">block</span>
+              </div>
+              <div class="flex-1 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-rose-300 uppercase tracking-wider" id="attachment-action-title">What You Should Do With This File</span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30" id="attachment-risk-badge">DANGEROUS FILE</span>
+                </div>
+                <p class="text-xs text-slate-200 font-medium" id="attachment-action-text">
+                  DO NOT OPEN THIS FILE! Quarantine or delete it immediately. It could harm your computer.
+                </p>
+                <p class="text-[11px] text-slate-400">
+                  Safe option: If you need to view it for work, ask IT to open it in a safe isolated viewer.
+                </p>
+              </div>
+            </div>
+
+            <!-- SHA-256 Fingerprint -->
+            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 overflow-hidden text-xs">
+                <span class="text-slate-400 font-medium shrink-0">SHA-256 Hash:</span>
+                <span class="font-mono text-purple-300 truncate" id="file-sha256">9f83a45c8192fb0172e2aa3958cc10915a1e809312b9cf440268a2bf624243ef</span>
+              </div>
+              <button class="shrink-0 px-2.5 py-1 rounded-lg bg-[#161b26] hover:bg-[#202738] border border-[#232d40] text-xs font-medium text-slate-200 hover:text-white flex items-center gap-1 transition-colors" onclick="copySha256()">
+                <span class="material-symbols-outlined text-xs">content_copy</span> Copy
+              </button>
+            </div>
+
+            <!-- Simple Explanation Box -->
+            <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 leading-relaxed" id="attachment-summary-box">
+              <strong class="text-purple-300 font-semibold block mb-0.5">Simple Explanation:</strong>
+              This file pretends to be a harmless PDF document, but it is actually a Windows computer program (.exe). Because Windows often hides file extensions, clicking it would run harmful code instead of opening an invoice.
+            </div>
+          </div>
+
         </div>
+      </div>
 
-        <!-- 2. Plain-Language Reasons & Observable Evidence (Requirement 6) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+      <!-- RIGHT COLUMN: Evidence Reasons, Safe Guidance & Feedback (5 Cols) -->
+      <div class="lg:col-span-5 flex flex-col gap-5">
+        
+        <!-- 1. Why Was This Flagged? Observable Evidence (Requirement 6) -->
+        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col gap-3.5">
           <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-purple-400 text-lg">flag</span>
-              <h3 class="text-sm font-semibold text-white">Why was this flagged? (Simple Evidence)</h3>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Why Was This Flagged? (Evidence)</h3>
             </div>
-            <span class="text-xs text-slate-400">Risk Points</span>
+            <span class="text-[11px] font-mono text-slate-400">Contributing Signals</span>
           </div>
 
           <div class="flex flex-col gap-2.5" id="signal-evidence-list">
@@ -638,58 +698,42 @@
           </div>
         </div>
 
-        <!-- 3. What Should You Do? (Safe Action Guidance) (Requirement 3) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+        <!-- 2. What Should You Do Now? Safe Action Guidance (Requirement 3) -->
+        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col gap-3.5">
           <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-emerald-400 text-lg">verified_user</span>
-              <h3 class="text-sm font-semibold text-white">What Should You Do Now?</h3>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">What Should You Do Now?</h3>
             </div>
-            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-medium">Recommended Steps</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-semibold">Recommended Steps</span>
           </div>
 
           <div class="space-y-2.5" id="triage-guidance-steps">
             <!-- Populated dynamically with quarantine / official channel / safe viewer guidance -->
           </div>
-
-          <!-- Quick Action Buttons -->
-          <div class="pt-2 grid grid-cols-2 gap-2">
-            <button class="py-2 px-3 rounded-xl bg-rose-600/30 hover:bg-rose-600/50 text-rose-300 border border-rose-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all" onclick="triggerAction('quarantine')">
-              <span class="material-symbols-outlined text-sm">shield</span> Quarantine (Block)
-            </button>
-            <button class="py-2 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all" onclick="openFeedbackModal()">
-              <span class="material-symbols-outlined text-sm">rate_review</span> Give Feedback
-            </button>
-            <button class="py-2 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-slate-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-all" onclick="triggerAction('export')">
-              <span class="material-symbols-outlined text-sm">download</span> Save Report
-            </button>
-            <button class="py-2 px-3 rounded-xl bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/30 text-amber-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-all" onclick="openBenchmarkModal()">
-              <span class="material-symbols-outlined text-sm">analytics</span> Compare with AI
-            </button>
-          </div>
         </div>
 
-        <!-- 4. User Feedback Card (Requirement 4) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-5 shadow-sm space-y-3">
+        <!-- 3. User Feedback & Accuracy Rating (Requirement 4) -->
+        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-[#232d40]">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-cyan-400 text-base">feedback</span>
-              <h3 class="text-xs font-semibold text-white">Was this result accurate?</h3>
+              <span class="material-symbols-outlined text-cyan-400 text-base">reviews</span>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Rate Accuracy</h3>
             </div>
             <span class="text-[10px] text-slate-400 font-mono" id="feedback-live-rate">Overall Accuracy: 95.0%</span>
           </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            Did we get this right? Let us know if this was a real scam or a safe email to help improve accuracy.
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Did we get this email right? Help evaluate false alarms and missed scams:
           </p>
           <div class="grid grid-cols-3 gap-2">
-            <button onclick="submitInlineFeedback('ACCURATE')" class="py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
-              <span class="material-symbols-outlined text-xs">check_circle</span> Accurate (Correct)
+            <button onclick="submitInlineFeedback('ACCURATE')" class="py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-xs">check_circle</span> Accurate
             </button>
-            <button onclick="submitInlineFeedback('FALSE_POSITIVE')" class="py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
-              <span class="material-symbols-outlined text-xs">warning</span> False Alarm (Safe)
+            <button onclick="submitInlineFeedback('FALSE_POSITIVE')" class="py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-xs">warning</span> False Alarm
             </button>
-            <button onclick="submitInlineFeedback('FALSE_NEGATIVE')" class="py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
-              <span class="material-symbols-outlined text-xs">error</span> Missed Scam (Risky)
+            <button onclick="submitInlineFeedback('FALSE_NEGATIVE')" class="py-2 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[11px] font-semibold flex items-center justify-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-xs">error</span> Missed Scam
             </button>
           </div>
         </div>
