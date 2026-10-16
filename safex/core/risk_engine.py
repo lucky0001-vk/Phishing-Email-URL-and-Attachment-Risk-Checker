@@ -14,6 +14,7 @@ from safex.core.models import (
     EmailAnalysisResult,
     SafeGuidance,
     DetectionSignal,
+    ActionRecommendation,
 )
 
 
@@ -150,7 +151,7 @@ def evaluate_email_risk(
             "with standard benign messages. Continue practicing standard verification habits."
         )
 
-    # 5. Formulate Safe Guidance
+    # 5. Formulate Safe Guidance & Action Cards
     safe_guidance = _generate_safe_guidance(
         risk_rating,
         header_analysis,
@@ -161,6 +162,10 @@ def evaluate_email_risk(
         has_zip_pw_match
     )
 
+    sender_score = header_score
+    body_score = getattr(body_analysis, "text_only_score", 0)
+    url_score = getattr(body_analysis, "url_only_score", 0)
+
     return EmailAnalysisResult(
         analysis_timestamp=now_str,
         overall_score=overall_score,
@@ -168,9 +173,12 @@ def evaluate_email_risk(
         verdict=verdict,
         summary=summary,
         score_breakdown={
+            "sender_score": sender_score,
+            "body_score": body_score,
+            "url_score": url_score,
+            "attachment_score": attachment_score,
             "header_score": header_score,
             "body_url_score": body_url_score,
-            "attachment_score": attachment_score,
             "overall_score": overall_score,
         },
         header_analysis=header_analysis,
@@ -191,7 +199,7 @@ def _generate_safe_guidance(
     has_zip_pw_match: bool
 ) -> SafeGuidance:
     """
-    Generate tailored, actionable safety steps based on detected indicators.
+    Generate tailored, actionable safety steps and interactive action recommendation cards.
     """
     verification_steps = [
         "Verify through an official, out-of-band communication channel (e.g., look up the company or colleague via an internal directory or known corporate phone number).",
@@ -204,6 +212,84 @@ def _generate_safe_guidance(
         "Do not click links inside the email.",
         "Do not download, extract, or open any attachments."
     ]
+    action_cards = []
+
+    # 1. Action Card: Quarantine
+    if risk_rating in ["HIGH", "CRITICAL"] or has_disguised_file or any(att.risk_level == "MALICIOUS" for att in attachments):
+        action_cards.append(
+            ActionRecommendation(
+                action_type="QUARANTINE",
+                title="Quarantine Threat & Block Sender",
+                description="Immediately isolate the message and any payload files. Do not permit end-user retrieval without SOC review.",
+                urgency="CRITICAL",
+                steps=[
+                    "Move message to the administrative quarantine vault.",
+                    "Extract sender domain and IP literal to update perimeter email security blocklists.",
+                    "If an attachment was downloaded, isolate the endpoint network adapter immediately."
+                ]
+            )
+        )
+
+    # 2. Action Card: Out-of-Band Sender Verification
+    sender_domain = header_analysis.from_domain or "sender"
+    action_cards.append(
+        ActionRecommendation(
+            action_type="VERIFY_SENDER",
+            title="Verify Sender via Official Channel",
+            description=f"Validate identity of {header_analysis.from_header or 'the sender'} through an independent verified path.",
+            urgency="HIGH" if risk_rating in ["HIGH", "MEDIUM"] else "LOW",
+            steps=[
+                "Do NOT use the phone numbers, links, or Reply-To address provided in this email.",
+                f"Contact {sender_domain} using an established corporate directory, phone switchboard, or secure chat.",
+                "Confirm if the requested transaction, credential update, or file transfer was genuinely initiated."
+            ]
+        )
+    )
+
+    # 3. Action Card: Safe Offline Viewer Inspection
+    if attachments:
+        action_cards.append(
+            ActionRecommendation(
+                action_type="SAFE_VIEWER",
+                title="Inspect in Safe Offline / Air-Gapped Viewer",
+                description="If content must be reviewed for business validity, inspect it only in an isolated viewer.",
+                urgency="MEDIUM",
+                steps=[
+                    "Use an air-gapped sandbox or offline static previewer with zero network connectivity.",
+                    "Disable macros, ActiveX, and JavaScript in document viewer settings before opening.",
+                    "For PDF invoices, view as plain text or rendered static images; never allow embedded script execution."
+                ]
+            )
+        )
+    elif has_suspicious_url:
+        action_cards.append(
+            ActionRecommendation(
+                action_type="SAFE_VIEWER",
+                title="Inspect URL via Isolated Browser Sandbox",
+                description="Inspect the destination domain without exposing your workstation or credentials.",
+                urgency="HIGH",
+                steps=[
+                    "Do NOT click the link directly in your standard browser.",
+                    "Navigate to the legitimate company portal by typing the verified URL into your browser address bar.",
+                    "If inspecting, submit the URL to an isolated secure web gateway or URL sandbox."
+                ]
+            )
+        )
+
+    # 4. Action Card: SOC Reporting
+    action_cards.append(
+        ActionRecommendation(
+            action_type="REPORT_SOC",
+            title="Report to Security Operations (SOC)",
+            description="Submit headers and static triage report to your security team for enterprise-wide threat hunting.",
+            urgency="HIGH" if risk_rating in ["HIGH", "CRITICAL"] else "LOW",
+            steps=[
+                "Forward email as an RFC 822 attachment to your organization's phishing reporting address.",
+                "Attach the SafeX static triage JSON report containing SHA-256 signatures and domain mismatches.",
+                "Flag whether any colleagues or departments may have received the same campaign."
+            ]
+        )
+    )
 
     if risk_rating in ["HIGH", "CRITICAL"]:
         action = "CRITICAL_THREAT_DO_NOT_ENGAGE" if risk_rating == "CRITICAL" else "DO_NOT_ENGAGE"
@@ -245,5 +331,6 @@ def _generate_safe_guidance(
         headline=headline,
         verification_steps=verification_steps,
         recommendations=recommendations,
-        things_to_avoid=things_to_avoid
+        things_to_avoid=things_to_avoid,
+        action_cards=action_cards
     )

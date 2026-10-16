@@ -371,18 +371,41 @@ function loadScenario(key) {
     vCircle.className = 'stroke-emerald-400 transition-all duration-700';
   }
 
-  // Risk Bars
-  document.getElementById('score-body-text').textContent = data.verdict.bodyScore + '%';
-  document.getElementById('score-body-bar').style.width = data.verdict.bodyScore + '%';
-  document.getElementById('score-attach-text').textContent = data.verdict.attachScore + '%';
-  document.getElementById('score-attach-bar').style.width = data.verdict.attachScore + '%';
+  // 4-Component Risk Breakdown (Requirement 1)
+  const breakdown = data.verdict.breakdown || {
+    sender_score: data.verdict.theme === 'rose' ? 25 : (data.verdict.theme === 'amber' ? 15 : 0),
+    body_score: data.verdict.theme === 'rose' ? 15 : (data.verdict.theme === 'amber' ? 20 : 0),
+    url_score: data.verdict.theme === 'rose' ? 25 : (data.verdict.theme === 'amber' ? 35 : 0),
+    attachment_score: data.verdict.attachScore || (data.verdict.theme === 'rose' ? 50 : 0),
+  };
 
-  // Signals
+  const senderEl = document.getElementById('score-sender-text');
+  if (senderEl) {
+    senderEl.textContent = `${breakdown.sender_score} pts`;
+    document.getElementById('score-sender-bar').style.width = Math.min(100, (breakdown.sender_score / 35) * 100) + '%';
+  }
+  const bodyTextEl = document.getElementById('score-bodytext-text');
+  if (bodyTextEl) {
+    bodyTextEl.textContent = `${breakdown.body_score} pts`;
+    document.getElementById('score-bodytext-bar').style.width = Math.min(100, (breakdown.body_score / 35) * 100) + '%';
+  }
+  const urlEl = document.getElementById('score-url-text');
+  if (urlEl) {
+    urlEl.textContent = `${breakdown.url_score} pts`;
+    document.getElementById('score-url-bar').style.width = Math.min(100, (breakdown.url_score / 45) * 100) + '%';
+  }
+  const attachEl = document.getElementById('score-attach-text');
+  if (attachEl) {
+    attachEl.textContent = `${breakdown.attachment_score} pts`;
+    document.getElementById('score-attach-bar').style.width = Math.min(100, (breakdown.attachment_score / 50) * 100) + '%';
+  }
+
+  // Observable Signals & Supporting Evidence (Requirement 6)
   const sigContainer = document.getElementById('signal-evidence-list');
   sigContainer.innerHTML = '';
   data.verdict.signals.forEach(sig => {
     const item = document.createElement('div');
-    item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-start justify-between gap-3';
+    item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5';
     let tagColor = 'text-slate-300';
     let weightColor = 'text-slate-400';
     if (sig.level === 'rose') {
@@ -396,12 +419,21 @@ function loadScenario(key) {
       weightColor = 'text-emerald-400 font-bold';
     }
 
-    item.innerHTML = `
-      <div>
-        <span class="text-xs ${tagColor} block">${sig.tag}</span>
-        <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${sig.desc}</p>
+    const evidenceHtml = sig.evidence ? `
+      <div class="mt-1 px-2.5 py-1 rounded-md bg-[#161b26] border border-[#232d40] flex items-center gap-1.5 text-[11px] font-mono text-cyan-300 break-all">
+        <span class="text-slate-500">Evidence:</span> ${escapeHtml(sig.evidence)}
       </div>
-      <span class="font-mono text-xs ${weightColor} shrink-0">${sig.weight}</span>
+    ` : '';
+
+    item.innerHTML = `
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span class="text-xs ${tagColor} block">${escapeHtml(sig.tag)}</span>
+          <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.desc)}</p>
+        </div>
+        <span class="font-mono text-xs ${weightColor} shrink-0">${sig.weight}</span>
+      </div>
+      ${evidenceHtml}
     `;
     sigContainer.appendChild(item);
   });
@@ -694,13 +726,20 @@ function renderLiveApiResponse(a) {
   });
 
   // Attachments
+  // Attachments & Per-Attachment Report Card (Requirement 2 & 8)
   const primaryAtt = atts[0];
   const sevPill = document.getElementById('attachment-severity-pill');
+  const featContainer = document.getElementById('attachment-features-list');
+  const actCard = document.getElementById('attachment-action-card');
+  const actBadge = document.getElementById('attachment-action-badge');
+  const actText = document.getElementById('attachment-action-text');
+  const actIcon = document.getElementById('attachment-action-icon');
+
   if (primaryAtt) {
     document.getElementById('file-name').textContent = primaryAtt.filename;
     let alertMsg = 'Standard static layout verified';
-    if (primaryAtt.is_double_extension) alertMsg = `Double extension: .${primaryAtt.filename.split('.').slice(-2).join('.')}`;
-    else if (primaryAtt.has_rtlo) alertMsg = 'Unicode RTLO Deception Detected';
+    if (primaryAtt.double_extension) alertMsg = `Double extension: .${primaryAtt.filename.split('.').slice(-2).join('.')}`;
+    else if (primaryAtt.rtlo_detected) alertMsg = 'Unicode RTLO Deception Detected';
     else if (primaryAtt.type_mismatch) alertMsg = 'Type mismatch: Declared MIME differs from magic bytes';
     else if (primaryAtt.has_vba_macros) alertMsg = 'VBA Macros detected in Office structure';
 
@@ -708,13 +747,51 @@ function renderLiveApiResponse(a) {
     document.getElementById('file-mime').textContent = primaryAtt.declared_mime_type || 'Unknown';
     document.getElementById('file-magic').textContent = primaryAtt.magic_signature || 'N/A';
     document.getElementById('file-size').textContent = primaryAtt.size_human;
-    document.getElementById('file-entropy').textContent = 'Analyzed byte distribution';
+    document.getElementById('file-entropy').textContent = 'Analyzed static byte layout';
     document.getElementById('file-sha256').textContent = primaryAtt.sha256 || '—';
 
     sevPill.textContent = primaryAtt.risk_level === 'MALICIOUS' ? 'Executable Binary Disguised' : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'Suspicious Attachment' : 'Verified Benign Document');
     sevPill.className = primaryAtt.risk_level === 'MALICIOUS' 
-      ? 'px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40'
-      : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40');
+      ? 'px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40'
+      : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40');
+
+    // Populate Suspicious Features
+    if (featContainer) {
+      const features = primaryAtt.suspicious_features || [];
+      featContainer.innerHTML = features.map(f => {
+        let col = 'bg-slate-800 text-slate-300 border-slate-700';
+        if (f.toLowerCase().includes('executable') || f.toLowerCase().includes('mismatch') || f.toLowerCase().includes('rtlo') || f.toLowerCase().includes('double') || f.toLowerCase().includes('password')) {
+          col = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+        } else if (f.toLowerCase().includes('macro') || f.toLowerCase().includes('script') || f.toLowerCase().includes('warning')) {
+          col = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+        } else if (f.toLowerCase().includes('clean') || f.toLowerCase().includes('benign')) {
+          col = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+        }
+        return `<span class="px-2.5 py-1 rounded-md text-xs font-mono border ${col}">${escapeHtml(f)}</span>`;
+      }).join(' ');
+    }
+
+    // Populate Recommended Action Card
+    if (actCard && actBadge && actText) {
+      actBadge.textContent = `RECOMMENDED ACTION: ${primaryAtt.recommended_action || 'SAFE_TO_OPEN'}`.replace(/_/g, ' ');
+      actText.textContent = primaryAtt.recommended_action_detail || 'No threat actions required.';
+      if (primaryAtt.risk_level === 'MALICIOUS') {
+        actCard.className = 'p-4 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-1.5';
+        actBadge.className = 'text-xs font-bold text-rose-300 uppercase tracking-wide';
+        actIcon.className = 'material-symbols-outlined text-rose-400 text-lg';
+        actIcon.textContent = 'block';
+      } else if (primaryAtt.risk_level === 'SUSPICIOUS') {
+        actCard.className = 'p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1.5';
+        actBadge.className = 'text-xs font-bold text-amber-300 uppercase tracking-wide';
+        actIcon.className = 'material-symbols-outlined text-amber-400 text-lg';
+        actIcon.textContent = 'warning';
+      } else {
+        actCard.className = 'p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-1.5';
+        actBadge.className = 'text-xs font-bold text-emerald-300 uppercase tracking-wide';
+        actIcon.className = 'material-symbols-outlined text-emerald-400 text-lg';
+        actIcon.textContent = 'check_circle';
+      }
+    }
   } else {
     document.getElementById('file-name').textContent = 'No Attachments Present';
     document.getElementById('file-ext-alert').textContent = 'Message body only';
@@ -725,6 +802,15 @@ function renderLiveApiResponse(a) {
     document.getElementById('file-sha256').textContent = '—';
     sevPill.textContent = 'No Attachment';
     sevPill.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700';
+    if (featContainer) {
+      featContainer.innerHTML = '<span class="text-xs text-slate-500 font-mono">No files attached to message sample</span>';
+    }
+    if (actCard) {
+      actBadge.textContent = 'RECOMMENDED ACTION: NONE REQUIRED';
+      actText.textContent = 'This email does not carry binary or document attachments.';
+      actCard.className = 'p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5';
+      actIcon.textContent = 'info';
+    }
   }
 
   // Verdict
@@ -765,17 +851,35 @@ function renderLiveApiResponse(a) {
     vCircle.className = 'stroke-emerald-400 transition-all duration-700';
   }
 
-  // Risk Bars
+  // 4-Component Risk Breakdown (Requirement 1)
   const breakdown = a.score_breakdown || {};
-  const bodyScorePct = Math.min(100, Math.round(((breakdown.body_url_score || 0) / 45) * 100));
-  const attachScorePct = Math.min(100, Math.round(((breakdown.attachment_score || 0) / 50) * 100));
+  const senderScore = breakdown.sender_score !== undefined ? breakdown.sender_score : (breakdown.header_score || 0);
+  const bodyScore = breakdown.body_score !== undefined ? breakdown.body_score : (b.text_only_score || 0);
+  const urlScore = breakdown.url_score !== undefined ? breakdown.url_score : (b.url_only_score || 0);
+  const attachScore = breakdown.attachment_score !== undefined ? breakdown.attachment_score : 0;
 
-  document.getElementById('score-body-text').textContent = bodyScorePct + '%';
-  document.getElementById('score-body-bar').style.width = bodyScorePct + '%';
-  document.getElementById('score-attach-text').textContent = attachScorePct + '%';
-  document.getElementById('score-attach-bar').style.width = attachScorePct + '%';
+  const senderEl = document.getElementById('score-sender-text');
+  if (senderEl) {
+    senderEl.textContent = `${senderScore} pts`;
+    document.getElementById('score-sender-bar').style.width = Math.min(100, (senderScore / 35) * 100) + '%';
+  }
+  const bodyTextEl = document.getElementById('score-bodytext-text');
+  if (bodyTextEl) {
+    bodyTextEl.textContent = `${bodyScore} pts`;
+    document.getElementById('score-bodytext-bar').style.width = Math.min(100, (bodyScore / 35) * 100) + '%';
+  }
+  const urlEl = document.getElementById('score-url-text');
+  if (urlEl) {
+    urlEl.textContent = `${urlScore} pts`;
+    document.getElementById('score-url-bar').style.width = Math.min(100, (urlScore / 45) * 100) + '%';
+  }
+  const attachEl = document.getElementById('score-attach-text');
+  if (attachEl) {
+    attachEl.textContent = `${attachScore} pts`;
+    document.getElementById('score-attach-bar').style.width = Math.min(100, (attachScore / 50) * 100) + '%';
+  }
 
-  // Signals
+  // Observable Signals & Supporting Evidence (Requirement 6)
   const sigContainer = document.getElementById('signal-evidence-list');
   sigContainer.innerHTML = '';
   const signals = a.all_signals || [];
@@ -788,7 +892,7 @@ function renderLiveApiResponse(a) {
   } else {
     signals.forEach(sig => {
       const item = document.createElement('div');
-      item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-start justify-between gap-3';
+      item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5';
       let tagColor = 'text-slate-300';
       let weightColor = 'text-slate-400';
       if (sig.severity === 'critical' || sig.severity === 'high') {
@@ -802,15 +906,64 @@ function renderLiveApiResponse(a) {
         weightColor = 'text-emerald-400 font-bold';
       }
 
-      item.innerHTML = `
-        <div>
-          <span class="text-xs ${tagColor} block">${escapeHtml(sig.name)}</span>
-          <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.description)}</p>
+      const evidenceHtml = sig.evidence ? `
+        <div class="mt-1 px-2.5 py-1 rounded-md bg-[#161b26] border border-[#232d40] flex items-center gap-1.5 text-[11px] font-mono text-cyan-300 break-all">
+          <span class="text-slate-500">Evidence:</span> ${escapeHtml(sig.evidence)}
         </div>
-        <span class="font-mono text-xs ${weightColor} shrink-0">+${sig.score_impact} pts</span>
+      ` : '';
+
+      item.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <span class="text-xs ${tagColor} block">${escapeHtml(sig.name)}</span>
+            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.description)}</p>
+          </div>
+          <span class="font-mono text-xs ${weightColor} shrink-0">+${sig.score_impact} pts</span>
+        </div>
+        ${evidenceHtml}
       `;
       sigContainer.appendChild(item);
     });
+  }
+
+  // Populate Action Recommendation Cards (Requirement 3)
+  const actionContainer = document.getElementById('action-cards-container');
+  if (actionContainer && a.safe_guidance && a.safe_guidance.action_cards) {
+    actionContainer.innerHTML = a.safe_guidance.action_cards.map(card => {
+      let border = 'border-[#232d40] bg-[#0c0e14]';
+      let iconCol = 'text-cyan-400';
+      let icon = 'info';
+      if (card.action_type === 'QUARANTINE') {
+        border = 'border-rose-500/30 bg-rose-950/20';
+        iconCol = 'text-rose-400';
+        icon = 'emergency';
+      } else if (card.action_type === 'VERIFY_SENDER') {
+        border = 'border-purple-500/30 bg-[#0c0e14]';
+        iconCol = 'text-purple-400';
+        icon = 'contact_phone';
+      } else if (card.action_type === 'SAFE_VIEWER') {
+        border = 'border-cyan-500/30 bg-[#0c0e14]';
+        iconCol = 'text-cyan-400';
+        icon = 'visibility_off';
+      } else if (card.action_type === 'REPORT_SOC') {
+        border = 'border-indigo-500/30 bg-[#0c0e14]';
+        iconCol = 'text-indigo-400';
+        icon = 'shield';
+      }
+
+      const stepsHtml = (card.steps || []).map(s => `<li class="text-[11px] text-slate-400">${escapeHtml(s)}</li>`).join('');
+
+      return `
+        <div class="p-3.5 rounded-xl ${border} space-y-1.5">
+          <div class="flex items-center gap-2 font-semibold text-xs text-slate-200">
+            <span class="material-symbols-outlined text-base ${iconCol}">${icon}</span>
+            <span>${escapeHtml(card.title)}</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(card.description)}</p>
+          ${stepsHtml ? `<ul class="list-disc pl-4 space-y-0.5 pt-1">${stepsHtml}</ul>` : ''}
+        </div>
+      `;
+    }).join('');
   }
 
   // Scroll smoothly to results
@@ -982,9 +1135,19 @@ function copySha256() {
 
 function triggerAction(action) {
   if (action === 'quarantine') {
-    alert('Threat Item Quarantined: The raw payload has been isolated and sender IP staged for boundary blocklist.');
+    alert('🛑 Threat Item Quarantined:\n• In-memory payload isolated and session locked.\n• Sender domain and detected IP addresses staged for enterprise mail gateway boundary blocklist.');
+  } else if (action === 'verify_sender') {
+    const from = document.getElementById('header-from').textContent;
+    alert(`📞 Official Channel Verification Protocol:\n• Target Sender: ${from}\n• Step 1: Do NOT reply or click links in this message.\n• Step 2: Look up the verified phone number or intranet contact in your corporate directory.\n• Step 3: Contact the sender to verify whether this request was legitimate.`);
+  } else if (action === 'safe_viewer') {
+    alert('🔍 Safe Offline Viewer Instructions:\n• Never double-click suspicious attachments in standard desktop applications.\n• Open strictly in an isolated air-gapped sandbox or static text previewer.\n• Ensure Macro Execution and JavaScript are disabled in viewer preferences.');
   } else if (action === 'whitelist') {
-    alert('Recorded False Positive: Signal override stored in local memory telemetry.');
+    selectFeedbackVerdict('FALSE_POSITIVE');
+    const notes = document.getElementById('feedback-notes');
+    if (notes) {
+      notes.value = 'User reported as legitimate / false positive';
+      notes.focus();
+    }
   } else if (action === 'export') {
     const artifact = {
       timestamp: new Date().toISOString(),
@@ -999,10 +1162,136 @@ function triggerAction(action) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `safex-report-${Date.now()}.json`;
+    a.download = `safex-triage-report-${Date.now()}.json`;
     a.click();
   }
 }
+
+// User Feedback Feature (Requirement 4)
+let currentFeedbackVerdict = 'ACCURATE';
+
+function selectFeedbackVerdict(verdict) {
+  currentFeedbackVerdict = verdict;
+  const btnAcc = document.getElementById('fb-btn-accurate');
+  const btnFp = document.getElementById('fb-btn-fp');
+  const btnFn = document.getElementById('fb-btn-fn');
+
+  if (btnAcc) btnAcc.className = 'py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 text-center flex flex-col items-center gap-1';
+  if (btnFp) btnFp.className = 'py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 text-center flex flex-col items-center gap-1';
+  if (btnFn) btnFn.className = 'py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 text-center flex flex-col items-center gap-1';
+
+  if (verdict === 'ACCURATE' && btnAcc) {
+    btnAcc.className = 'py-2 px-1 rounded-xl border bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold text-center flex flex-col items-center gap-1';
+  } else if (verdict === 'FALSE_POSITIVE' && btnFp) {
+    btnFp.className = 'py-2 px-1 rounded-xl border bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold text-center flex flex-col items-center gap-1';
+  } else if (verdict === 'FALSE_NEGATIVE' && btnFn) {
+    btnFn.className = 'py-2 px-1 rounded-xl border bg-rose-500/20 border-rose-500/40 text-rose-300 font-semibold text-center flex flex-col items-center gap-1';
+  }
+}
+
+async function submitClassificationFeedback() {
+  const notesInput = document.getElementById('feedback-notes');
+  const notes = notesInput ? notesInput.value.trim() : '';
+  const score = parseInt(document.getElementById('verdict-score').textContent || '0', 10);
+  const rating = document.getElementById('verdict-label').textContent || 'LOW';
+
+  const formData = new FormData();
+  formData.append('sample_id', currentScenario || 'custom');
+  formData.append('sample_name', document.getElementById('email-subject').textContent || 'Triage Sample');
+  formData.append('user_verdict', currentFeedbackVerdict);
+  formData.append('notes', notes);
+  formData.append('assigned_score', score);
+  formData.append('assigned_rating', rating);
+
+  const btn = document.getElementById('btn-submit-feedback');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/feedback', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('Failed to record feedback');
+    const data = await res.json();
+    alert(`Feedback Recorded: Thank you! Reported as ${currentFeedbackVerdict}. This helps tune SafeX heuristic thresholds.`);
+    if (notesInput) notesInput.value = '';
+    loadFeedbackStats();
+  } catch (err) {
+    alert('Error submitting feedback: ' + err.message);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function loadFeedbackStats() {
+  try {
+    const res = await fetch('/api/feedback/stats');
+    if (!res.ok) return;
+    const stats = await res.json();
+    const accPill = document.getElementById('feedback-stat-accuracy');
+    const countLabel = document.getElementById('feedback-count-label');
+    if (accPill) accPill.textContent = `Model Accuracy: ${stats.user_verified_accuracy_pct}%`;
+    if (countLabel) countLabel.textContent = `${stats.total_reports} reports logged (${stats.false_positive_count} FP, ${stats.false_negative_count} FN)`;
+  } catch (e) {
+    console.warn(e);
+  }
+}
+
+// ML vs Rule Benchmark Loader (Requirement 5)
+async function openBenchmarkModal() {
+  openModal('modal-benchmark');
+  try {
+    const res = await fetch('/api/evaluation/benchmark');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const rb = data.rule_based;
+    const ml = data.ml_based;
+
+    // Rule confusion matrix
+    document.getElementById('rule-tn').textContent = rb.confusion_matrix.tn;
+    document.getElementById('rule-fp').textContent = rb.confusion_matrix.fp;
+    document.getElementById('rule-fn').textContent = rb.confusion_matrix.fn;
+    document.getElementById('rule-tp').textContent = rb.confusion_matrix.tp;
+
+    document.getElementById('rule-acc').textContent = rb.metrics.accuracy_pct + '%';
+    document.getElementById('rule-prec').textContent = rb.metrics.precision_pct + '%';
+    document.getElementById('rule-rec').textContent = rb.metrics.recall_pct + '%';
+    document.getElementById('rule-f1').textContent = rb.metrics.f1_score;
+
+    // ML confusion matrix
+    document.getElementById('ml-tn').textContent = ml.confusion_matrix.tn;
+    document.getElementById('ml-fp').textContent = ml.confusion_matrix.fp;
+    document.getElementById('ml-fn').textContent = ml.confusion_matrix.fn;
+    document.getElementById('ml-tp').textContent = ml.confusion_matrix.tp;
+
+    document.getElementById('ml-acc').textContent = ml.metrics.accuracy_pct + '%';
+    document.getElementById('ml-prec').textContent = ml.metrics.precision_pct + '%';
+    document.getElementById('ml-rec').textContent = ml.metrics.recall_pct + '%';
+    document.getElementById('ml-f1').textContent = ml.metrics.f1_score;
+
+    // Populate samples table
+    const container = document.getElementById('benchmark-samples-table');
+    if (container && data.side_by_side_samples) {
+      container.innerHTML = data.side_by_side_samples.map(s => `
+        <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between gap-2 font-mono text-[11px]">
+          <div class="flex items-center gap-2 truncate">
+            <span class="px-1.5 py-0.5 rounded text-[10px] ${s.ground_truth === 'THREAT' ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'}">${s.ground_truth}</span>
+            <span class="text-slate-200 truncate">${escapeHtml(s.name)}</span>
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="text-cyan-400">Rule: ${s.rule_score} (${s.rule_verdict})</span>
+            <span class="text-amber-400">ML: ${s.ml_prob}% (${s.ml_verdict})</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (e) {
+    console.error('Failed to load benchmark data', e);
+  }
+}
+
+// Initialise feedback stats on boot
+document.addEventListener('DOMContentLoaded', () => {
+  loadFeedbackStats();
+});
 
 function openModal(id) {
   const el = document.getElementById(id);
@@ -1074,4 +1363,5 @@ function setQuickUrl(url) {
     runStandaloneLinkCheck();
   }
 }
+
 

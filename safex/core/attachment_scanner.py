@@ -331,6 +331,65 @@ def scan_attachment(
     else:
         inv.risk_level = "CLEAN"
 
+    # Per-Attachment Report Card: Extract concise suspicious features list
+    features = []
+    if inv.type_mismatch:
+        features.append(f"MIME/Magic Mismatch: extension '{ext}' vs signature '{inv.magic_signature}'")
+    if inv.high_risk_extension:
+        features.append(f"High-risk executable extension: '{ext}'")
+    if inv.double_extension:
+        features.append("Deceptive double file extension")
+    if inv.rtlo_detected:
+        features.append("Unicode RTLO (Right-to-Left Override) filename spoofing")
+    if inv.has_vba_macros:
+        features.append(f"Embedded VBA macros: {', '.join(inv.macro_details[:2]) if inv.macro_details else 'Active macro code'}")
+    if inv.pdf_active_features:
+        features.append(f"Active PDF objects: {', '.join(inv.pdf_active_features[:2])}")
+    if inv.html_has_password_fields:
+        features.append("HTML Credential Harvesting form with password input")
+    if inv.html_has_smuggling:
+        features.append("HTML Smuggling / Data URI obfuscation")
+    if inv.archive_password_in_body:
+        features.append("Password-protected archive with password leaked in email body")
+    elif inv.archive_encrypted:
+        features.append("Encrypted archive (contents shielded from gateway scanner)")
+    if inv.has_archive_executables:
+        features.append("Executable/script packaged inside compressed archive")
+    if inv.known_hash_match:
+        features.append("Known malicious threat hash matched in local database")
+
+    if not features:
+        if inv.risk_level == "CLEAN":
+            features.append("Static byte inspection clean; no active code or structural anomalies found")
+        else:
+            features.append("Minor structural warnings; verify sender before opening")
+
+    inv.suspicious_features = features
+
+    # Per-Attachment Report Card: Recommended Action
+    if inv.risk_level == "MALICIOUS":
+        inv.recommended_action = "QUARANTINE_PAYLOAD"
+        inv.recommended_action_detail = (
+            "Immediately isolate and quarantine this attachment. Do NOT open, extract, or run it. "
+            "Stage sender domain and hash for enterprise gateway perimeter blocking."
+        )
+    elif inv.risk_level == "SUSPICIOUS":
+        inv.recommended_action = "INSPECT_IN_SAFE_OFFLINE_VIEWER"
+        inv.recommended_action_detail = (
+            "Do not open in standard desktop apps. Inspect only using an isolated, air-gapped text previewer "
+            "or sandbox viewer with macros and JavaScript execution disabled."
+        )
+    elif inv.risk_level == "LOW":
+        inv.recommended_action = "VERIFY_SENDER_BEFORE_OPENING"
+        inv.recommended_action_detail = (
+            "Verify with the sender via an independent corporate channel (phone/chat) to confirm they sent this file."
+        )
+    else:
+        inv.recommended_action = "SAFE_TO_OPEN"
+        inv.recommended_action_detail = (
+            "Static byte analysis detected standard benign structures. Standard safe computing hygiene applies."
+        )
+
     return inv
 
 

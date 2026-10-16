@@ -132,6 +132,57 @@ async def analyze_standalone_url(
     }
 
 
+@app.post("/api/feedback")
+async def submit_user_feedback(
+    sample_id: Optional[str] = Form("custom"),
+    sample_name: Optional[str] = Form("User Ingested Sample"),
+    user_verdict: str = Form("ACCURATE"),  # 'FALSE_POSITIVE', 'FALSE_NEGATIVE', 'ACCURATE'
+    notes: Optional[str] = Form(""),
+    assigned_score: Optional[int] = Form(0),
+    assigned_rating: Optional[str] = Form("LOW"),
+    flagged_components: Optional[str] = Form("")  # comma separated
+):
+    """
+    User feedback endpoint to report incorrect classifications,
+    false positives, and false negatives.
+    """
+    from safex.core.feedback_store import record_feedback, get_feedback_stats
+    comp_list = [c.strip() for c in flagged_components.split(",") if c.strip()] if flagged_components else []
+    record = record_feedback({
+        "sample_id": sample_id,
+        "sample_name": sample_name,
+        "user_verdict": user_verdict,
+        "notes": notes,
+        "assigned_score": assigned_score,
+        "assigned_rating": assigned_rating,
+        "flagged_components": comp_list
+    })
+    stats = get_feedback_stats()
+    return {
+        "status": "success",
+        "message": "Feedback recorded successfully to help refine detection accuracy.",
+        "record": record,
+        "current_stats": stats
+    }
+
+
+@app.get("/api/feedback/stats")
+async def fetch_feedback_stats():
+    """Retrieve aggregated user feedback metrics and false-positive/negative rates."""
+    from safex.core.feedback_store import get_feedback_stats
+    return get_feedback_stats()
+
+
+@app.get("/api/evaluation/benchmark")
+async def fetch_evaluation_benchmark(threshold: int = 40):
+    """
+    Retrieve standardized evaluation metrics comparing SafeX Rule-Based Static Engine
+    with a Machine Learning Feature Classifier, including Confusion Matrices.
+    """
+    from safex.core.evaluation_engine import evaluate_benchmark
+    return evaluate_benchmark(threshold=threshold)
+
+
 def start_server(host="127.0.0.1", port=8000):
     """Entry point for starting the web server."""
     import uvicorn

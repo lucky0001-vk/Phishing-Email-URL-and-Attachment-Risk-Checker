@@ -168,6 +168,107 @@ class TestSafeXAnalyzer(unittest.TestCase):
         self.assertTrue(att.html_has_password_fields, "Should detect <input type='password'>")
         self.assertTrue(att.html_has_smuggling, "Should detect window.atob / smuggling")
 
+    def test_09_four_component_risk_breakdown(self):
+        """
+        Requirement 1: 4-part risk breakdown (Sender, Body, URLs, Attachments).
+        """
+        s = self.samples["scenario_2_disguised_executable"]
+        res = analyze_email(s["email_text"], s["attachments"])
+        b = res.score_breakdown
+
+        self.assertIn("sender_score", b)
+        self.assertIn("body_score", b)
+        self.assertIn("url_score", b)
+        self.assertIn("attachment_score", b)
+        self.assertIn("overall_score", b)
+        self.assertGreaterEqual(b["attachment_score"], 40, "Disguised executable should heavily drive attachment score")
+
+    def test_10_per_attachment_report_card_and_recommendations(self):
+        """
+        Requirements 2 & 3: Per-attachment report card and actionable recommendations.
+        """
+        s = self.samples["scenario_2_disguised_executable"]
+        res = analyze_email(s["email_text"], s["attachments"])
+        att = res.attachments[0]
+
+        # Per-attachment report card
+        self.assertTrue(len(att.suspicious_features) > 0, "Should generate list of suspicious features")
+        self.assertEqual(att.recommended_action, "QUARANTINE_PAYLOAD")
+        self.assertIn("quarantine", att.recommended_action_detail.lower())
+
+        # Actionable recommendations
+        self.assertTrue(len(res.safe_guidance.action_cards) >= 2)
+        action_types = [c.action_type for c in res.safe_guidance.action_cards]
+        self.assertIn("QUARANTINE", action_types)
+        self.assertIn("VERIFY_SENDER", action_types)
+
+    def test_11_user_feedback_feature(self):
+        """
+        Requirement 4: User feedback feature to record false positives and false negatives.
+        """
+        from safex.core.feedback_store import record_feedback, get_feedback_stats
+
+        rec_fp = record_feedback({
+            "sample_id": "test-benign-sample",
+            "sample_name": "Test Benign Email",
+            "user_verdict": "FALSE_POSITIVE",
+            "notes": "Legitimate company announcement flagged as high urgency",
+            "assigned_score": 65,
+            "assigned_rating": "HIGH"
+        })
+        self.assertEqual(rec_fp["user_verdict"], "FALSE_POSITIVE")
+
+        rec_acc = record_feedback({
+            "sample_id": "test-phish-sample",
+            "sample_name": "Credential Harvester",
+            "user_verdict": "ACCURATE",
+            "notes": "Accurately caught fake login link",
+            "assigned_score": 88,
+            "assigned_rating": "CRITICAL"
+        })
+        self.assertEqual(rec_acc["user_verdict"], "ACCURATE")
+
+        stats = get_feedback_stats()
+        self.assertGreaterEqual(stats["total_reports"], 2)
+        self.assertGreaterEqual(stats["false_positive_count"], 1)
+        self.assertGreaterEqual(stats["accurate_count"], 1)
+
+    def test_12_evaluation_benchmark_and_confusion_matrix(self):
+        """
+        Requirement 5: ML vs Rule-Based detection benchmark & confusion matrix.
+        """
+        from safex.core.evaluation_engine import evaluate_benchmark
+
+        bench = evaluate_benchmark(threshold=40)
+        self.assertIn("rule_based", bench)
+        self.assertIn("ml_based", bench)
+
+        # Rule confusion matrix check
+        rb_cm = bench["rule_based"]["confusion_matrix"]
+        self.assertEqual(rb_cm["tp"] + rb_cm["fn"], 10, "Should evaluate 10 threat samples")
+        self.assertEqual(rb_cm["tn"] + rb_cm["fp"], 10, "Should evaluate 10 benign samples")
+        self.assertGreaterEqual(bench["rule_based"]["metrics"]["f1_score"], 0.85)
+
+        # ML confusion matrix check
+        ml_cm = bench["ml_based"]["confusion_matrix"]
+        self.assertEqual(ml_cm["tp"] + ml_cm["fn"], 10)
+        self.assertEqual(ml_cm["tn"] + ml_cm["fp"], 10)
+        self.assertGreaterEqual(bench["ml_based"]["metrics"]["f1_score"], 0.80)
+
+    def test_13_zero_execution_guarantee(self):
+        """
+        Requirement 8: Ensure attachments are analysed statically without executing files.
+        """
+        import inspect
+        from safex.core import attachment_scanner
+
+        src = inspect.getsource(attachment_scanner)
+        self.assertNotIn("os.system", src, "Attachment scanner must never invoke os.system")
+        self.assertNotIn("subprocess.Popen", src, "Attachment scanner must never invoke subprocess.Popen")
+        self.assertNotIn("exec(", src, "Attachment scanner must never call exec()")
+        self.assertNotIn("eval(", src, "Attachment scanner must never call eval()")
+
 
 if __name__ == "__main__":
     unittest.main()
+

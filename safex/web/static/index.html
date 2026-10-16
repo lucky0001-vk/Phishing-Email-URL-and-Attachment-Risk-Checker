@@ -95,15 +95,19 @@
           </button>
           <button id="nav-btn-custom" onclick="toggleCustomSection()" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-2">
             <span class="material-symbols-outlined text-[18px] text-emerald-400">terminal</span>
-            Live Custom Input
+            Live Threat Inspector
           </button>
-          <button onclick="openModal('modal-presets')" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-2">
+          <button onclick="openBenchmarkModal()" class="px-3.5 py-1.5 rounded-lg text-amber-300 hover:text-white bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px] text-amber-400">stacked_bar_chart</span>
+            ML vs Rule Benchmark
+          </button>
+          <button onclick="openModal('modal-presets')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[18px]">biotech</span>
-            Test Matrix (9/9)
+            Tests (9/9)
           </button>
-          <button onclick="openModal('modal-rules')" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-2">
+          <button onclick="openModal('modal-rules')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[18px]">rule</span>
-            Detection Engine
+            Rules
           </button>
         </nav>
       </div>
@@ -414,17 +418,23 @@
           </div>
         </div>
 
-        <!-- 5. Attachment Breakdown Card -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+        <!-- 5. PER-ATTACHMENT REPORT CARD (Requirements 2 & 8) -->
+        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4" id="attachment-report-card">
           <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
             <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">attach_file</span>
-              <h2 class="text-base font-semibold text-white">Static Attachment Analysis</h2>
+              <span class="material-symbols-outlined text-purple-400 text-xl">badge</span>
+              <h2 class="text-base font-semibold text-white">Per-Attachment Report Card</h2>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40" id="attachment-severity-pill">Executable Binary Disguised</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="attachment-severity-pill">Executable Binary Disguised</span>
           </div>
 
-          <!-- File details -->
+          <!-- Static Inspection Guarantee Badge -->
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono">
+            <span class="material-symbols-outlined text-sm text-emerald-400">gavel</span>
+            <span>Zero-Execution Guarantee: Inspected in memory via magic bytes. Never opened, executed, or rendered to disk.</span>
+          </div>
+
+          <!-- File details inventory -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
               <span class="text-xs text-slate-400 block">Filename</span>
@@ -454,6 +464,26 @@
             </button>
           </div>
 
+          <!-- Suspicious Features Badge List -->
+          <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-2">
+            <span class="text-xs font-semibold text-slate-300 block">Identified Structural Features:</span>
+            <div class="flex flex-wrap gap-1.5" id="attachment-features-list">
+              <span class="px-2.5 py-1 rounded-md text-xs font-mono bg-rose-500/15 text-rose-300 border border-rose-500/30">MZ Executable Header in .pdf</span>
+              <span class="px-2.5 py-1 rounded-md text-xs font-mono bg-rose-500/15 text-rose-300 border border-rose-500/30">Double Extension (.pdf.exe)</span>
+            </div>
+          </div>
+
+          <!-- Recommended Attachment Action Card -->
+          <div class="p-4 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-1.5" id="attachment-action-card">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-rose-400 text-lg" id="attachment-action-icon">block</span>
+              <span class="text-xs font-bold text-rose-300 uppercase tracking-wide" id="attachment-action-badge">RECOMMENDED ACTION: QUARANTINE PAYLOAD</span>
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed" id="attachment-action-text">
+              Do not open, extract, or run this file. Isolate immediately in quarantine and stage sender domain for mail perimeter blocking.
+            </p>
+          </div>
+
           <!-- Plain English explanation -->
           <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 leading-relaxed" id="attachment-summary-box">
             <strong class="text-purple-300 font-semibold block mb-0.5">Plain English Threat Summary:</strong>
@@ -463,11 +493,11 @@
 
       </div>
 
-      <!-- RIGHT COLUMN: Triage Verdict, Risk Score & Action Plan (5 Cols) -->
+      <!-- RIGHT COLUMN: Triage Verdict, 4-Way Breakdown & Action Recommendations (5 Cols) -->
       <div class="lg:col-span-5 flex flex-col gap-6">
         
-        <!-- 1. Prominent Risk Score Card -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-6" id="verdict-card">
+        <!-- 1. Prominent Risk Score Card with 4-Way Risk Breakdown (Requirement 1) -->
+        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-5" id="verdict-card">
           <div class="flex items-center justify-between">
             <div>
               <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Triage Assessment</span>
@@ -487,88 +517,161 @@
             </div>
           </div>
 
-          <!-- Risk Bars -->
+          <!-- 4-Part Risk Breakdown (Requirement 1) -->
           <div class="space-y-3 pt-4 border-t border-[#232d40]">
+            <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider block">4-Component Risk Contribution</span>
+
+            <!-- 1. Sender Authentication -->
             <div>
               <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-300">Email Body &amp; Links Risk</span>
-                <span class="text-cyan-400 font-bold" id="score-body-text">74%</span>
+                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-400"></span> 1. Sender Authentication &amp; Headers</span>
+                <span class="text-purple-400 font-bold font-mono" id="score-sender-text">20 pts</span>
               </div>
-              <div class="w-full h-2 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-cyan-400 rounded-full transition-all duration-500" id="score-body-bar" style="width: 74%;"></div>
+              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
+                <div class="h-full bg-purple-400 rounded-full transition-all duration-500" id="score-sender-bar" style="width: 40%;"></div>
               </div>
             </div>
+
+            <!-- 2. Email Body Text -->
             <div>
               <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-300">Attachment Structural Risk</span>
-                <span class="text-rose-400 font-bold" id="score-attach-text">96%</span>
+                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> 2. Email Body (Urgency/Vishing/Hidden)</span>
+                <span class="text-amber-400 font-bold font-mono" id="score-bodytext-text">15 pts</span>
               </div>
-              <div class="w-full h-2 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-rose-500 rounded-full transition-all duration-500" id="score-attach-bar" style="width: 96%;"></div>
+              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
+                <div class="h-full bg-amber-400 rounded-full transition-all duration-500" id="score-bodytext-bar" style="width: 30%;"></div>
+              </div>
+            </div>
+
+            <!-- 3. URLs & Hyperlinks -->
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1">
+                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> 3. URLs (Mismatches/Lookalikes/IPs)</span>
+                <span class="text-cyan-400 font-bold font-mono" id="score-url-text">35 pts</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
+                <div class="h-full bg-cyan-400 rounded-full transition-all duration-500" id="score-url-bar" style="width: 70%;"></div>
+              </div>
+            </div>
+
+            <!-- 4. Attachments -->
+            <div>
+              <div class="flex justify-between text-xs font-medium mb-1">
+                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> 4. Attachments (Static Byte Structure)</span>
+                <span class="text-rose-400 font-bold font-mono" id="score-attach-text">50 pts</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
+                <div class="h-full bg-rose-500 rounded-full transition-all duration-500" id="score-attach-bar" style="width: 100%;"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 2. Plain-Language Reasons (Why is this flagged?) -->
+        <!-- 2. Plain-Language Reasons & Supporting Evidence (Requirement 6) -->
         <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-purple-400 text-lg">flag</span>
-              <h3 class="text-sm font-semibold text-white">Why is this flagged? (Observable Signals)</h3>
+              <h3 class="text-sm font-semibold text-white">Observable Signals &amp; Concrete Evidence</h3>
             </div>
             <span class="text-xs text-slate-400">Score Impact</span>
           </div>
 
           <div class="flex flex-col gap-2.5" id="signal-evidence-list">
-            <!-- Populated dynamically -->
+            <!-- Populated dynamically with title, explanation and evidence -->
           </div>
         </div>
 
-        <!-- 3. What Should You Do? (Safe Action Guidance) -->
+        <!-- 3. ACTIONABLE RECOMMENDATIONS (Requirement 3: Quarantine, Official Channel, Safe Viewer) -->
         <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <div class="flex items-center gap-2 pb-3 border-b border-[#232d40]">
             <span class="material-symbols-outlined text-emerald-400 text-lg">verified_user</span>
-            <h3 class="text-sm font-semibold text-white">What Should You Do? (Safe Guidance)</h3>
+            <h3 class="text-sm font-semibold text-white">Actionable Security Recommendations</h3>
           </div>
 
-          <div class="space-y-3" id="triage-guidance-steps">
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
-              <div>
-                <h4 class="text-xs font-semibold text-white">Do not open or run the attachment</h4>
-                <p class="text-xs text-slate-400 mt-0.5">Keep the file quarantined; running it will launch an unverified executable binary.</p>
+          <!-- Structured Action Cards Container -->
+          <div class="space-y-3" id="action-cards-container">
+            <!-- Action 1: Quarantine -->
+            <div class="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-1.5">
+              <div class="flex items-center gap-2 text-rose-300 font-semibold text-xs">
+                <span class="material-symbols-outlined text-base">emergency</span>
+                <span>Quarantine Threat &amp; Block Sender</span>
               </div>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Immediately isolate the payload. Do not permit retrieval without security analyst approval.
+              </p>
             </div>
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 font-bold text-xs flex items-center justify-center shrink-0">2</span>
-              <div>
-                <h4 class="text-xs font-semibold text-white">Verify out-of-band via trusted internal directory</h4>
-                <p class="text-xs text-slate-400 mt-0.5">Call your finance or vendor contact directly using official phone numbers, never from this email.</p>
+            <!-- Action 2: Verify Sender -->
+            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
+              <div class="flex items-center gap-2 text-purple-300 font-semibold text-xs">
+                <span class="material-symbols-outlined text-base">call</span>
+                <span>Verify via Official Out-of-Band Channel</span>
               </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Contact sender using an internal corporate directory or known phone number. Never use details from this email.
+              </p>
             </div>
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">3</span>
-              <div>
-                <h4 class="text-xs font-semibold text-white">Quarantine and notify the SOC / Security Team</h4>
-                <p class="text-xs text-slate-400 mt-0.5">Push this IOC hash to company perimeter firewalls to block similar spoof campaigns.</p>
+            <!-- Action 3: Safe Viewer -->
+            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
+              <div class="flex items-center gap-2 text-cyan-300 font-semibold text-xs">
+                <span class="material-symbols-outlined text-base">visibility_off</span>
+                <span>Inspect in Safe Offline / Air-Gapped Viewer</span>
               </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                If review is required, open strictly in an offline sandbox with scripts and macros disabled.
+              </p>
             </div>
           </div>
 
           <!-- Clean Action CTAs -->
           <div class="pt-2 grid grid-cols-2 gap-2.5">
-            <button class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-sm transition-all" onclick="triggerAction('quarantine')">
-              Quarantine Threat
+            <button class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5" onclick="triggerAction('quarantine')">
+              <span class="material-symbols-outlined text-sm">lock</span> Quarantine Threat
             </button>
-            <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-slate-200 text-xs font-semibold transition-all" onclick="triggerAction('whitelist')">
-              Mark False Positive
+            <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-purple-300 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" onclick="triggerAction('verify_sender')">
+              <span class="material-symbols-outlined text-sm">contact_phone</span> Verify Channel
+            </button>
+            <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-cyan-300 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" onclick="triggerAction('safe_viewer')">
+              <span class="material-symbols-outlined text-sm">preview</span> Safe Viewer
             </button>
             <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all" onclick="triggerAction('export')">
-              <span class="material-symbols-outlined text-sm">download</span> Export Report
+              <span class="material-symbols-outlined text-sm">download</span> Export JSON
             </button>
-            <button class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all" onclick="alert('Syncing evidence report to remote Gravity repository pipeline: lucky0001-vk/Phishing-Email-URL-and-Attachment-Risk-Checker')">
-              <span class="material-symbols-outlined text-sm">sync</span> Push to Gravity
+          </div>
+        </div>
+
+        <!-- 4. USER FEEDBACK CARD (Requirement 4: Report False Positives & Negatives) -->
+        <div class="bg-[#161b26] border border-cyan-500/30 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-[#232d40]">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-cyan-400 text-lg">rate_review</span>
+              <h3 class="text-xs font-semibold text-white uppercase tracking-wider">Classification Feedback</h3>
+            </div>
+            <span class="text-[11px] font-mono text-cyan-400" id="feedback-stat-accuracy">Model Accuracy: 100%</span>
+          </div>
+
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Report classification accuracy to help evaluate false positives and tune heuristic thresholds.
+          </p>
+
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <button id="fb-btn-accurate" onclick="selectFeedbackVerdict('ACCURATE')" class="py-2 px-1 rounded-xl border bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold text-center flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-sm">thumb_up</span> Accurate
+            </button>
+            <button id="fb-btn-fp" onclick="selectFeedbackVerdict('FALSE_POSITIVE')" class="py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-amber-300 text-center flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-sm">warning</span> False Positive
+            </button>
+            <button id="fb-btn-fn" onclick="selectFeedbackVerdict('FALSE_NEGATIVE')" class="py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-rose-300 text-center flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-sm">error</span> False Negative
+            </button>
+          </div>
+
+          <input type="text" id="feedback-notes" placeholder="Optional notes (e.g., 'Legitimate vendor invoice from Acme Corp')" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl px-3 py-2 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400"/>
+
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-[11px] text-slate-500" id="feedback-count-label">0 user reports logged</span>
+            <button onclick="submitClassificationFeedback()" id="btn-submit-feedback" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center gap-1 transition-all">
+              <span class="material-symbols-outlined text-xs">send</span> Submit Report
             </button>
           </div>
         </div>
@@ -637,6 +740,139 @@
         <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
           <span class="text-amber-400 font-semibold block mb-0.5">RULE-SOC-01: Callback Vishing &amp; Hidden Text</span>
           <p class="text-slate-400 text-xs">Detects phone numbers combined with fake refund/dispute keywords and zero-font HTML evasion.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ML vs Rule-Based Detection Benchmark & Confusion Matrix (Requirement 5) -->
+  <div id="modal-benchmark" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-[#161b26] border border-[#232d40] rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative max-h-[90vh] flex flex-col gap-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-amber-400 text-xl">stacked_bar_chart</span>
+          <div>
+            <h3 class="text-base font-semibold text-white">Rule-Based vs Machine Learning (ML) Benchmark</h3>
+            <p class="text-xs text-slate-400">Evaluation on standardized ground-truth benchmark (10 Benign vs 10 Threat samples)</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-benchmark')" class="text-slate-400 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <div class="overflow-y-auto space-y-4 pr-1 text-xs">
+        <!-- Comparative Metrics Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Rule Based Card -->
+          <div class="p-4 rounded-xl bg-[#0c0e14] border border-cyan-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-300 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">rule</span> SafeX Rule-Based Engine (v4.2)
+              </span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Deterministic</span>
+            </div>
+
+            <!-- Confusion Matrix Table -->
+            <div class="space-y-1">
+              <span class="text-[11px] text-slate-400 font-semibold uppercase">Confusion Matrix:</span>
+              <div class="grid grid-cols-2 gap-2 text-center font-mono">
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">True Negative (TN)</span>
+                  <span class="text-base font-bold text-emerald-400" id="rule-tn">10</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">False Positive (FP)</span>
+                  <span class="text-base font-bold text-amber-400" id="rule-fp">0</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">False Negative (FN)</span>
+                  <span class="text-base font-bold text-rose-400" id="rule-fn">0</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">True Positive (TP)</span>
+                  <span class="text-base font-bold text-emerald-400" id="rule-tp">10</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric Badges -->
+            <div class="grid grid-cols-4 gap-2 text-center pt-2 border-t border-[#1b2333]">
+              <div><span class="text-[10px] text-slate-400 block">Accuracy</span><span class="font-bold text-cyan-300" id="rule-acc">100.0%</span></div>
+              <div><span class="text-[10px] text-slate-400 block">Precision</span><span class="font-bold text-cyan-300" id="rule-prec">100.0%</span></div>
+              <div><span class="text-[10px] text-slate-400 block">Recall</span><span class="font-bold text-cyan-300" id="rule-rec">100.0%</span></div>
+              <div><span class="text-[10px] text-slate-400 block">F1-Score</span><span class="font-bold text-cyan-300" id="rule-f1">1.000</span></div>
+            </div>
+          </div>
+
+          <!-- ML Based Card -->
+          <div class="p-4 rounded-xl bg-[#0c0e14] border border-amber-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">psychology</span> ML Feature Classifier (Random Forest)
+              </span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-amber-500/15 text-amber-300 border border-amber-500/30">Probabilistic</span>
+            </div>
+
+            <!-- Confusion Matrix Table -->
+            <div class="space-y-1">
+              <span class="text-[11px] text-slate-400 font-semibold uppercase">Confusion Matrix:</span>
+              <div class="grid grid-cols-2 gap-2 text-center font-mono">
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">True Negative (TN)</span>
+                  <span class="text-base font-bold text-emerald-400" id="ml-tn">10</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">False Positive (FP)</span>
+                  <span class="text-base font-bold text-amber-400" id="ml-fp">0</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">False Negative (FN)</span>
+                  <span class="text-base font-bold text-rose-400" id="ml-fn">0</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
+                  <span class="text-[10px] text-slate-400 block">True Positive (TP)</span>
+                  <span class="text-base font-bold text-emerald-400" id="ml-tp">10</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric Badges -->
+            <div class="grid grid-cols-4 gap-2 text-center pt-2 border-t border-[#1b2333]">
+              <div><span class="text-[10px] text-slate-400 block">Accuracy</span><span class="font-bold text-amber-300" id="ml-acc">100.0%</span></div>
+              <div><span class="text-[10px] text-slate-400 block">Precision</span><span class="font-bold text-amber-300" id="ml-prec">100.0%</span></div>
+              <div><span class="text-[10px] text-slate-400 block">Recall</span><span class="font-bold text-amber-300" id="ml-rec">100.0%</span></div>
+              <div><span class="text-[10px] text-slate-400 block">F1-Score</span><span class="font-bold text-amber-300" id="ml-f1">1.000</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparative Strengths & Operational Trade-offs Table -->
+        <div class="p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-2">
+          <span class="text-xs font-semibold text-white block">Engine Architecture Trade-off Analysis:</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="space-y-1 text-slate-300">
+              <span class="text-cyan-400 font-semibold block">Why SafeX Rule-Based Excels in Production:</span>
+              <ul class="list-disc pl-4 space-y-0.5 text-slate-400">
+                <li><strong class="text-slate-200">100% Explainable:</strong> Gives exact observable proof (e.g. MZ magic byte offset, Unicode RTLO char).</li>
+                <li><strong class="text-slate-200">Zero Execution &amp; Air-Gapped:</strong> No external cloud model dependencies or data leakage.</li>
+                <li><strong class="text-slate-200">Immune to Adversarial Token Drift:</strong> Scammers cannot fool it with text camouflage if binary headers are weaponized.</li>
+              </ul>
+            </div>
+            <div class="space-y-1 text-slate-300">
+              <span class="text-amber-400 font-semibold block">When Machine Learning Complements Rules:</span>
+              <ul class="list-disc pl-4 space-y-0.5 text-slate-400">
+                <li><strong class="text-slate-200">Semantic Nuance:</strong> Generalizes well to brand-new persuasive text variations.</li>
+                <li><strong class="text-slate-200">Hybrid Synergy:</strong> Rule-based engine handles hard binary/MIME invariants, while ML scores NLP text ambiguity.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benchmark Dataset Samples List -->
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-white block">Benchmark Samples (20 Ground-Truth Scenarios):</span>
+          <div class="space-y-1 max-h-48 overflow-y-auto" id="benchmark-samples-table">
+            <!-- Dynamically populated -->
+          </div>
         </div>
       </div>
     </div>
