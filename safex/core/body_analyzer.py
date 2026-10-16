@@ -265,10 +265,5 @@ def analyze_body(plain_text: str, html_text: str) -> BodyAnalysis:
             )
         )
 
-    url_only_raw = sum(lk.score_impact for lk in links)
-    text_only_raw = max(0, score - url_only_raw)
-
-    body_analysis.url_only_score = min(url_only_raw, 50)
-    body_analysis.text_only_score = min(text_only_raw, 45)
-    body_analysis.score = min(score, 50)
+    body_analysis.score = min(score, 45)
     return body_analysis

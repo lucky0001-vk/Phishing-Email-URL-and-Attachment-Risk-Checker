@@ -1,0 +1,71 @@
+{
+  "created_at": "2026-10-16T20:05:58.572768+00:00",
+  "feedbacks": [
+    {
+      "id": "fb-0001",
+      "timestamp": "2026-10-16 20:05:58 UTC",
+      "sample_id": "test-benign-sample",
+      "sample_name": "Test Benign Email",
+      "user_verdict": "FALSE_POSITIVE",
+      "notes": "Legitimate company announcement flagged as high urgency",
+      "assigned_score": 65,
+      "assigned_rating": "HIGH",
+      "flagged_components": []
+    },
+    {
+      "id": "fb-0002",
+      "timestamp": "2026-10-16 20:05:58 UTC",
+      "sample_id": "test-phish-sample",
+      "sample_name": "Credential Harvester",
+      "user_verdict": "ACCURATE",
+      "notes": "Accurately caught fake login link",
+      "assigned_score": 88,
+      "assigned_rating": "CRITICAL",
+      "flagged_components": []
+    },
+    {
+      "id": "fb-0003",
+      "timestamp": "2026-10-16 21:01:56 UTC",
+      "sample_id": "test-benign-sample",
+      "sample_name": "Test Benign Email",
+      "user_verdict": "FALSE_POSITIVE",
+      "notes": "Legitimate company announcement flagged as high urgency",
+      "assigned_score": 65,
+      "assigned_rating": "HIGH",
+      "flagged_components": []
+    },
+    {
+      "id": "fb-0004",
+      "timestamp": "2026-10-16 21:01:56 UTC",
+      "sample_id": "test-phish-sample",
+      "sample_name": "Credential Harvester",
+      "user_verdict": "ACCURATE",
+      "notes": "Accurately caught fake login link",
+      "assigned_score": 88,
+      "assigned_rating": "CRITICAL",
+      "flagged_components": []
+    },
+    {
+      "id": "fb-0005",
+      "timestamp": "2026-10-16 21:10:50 UTC",
+      "sample_id": "test-benign-sample",
+      "sample_name": "Test Benign Email",
+      "user_verdict": "FALSE_POSITIVE",
+      "notes": "Legitimate company announcement flagged as high urgency",
+      "assigned_score": 65,
+      "assigned_rating": "HIGH",
+      "flagged_components": []
+    },
+    {
+      "id": "fb-0006",
+      "timestamp": "2026-10-16 21:10:50 UTC",
+      "sample_id": "test-phish-sample",
+      "sample_name": "Credential Harvester",
+      "user_verdict": "ACCURATE",
+      "notes": "Accurately caught fake login link",
+      "assigned_score": 88,
+      "assigned_rating": "CRITICAL",
+      "flagged_components": []
+    }
+  ]
+}

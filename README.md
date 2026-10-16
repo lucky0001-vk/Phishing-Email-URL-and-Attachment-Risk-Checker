@@ -34,38 +34,8 @@ python safex_cli.py --sample 4 --json
 
 ### 3. Run the Automated Verification Test Suite
 ```bash
-python -m unittest discover -s safex/tests
-python -m safex.tests.audit_all_requirements
+python -m unittest safex.tests.test_safex
 ```
-
----
-
-## 🚀 Key Features & 9 Prompt Capabilities
-
-1. **4-Component Transparent Risk Breakdown:**
-   * Separately tracks score contributions for **Sender Authentication**, **Email Body Text**, **URLs & Hyperlinks**, and **Attachment Structure** to show exactly what drove the verdict.
-2. **Per-Attachment Report Card:**
-   * Displays detected file type (via magic bytes), identified structural features, risk level (`CLEAN`, `LOW`, `SUSPICIOUS`, `MALICIOUS`), and a specific recommended action.
-3. **Actionable Recommendations:**
-   * Interactive, actionable playbooks for:
-     - 🛑 **Quarantine Threat & Block Sender** (per-workstation and gateway isolation)
-     - 📞 **Verify Sender via Official Channel** (out-of-band verification protocol)
-     - 🔍 **Safe Offline / Air-Gapped Viewer Inspection** (macro-free, script-disabled sandbox parameters)
-     - 🛡️ **Report to Security Operations (SOC)**
-4. **User Feedback & False Positive / Negative Loop:**
-   * Built-in classification reporting widget storing user feedback locally in `safex/feedback_store.json` to monitor and tune heuristic accuracy.
-5. **Rule-Based vs Machine Learning (ML) Benchmark & Confusion Matrix:**
-   * Evaluated across 20 ground-truth scenarios (10 benign vs 10 threats).
-   * Calculates **Confusion Matrices ($TP, FP, TN, FN$)**, Accuracy, Precision, Recall, and F1-score side-by-side.
-   * Access via the **[ 📊 ML vs Rule Benchmark ]** button in the web dashboard!
-6. **Observable Signals with Supporting Evidence:**
-   * Every threat flag provides the rule name, point impact, plain-English reason, and an explicit **Technical Supporting Evidence** box (e.g. hex signature match, domain mismatch).
-7. **Comprehensive Scenario Corpus:**
-   * Validated against legitimate urgent IT maintenance notices, benign vendor invoices, plain DOCX archives, disguised PE executables, macro-enabled documents, and RTLO filename attacks.
-8. **Strict Zero-Execution Guarantee:**
-   * All files parsed strictly in memory (`io.BytesIO`); never rendered, executed, or written to disk.
-9. **Full Technical Documentation:**
-   * Complete evaluation report, methodology, and architectural analysis available in [`EVALUATION_REPORT.md`](file:///c:/Users/Dell/Desktop/anti/EVALUATION_REPORT.md).
 
 ---
 
@@ -74,27 +44,48 @@ python -m safex.tests.audit_all_requirements
 ```
 safex/
   ├── core/
-  │    ├── models.py             # Pydantic schemas (Signals, Attachments, RiskScores, ActionCards)
+  │    ├── models.py             # Pydantic schemas (Signals, Attachments, RiskScores)
   │    ├── email_parser.py       # In-memory RFC822 parser (strict limits: 25MB, 10 atts)
   │    ├── header_analyzer.py    # Display-name spoofing, Reply-To mismatch, SPF/DKIM/DMARC (no live DNS)
-  │    ├── url_analyzer.py       # Link text vs target mismatch, IP literals, lookalikes, homoglyphs, ports
-  │    ├── body_analyzer.py      # Urgency/financial rhetoric, vishing phone patterns, hidden CSS text, quishing
-  │    ├── attachment_scanner.py # Static magic bytes, MZ in PDF, macros, PDF tags, encrypted ZIP, RTLO
-  │    ├── risk_engine.py        # 4-way balanced scoring engine & actionable safe guidance cards
-  │    ├── feedback_store.py     # Local JSON feedback store for tracking FP / FN reports
-  │    ├── evaluation_engine.py  # Benchmark dataset, confusion matrices & ML comparison
+  │    ├── url_analyzer.py       # Link text vs target mismatch, IP literals, lookalikes, punycode
+  │    ├── body_analyzer.py      # Urgency/financial rhetoric, archive password body extractor
+  │    ├── attachment_scanner.py # Static magic bytes, MZ in PDF, macros, PDF tags, encrypted ZIP
+  │    ├── risk_engine.py        # Multi-vector balanced scoring engine & safe action guidance
   │    ├── analyzer.py           # Unified analysis coordinator
   │    └── test_samples.py       # 9 pre-configured test scenarios with synthetic payloads
   ├── web/
   │    ├── app.py                # FastAPI REST API & static file server
   │    └── static/               # Mesmerizing Cyber SOC Dashboard (HTML/CSS/JS)
   ├── tests/
-  │    ├── test_safex.py         # 14 Unit tests covering all requirements
-  │    └── audit_all_requirements.py # 113-point compliance audit test suite
+  │    └── test_safex.py         # Unit tests covering all 8 prompt verification criteria
   ├── samples/                   # Generated .eml and sample attachments for manual testing
   ├── cli.py                     # Rich terminal CLI analyzer
   └── safex_cli.py               # Root quick-launcher CLI script
 ```
+
+---
+
+## 🔍 Core Security & Analysis Engines
+
+### 1. Attachment Static Analysis (Zero Execution)
+* **True File Type Identification**: Content-based magic-byte inspection (not relying on filename extension or declared MIME type).
+* **Disguised Executable Detection**: Detects Windows PE binaries (`MZ` header `0x4D 0x5A`) masquerading as `.pdf`, `.png`, or `.docx`.
+* **Filename Deception Prevention**: Flags double extensions (`invoice.pdf.exe`) and Unicode Right-to-Left Override (`\u202e`) used to reverse file extension display.
+* **Macro & Office Inspection**: Static OpenXML inspection for `vbaProject.bin` and OLE macro streams with suspicious auto-exec functions (`AutoOpen`, `Shell`, `PowerShell`).
+* **PDF Structural Analysis**: Scans raw byte streams for `/JavaScript`, `/OpenAction`, `/Launch`, `/EmbeddedFiles`, and `/AA`.
+* **HTML Phishing & Smuggling**: Identifies password inputs (`<input type="password">`), off-site form submissions, and JavaScript blob assembly (`window.atob`, `msSaveOrOpenBlob`).
+* **Archive Security**: In-memory inspection of ZIP contents; flags encrypted archives, extracts passwords from email body, and flags nested executables without extracting to disk.
+
+### 2. Email & URL Analysis
+* **Link Mismatch Detection**: Flags hyperlinks whose visible anchor text displays one trusted domain (e.g. `https://paypal.com`) while destination href leads to a different domain (`paypal.com.account-verify.xyz`).
+* **IP Literals & Lookalikes**: Flags bare IP addresses (`http://192.168.1.1/`) and typosquatting/homoglyph brand mimicry.
+* **Header Alignment**: Inspects `From`, `Reply-To`, and `Return-Path` for domain mismatches and display-name spoofing.
+* **Authentication Headers**: Evaluates recorded SPF, DKIM, and DMARC status without performing live DNS queries.
+
+### 3. Balanced Risk Scoring & False-Positive Prevention
+* **Multi-Indicator Weighting**: Avoids false alarms from single weak signals. Routine urgency keywords (e.g. "deadline") in authentic corporate communications with passing SPF/DKIM/DMARC headers receive a **LOW** risk rating.
+* **Transparent Reasons**: Every score increase is accompanied by a concrete `DetectionSignal` object containing severity, rule title, human explanation, and raw evidence.
+* **Tailored Safe Action Protocol**: Supplies specific, out-of-band verification steps and prohibitions (e.g. never enable macros, verify via internal directory, do not click links).
 
 ---
 
@@ -103,4 +94,3 @@ safex/
 2. **In-Memory Only**: Attachments are read into temporary in-memory byte buffers (`io.BytesIO`) and discarded immediately after analysis.
 3. **Strict Safety Limits**: Enforces a 25MB attachment size limit, a maximum of 10 attachments per email, and an archive nesting depth limit of 2. Oversized or corrupted inputs are designated `UNSCANNED` or `UNKNOWN`, never `SAFE`.
 4. **Decision-Support Tool**: SafeX explicitly provides threat triage indicators and safe verification protocols, functioning as an assistive decision-support tool.
-

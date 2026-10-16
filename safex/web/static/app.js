@@ -1,139 +1,11 @@
-
-// SafeX SOVEREIGN - Dynamic UI Synchronization Helpers
-function updateSovereignVectors(breakdown, senderFail, nlpSuspicious, urlCrit, binClean) {
-  const v1Badge = document.getElementById('v1-score-badge');
-  const v1Bar = document.getElementById('v1-progress-bar');
-  const v2Badge = document.getElementById('v2-score-badge');
-  const v2Bar = document.getElementById('v2-progress-bar');
-  const v3Badge = document.getElementById('v3-score-badge');
-  const v3Bar = document.getElementById('v3-progress-bar');
-  const v4Badge = document.getElementById('v4-score-badge');
-  const v4Bar = document.getElementById('v4-progress-bar');
-
-  const sScore = breakdown.sender_score !== undefined ? breakdown.sender_score : 0;
-  const bScore = breakdown.body_score !== undefined ? breakdown.body_score : 0;
-  const uScore = breakdown.url_score !== undefined ? breakdown.url_score : 0;
-  const aScore = breakdown.attachment_score !== undefined ? breakdown.attachment_score : 0;
-
-  if (v1Badge) {
-    const sPct = Math.min(100, Math.round((sScore / 35) * 100));
-    v1Badge.textContent = sPct >= 50 ? `FAIL ${sPct}/100` : `PASS ${sPct}/100`;
-    v1Badge.className = sPct >= 50 ? 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
-    if (v1Bar) {
-      v1Bar.style.width = `${sPct}%`;
-      v1Bar.className = sPct >= 50 ? 'bg-error h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
-    }
-  }
-
-  if (v2Badge) {
-    const bPct = Math.min(100, Math.round((bScore / 35) * 100));
-    v2Badge.textContent = bPct >= 50 ? `SUSPICIOUS ${bPct}/100` : `CLEAN ${bPct}/100`;
-    v2Badge.className = bPct >= 50 ? 'px-space-sm py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
-    if (v2Bar) {
-      v2Bar.style.width = `${bPct}%`;
-      v2Bar.className = bPct >= 50 ? 'bg-tertiary h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
-    }
-  }
-
-  if (v3Badge) {
-    const uPct = Math.min(100, Math.round((uScore / 45) * 100));
-    v3Badge.textContent = uPct >= 50 ? `CRITICAL ${uPct}/100` : `BENIGN ${uPct}/100`;
-    v3Badge.className = uPct >= 50 ? 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
-    if (v3Bar) {
-      v3Bar.style.width = `${uPct}%`;
-      v3Bar.className = uPct >= 50 ? 'bg-error h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
-    }
-  }
-
-  if (v4Badge) {
-    const aPct = Math.min(100, Math.round((aScore / 50) * 100));
-    v4Badge.textContent = aPct >= 50 ? `MALICIOUS ${aPct}/100` : `CLEAN DISARMED ${aPct}/100`;
-    v4Badge.className = aPct >= 50 ? 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
-    if (v4Bar) {
-      v4Bar.style.width = `${aPct}%`;
-      v4Bar.className = aPct >= 50 ? 'bg-error h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
-    }
-  }
-}
-
-// Sovereign Playbook Quick Actions handler
-function triggerPlaybookAction(action) {
-  const note = document.createElement('div');
-  note.className = 'fixed bottom-12 right-6 px-4 py-3 rounded-xl bg-surface-container-high border border-primary/30 text-on-surface font-code-inline text-xs shadow-2xl z-50 flex items-center gap-3 transform translate-y-2 opacity-0 transition-all duration-300';
-
-  let msg = '';
-  let icon = 'bolt';
-  if (action === 'quarantine') {
-    msg = 'Defcon Isolation Activated: Sender domain blacklisted & inbox delivery revoked.';
-    icon = 'block';
-  } else if (action === 'verify') {
-    msg = 'Out-of-Band Checklist: Initiating registered corporate directory phone verification.';
-    icon = 'call_split';
-  } else if (action === 'sandbox') {
-    msg = 'In-Memory Byte Sandbox: Hex stream extracted without disk persistence.';
-    icon = 'biotech';
-  } else if (action === 'soc') {
-    msg = 'SOC Telemetry Dispatched: Incident package encrypted and sent to Tier 3 queue.';
-    icon = 'hub';
-  }
-
-  note.innerHTML = `<span class="material-symbols-outlined text-primary text-[20px]">${icon}</span><span>${msg}</span>`;
-  document.body.appendChild(note);
-
-  setTimeout(() => { note.classList.remove('translate-y-2', 'opacity-0'); }, 10);
-  setTimeout(() => {
-    note.classList.add('translate-y-2', 'opacity-0');
-    setTimeout(() => note.remove(), 300);
-  }, 3200);
-}
-
-// Sovereign Feedback Store Writer (Requirement 4)
-async function recordFeedback(actionType) {
-  const score = parseInt(document.getElementById('verdict-score')?.textContent || '0', 10);
-  const rating = document.getElementById('verdict-label')?.textContent || 'HIGH RISK';
-  const sampleName = document.getElementById('email-subject')?.textContent || 'Sovereign Triage Sample';
-
-  let userVerdict = 'ACCURATE';
-  if (actionType === 'false_positive') userVerdict = 'FALSE_POSITIVE';
-  else if (actionType === 'weight_adjust') userVerdict = 'WEIGHT_ADJUST';
-
-  try {
-    const formData = new FormData();
-    formData.append('sample_id', currentScenario || 'custom');
-    formData.append('sample_name', sampleName);
-    formData.append('user_verdict', userVerdict);
-    formData.append('notes', `Logged via Sovereign Quick Tuning: ${actionType}`);
-    formData.append('assigned_score', score);
-    formData.append('assigned_rating', rating);
-
-    await fetch('/api/feedback', { method: 'POST', body: formData });
-    loadFeedbackStats();
-  } catch (err) {
-    console.warn('Feedback sync error:', err);
-  }
-
-  const feedbackMap = {
-    'true_positive': 'Verified True Positive written to local store.',
-    'false_positive': 'False Positive reported. Heuristic delta saved to feedback_store.json.',
-    'weight_adjust': 'Active weights calibration modal engaged for SOV-POL-STRICT-04.'
-  };
-
-  const note = document.createElement('div');
-  note.className = 'fixed bottom-12 right-6 px-4 py-2.5 rounded-lg bg-surface-container-high border border-outline-variant/30 text-on-surface font-code-inline text-code-inline shadow-2xl z-50 flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300';
-  note.innerHTML = `<span class="material-symbols-outlined text-primary text-[18px]">save</span><span>${feedbackMap[actionType] || 'Acknowledged.'}</span>`;
-  document.body.appendChild(note);
-
-  setTimeout(() => { note.classList.remove('translate-y-2', 'opacity-0'); }, 10);
-  setTimeout(() => {
-    note.classList.add('translate-y-2', 'opacity-0');
-    setTimeout(() => note.remove(), 300);
-  }, 2800);
-}
-
 /**
  * SafeX - High-Performance Threat Analyzer Engine
  * Comprehensive Email, Suspicious Links, and File Threat Analysis.
  */
+
+const API_BASE = (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) 
+  ? '' 
+  : 'http://127.0.0.1:8000';
 
 const SCENARIOS = {
   high: {
@@ -503,41 +375,18 @@ function loadScenario(key) {
     vCircle.className = 'stroke-emerald-400 transition-all duration-700';
   }
 
-  // 4-Component Risk Breakdown (Requirement 1)
-  const breakdown = data.verdict.breakdown || {
-    sender_score: data.verdict.theme === 'rose' ? 25 : (data.verdict.theme === 'amber' ? 15 : 0),
-    body_score: data.verdict.theme === 'rose' ? 15 : (data.verdict.theme === 'amber' ? 20 : 0),
-    url_score: data.verdict.theme === 'rose' ? 25 : (data.verdict.theme === 'amber' ? 35 : 0),
-    attachment_score: data.verdict.attachScore || (data.verdict.theme === 'rose' ? 50 : 0),
-  };
+  // Risk Bars
+  document.getElementById('score-body-text').textContent = data.verdict.bodyScore + '%';
+  document.getElementById('score-body-bar').style.width = data.verdict.bodyScore + '%';
+  document.getElementById('score-attach-text').textContent = data.verdict.attachScore + '%';
+  document.getElementById('score-attach-bar').style.width = data.verdict.attachScore + '%';
 
-  const senderEl = document.getElementById('score-sender-text');
-  if (senderEl) {
-    senderEl.textContent = `${breakdown.sender_score} pts`;
-    document.getElementById('score-sender-bar').style.width = Math.min(100, (breakdown.sender_score / 35) * 100) + '%';
-  }
-  const bodyTextEl = document.getElementById('score-bodytext-text');
-  if (bodyTextEl) {
-    bodyTextEl.textContent = `${breakdown.body_score} pts`;
-    document.getElementById('score-bodytext-bar').style.width = Math.min(100, (breakdown.body_score / 35) * 100) + '%';
-  }
-  const urlEl = document.getElementById('score-url-text');
-  if (urlEl) {
-    urlEl.textContent = `${breakdown.url_score} pts`;
-    document.getElementById('score-url-bar').style.width = Math.min(100, (breakdown.url_score / 45) * 100) + '%';
-  }
-  const attachEl = document.getElementById('score-attach-text');
-  if (attachEl) {
-    attachEl.textContent = `${breakdown.attachment_score} pts`;
-    document.getElementById('score-attach-bar').style.width = Math.min(100, (breakdown.attachment_score / 50) * 100) + '%';
-  }
-
-  // Observable Signals & Supporting Evidence (Requirement 6)
+  // Signals
   const sigContainer = document.getElementById('signal-evidence-list');
   sigContainer.innerHTML = '';
   data.verdict.signals.forEach(sig => {
     const item = document.createElement('div');
-    item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5';
+    item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-start justify-between gap-3';
     let tagColor = 'text-slate-300';
     let weightColor = 'text-slate-400';
     if (sig.level === 'rose') {
@@ -551,40 +400,15 @@ function loadScenario(key) {
       weightColor = 'text-emerald-400 font-bold';
     }
 
-    const evidenceHtml = sig.evidence ? `
-      <div class="mt-1 px-2.5 py-1 rounded-md bg-[#161b26] border border-[#232d40] flex items-center gap-1.5 text-[11px] font-mono text-cyan-300 break-all">
-        <span class="text-slate-500">Evidence:</span> ${escapeHtml(sig.evidence)}
-      </div>
-    ` : '';
-
     item.innerHTML = `
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <span class="text-xs ${tagColor} block">${escapeHtml(sig.tag)}</span>
-          <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.desc)}</p>
-        </div>
-        <span class="font-mono text-xs ${weightColor} shrink-0">${sig.weight}</span>
+      <div>
+        <span class="text-xs ${tagColor} block">${sig.tag}</span>
+        <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${sig.desc}</p>
       </div>
-      ${evidenceHtml}
+      <span class="font-mono text-xs ${weightColor} shrink-0">${sig.weight}</span>
     `;
     sigContainer.appendChild(item);
   });
-
-  // Sync SafeX Sovereign Vectors & Telemetry
-  updateSovereignVectors(breakdown);
-  const defconPill = document.getElementById('verdict-defcon-pill');
-  if (defconPill) {
-    if (data.verdict.score >= 70) {
-      defconPill.textContent = 'Defcon 1 Alert';
-      defconPill.className = 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase tracking-wider font-semibold';
-    } else if (data.verdict.score >= 40) {
-      defconPill.textContent = 'Defcon 2 Elevated';
-      defconPill.className = 'px-space-sm py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps uppercase tracking-wider font-semibold';
-    } else {
-      defconPill.textContent = 'Defcon 5 Normal';
-      defconPill.className = 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps uppercase tracking-wider font-semibold';
-    }
-  }
 }
 
 // Render All Detected Links Table
@@ -702,7 +526,7 @@ async function runStandaloneLinkCheck() {
     formData.append('url', input);
     if (anchor) formData.append('anchor_text', anchor);
 
-    const res = await fetch('/api/analyze-link', {
+    const res = await fetch(`${API_BASE}/api/analyze-link`, {
       method: 'POST',
       body: formData
     });
@@ -799,7 +623,7 @@ async function executeLiveAnalysis() {
       if (!f.name.endsWith('.eml')) formData.append('attachments', f);
     });
 
-    const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+    const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
     if (!res.ok) {
       const e = await res.json();
       throw new Error(e.detail || 'Analysis failed');
@@ -874,20 +698,13 @@ function renderLiveApiResponse(a) {
   });
 
   // Attachments
-  // Attachments & Per-Attachment Report Card (Requirement 2 & 8)
   const primaryAtt = atts[0];
   const sevPill = document.getElementById('attachment-severity-pill');
-  const featContainer = document.getElementById('attachment-features-list');
-  const actCard = document.getElementById('attachment-action-card');
-  const actBadge = document.getElementById('attachment-action-badge');
-  const actText = document.getElementById('attachment-action-text');
-  const actIcon = document.getElementById('attachment-action-icon');
-
   if (primaryAtt) {
     document.getElementById('file-name').textContent = primaryAtt.filename;
     let alertMsg = 'Standard static layout verified';
-    if (primaryAtt.double_extension) alertMsg = `Double extension: .${primaryAtt.filename.split('.').slice(-2).join('.')}`;
-    else if (primaryAtt.rtlo_detected) alertMsg = 'Unicode RTLO Deception Detected';
+    if (primaryAtt.is_double_extension) alertMsg = `Double extension: .${primaryAtt.filename.split('.').slice(-2).join('.')}`;
+    else if (primaryAtt.has_rtlo) alertMsg = 'Unicode RTLO Deception Detected';
     else if (primaryAtt.type_mismatch) alertMsg = 'Type mismatch: Declared MIME differs from magic bytes';
     else if (primaryAtt.has_vba_macros) alertMsg = 'VBA Macros detected in Office structure';
 
@@ -895,51 +712,13 @@ function renderLiveApiResponse(a) {
     document.getElementById('file-mime').textContent = primaryAtt.declared_mime_type || 'Unknown';
     document.getElementById('file-magic').textContent = primaryAtt.magic_signature || 'N/A';
     document.getElementById('file-size').textContent = primaryAtt.size_human;
-    document.getElementById('file-entropy').textContent = 'Analyzed static byte layout';
+    document.getElementById('file-entropy').textContent = 'Analyzed byte distribution';
     document.getElementById('file-sha256').textContent = primaryAtt.sha256 || '—';
 
     sevPill.textContent = primaryAtt.risk_level === 'MALICIOUS' ? 'Executable Binary Disguised' : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'Suspicious Attachment' : 'Verified Benign Document');
     sevPill.className = primaryAtt.risk_level === 'MALICIOUS' 
-      ? 'px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40'
-      : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40');
-
-    // Populate Suspicious Features
-    if (featContainer) {
-      const features = primaryAtt.suspicious_features || [];
-      featContainer.innerHTML = features.map(f => {
-        let col = 'bg-slate-800 text-slate-300 border-slate-700';
-        if (f.toLowerCase().includes('executable') || f.toLowerCase().includes('mismatch') || f.toLowerCase().includes('rtlo') || f.toLowerCase().includes('double') || f.toLowerCase().includes('password')) {
-          col = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
-        } else if (f.toLowerCase().includes('macro') || f.toLowerCase().includes('script') || f.toLowerCase().includes('warning')) {
-          col = 'bg-amber-500/15 text-amber-300 border-amber-500/30';
-        } else if (f.toLowerCase().includes('clean') || f.toLowerCase().includes('benign')) {
-          col = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
-        }
-        return `<span class="px-2.5 py-1 rounded-md text-xs font-mono border ${col}">${escapeHtml(f)}</span>`;
-      }).join(' ');
-    }
-
-    // Populate Recommended Action Card
-    if (actCard && actBadge && actText) {
-      actBadge.textContent = `RECOMMENDED ACTION: ${primaryAtt.recommended_action || 'SAFE_TO_OPEN'}`.replace(/_/g, ' ');
-      actText.textContent = primaryAtt.recommended_action_detail || 'No threat actions required.';
-      if (primaryAtt.risk_level === 'MALICIOUS') {
-        actCard.className = 'p-4 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-1.5';
-        actBadge.className = 'text-xs font-bold text-rose-300 uppercase tracking-wide';
-        actIcon.className = 'material-symbols-outlined text-rose-400 text-lg';
-        actIcon.textContent = 'block';
-      } else if (primaryAtt.risk_level === 'SUSPICIOUS') {
-        actCard.className = 'p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1.5';
-        actBadge.className = 'text-xs font-bold text-amber-300 uppercase tracking-wide';
-        actIcon.className = 'material-symbols-outlined text-amber-400 text-lg';
-        actIcon.textContent = 'warning';
-      } else {
-        actCard.className = 'p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-1.5';
-        actBadge.className = 'text-xs font-bold text-emerald-300 uppercase tracking-wide';
-        actIcon.className = 'material-symbols-outlined text-emerald-400 text-lg';
-        actIcon.textContent = 'check_circle';
-      }
-    }
+      ? 'px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40'
+      : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40');
   } else {
     document.getElementById('file-name').textContent = 'No Attachments Present';
     document.getElementById('file-ext-alert').textContent = 'Message body only';
@@ -950,15 +729,6 @@ function renderLiveApiResponse(a) {
     document.getElementById('file-sha256').textContent = '—';
     sevPill.textContent = 'No Attachment';
     sevPill.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700';
-    if (featContainer) {
-      featContainer.innerHTML = '<span class="text-xs text-slate-500 font-mono">No files attached to message sample</span>';
-    }
-    if (actCard) {
-      actBadge.textContent = 'RECOMMENDED ACTION: NONE REQUIRED';
-      actText.textContent = 'This email does not carry binary or document attachments.';
-      actCard.className = 'p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5';
-      actIcon.textContent = 'info';
-    }
   }
 
   // Verdict
@@ -999,42 +769,17 @@ function renderLiveApiResponse(a) {
     vCircle.className = 'stroke-emerald-400 transition-all duration-700';
   }
 
-  // 4-Component Risk Breakdown (Requirement 1)
+  // Risk Bars
   const breakdown = a.score_breakdown || {};
-  const senderScore = breakdown.sender_score !== undefined ? breakdown.sender_score : (breakdown.header_score || 0);
-  const bodyScore = breakdown.body_score !== undefined ? breakdown.body_score : (b.text_only_score || 0);
-  const urlScore = breakdown.url_score !== undefined ? breakdown.url_score : (b.url_only_score || 0);
-  const attachScore = breakdown.attachment_score !== undefined ? breakdown.attachment_score : 0;
+  const bodyScorePct = Math.min(100, Math.round(((breakdown.body_url_score || 0) / 45) * 100));
+  const attachScorePct = Math.min(100, Math.round(((breakdown.attachment_score || 0) / 50) * 100));
 
-  const senderEl = document.getElementById('score-sender-text');
-  if (senderEl) {
-    senderEl.textContent = `${senderScore} pts`;
-    document.getElementById('score-sender-bar').style.width = Math.min(100, (senderScore / 35) * 100) + '%';
-  }
-  const bodyTextEl = document.getElementById('score-bodytext-text');
-  if (bodyTextEl) {
-    bodyTextEl.textContent = `${bodyScore} pts`;
-    document.getElementById('score-bodytext-bar').style.width = Math.min(100, (bodyScore / 35) * 100) + '%';
-  }
-  const urlEl = document.getElementById('score-url-text');
-  if (urlEl) {
-    urlEl.textContent = `${urlScore} pts`;
-    document.getElementById('score-url-bar').style.width = Math.min(100, (urlScore / 45) * 100) + '%';
-  }
-  const attachEl = document.getElementById('score-attach-text');
-  if (attachEl) {
-    attachEl.textContent = `${attachScore} pts`;
-    document.getElementById('score-attach-bar').style.width = Math.min(100, (attachScore / 50) * 100) + '%';
-  }
-  // Sync Sovereign 4 Score Drivers
-  updateSovereignVectors({
-    sender_score: senderScore,
-    body_score: bodyScore,
-    url_score: urlScore,
-    attachment_score: attachScore
-  });
+  document.getElementById('score-body-text').textContent = bodyScorePct + '%';
+  document.getElementById('score-body-bar').style.width = bodyScorePct + '%';
+  document.getElementById('score-attach-text').textContent = attachScorePct + '%';
+  document.getElementById('score-attach-bar').style.width = attachScorePct + '%';
 
-  // Observable Signals & Supporting Evidence (Requirement 6)
+  // Signals
   const sigContainer = document.getElementById('signal-evidence-list');
   sigContainer.innerHTML = '';
   const signals = a.all_signals || [];
@@ -1047,7 +792,7 @@ function renderLiveApiResponse(a) {
   } else {
     signals.forEach(sig => {
       const item = document.createElement('div');
-      item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5';
+      item.className = 'p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-start justify-between gap-3';
       let tagColor = 'text-slate-300';
       let weightColor = 'text-slate-400';
       if (sig.severity === 'critical' || sig.severity === 'high') {
@@ -1061,64 +806,15 @@ function renderLiveApiResponse(a) {
         weightColor = 'text-emerald-400 font-bold';
       }
 
-      const evidenceHtml = sig.evidence ? `
-        <div class="mt-1 px-2.5 py-1 rounded-md bg-[#161b26] border border-[#232d40] flex items-center gap-1.5 text-[11px] font-mono text-cyan-300 break-all">
-          <span class="text-slate-500">Evidence:</span> ${escapeHtml(sig.evidence)}
-        </div>
-      ` : '';
-
       item.innerHTML = `
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <span class="text-xs ${tagColor} block">${escapeHtml(sig.name)}</span>
-            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.description)}</p>
-          </div>
-          <span class="font-mono text-xs ${weightColor} shrink-0">+${sig.score_impact} pts</span>
+        <div>
+          <span class="text-xs ${tagColor} block">${escapeHtml(sig.name)}</span>
+          <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.description)}</p>
         </div>
-        ${evidenceHtml}
+        <span class="font-mono text-xs ${weightColor} shrink-0">+${sig.score_impact} pts</span>
       `;
       sigContainer.appendChild(item);
     });
-  }
-
-  // Populate Action Recommendation Cards (Requirement 3)
-  const actionContainer = document.getElementById('action-cards-container');
-  if (actionContainer && a.safe_guidance && a.safe_guidance.action_cards) {
-    actionContainer.innerHTML = a.safe_guidance.action_cards.map(card => {
-      let border = 'border-[#232d40] bg-[#0c0e14]';
-      let iconCol = 'text-cyan-400';
-      let icon = 'info';
-      if (card.action_type === 'QUARANTINE') {
-        border = 'border-rose-500/30 bg-rose-950/20';
-        iconCol = 'text-rose-400';
-        icon = 'emergency';
-      } else if (card.action_type === 'VERIFY_SENDER') {
-        border = 'border-purple-500/30 bg-[#0c0e14]';
-        iconCol = 'text-purple-400';
-        icon = 'contact_phone';
-      } else if (card.action_type === 'SAFE_VIEWER') {
-        border = 'border-cyan-500/30 bg-[#0c0e14]';
-        iconCol = 'text-cyan-400';
-        icon = 'visibility_off';
-      } else if (card.action_type === 'REPORT_SOC') {
-        border = 'border-indigo-500/30 bg-[#0c0e14]';
-        iconCol = 'text-indigo-400';
-        icon = 'shield';
-      }
-
-      const stepsHtml = (card.steps || []).map(s => `<li class="text-[11px] text-slate-400">${escapeHtml(s)}</li>`).join('');
-
-      return `
-        <div class="p-3.5 rounded-xl ${border} space-y-1.5">
-          <div class="flex items-center gap-2 font-semibold text-xs text-slate-200">
-            <span class="material-symbols-outlined text-base ${iconCol}">${icon}</span>
-            <span>${escapeHtml(card.title)}</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(card.description)}</p>
-          ${stepsHtml ? `<ul class="list-disc pl-4 space-y-0.5 pt-1">${stepsHtml}</ul>` : ''}
-        </div>
-      `;
-    }).join('');
   }
 
   // Scroll smoothly to results
@@ -1171,11 +867,15 @@ Call: +1-800-492-9102 (Toll Free 24/7 Support)`;
 }
 
 function clearCustomInput() {
-  document.getElementById('live-email-input').value = '';
-  document.getElementById('standalone-url-input').value = '';
-  document.getElementById('standalone-anchor-input').value = '';
+  const emailInput = document.getElementById('live-email-input');
+  if (emailInput) emailInput.value = '';
+  const urlInput = document.getElementById('standalone-url-input');
+  if (urlInput) urlInput.value = '';
+  const anchorInput = document.getElementById('standalone-anchor-input');
+  if (anchorInput) anchorInput.value = '';
   liveFiles = [];
-  document.getElementById('live-file-list').innerHTML = '';
+  const fileList = document.getElementById('live-file-list');
+  if (fileList) fileList.innerHTML = '';
 }
 
 function toggleCustomSection() {
@@ -1242,7 +942,7 @@ function removeLiveFile(i) {
 
 async function fetchBackendCatalog() {
   try {
-    const res = await fetch('/api/samples');
+    const res = await fetch(`${API_BASE}/api/samples`);
     if (!res.ok) return;
     const samples = await res.json();
     const container = document.getElementById('test-matrix-list');
@@ -1269,7 +969,7 @@ async function fetchBackendCatalog() {
 async function loadSampleFromApi(id) {
   closeModal('modal-presets');
   try {
-    const res = await fetch(`/api/sample/${id}`);
+    const res = await fetch(`${API_BASE}/api/sample/${id}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     renderLiveApiResponse(data.analysis);
@@ -1290,19 +990,9 @@ function copySha256() {
 
 function triggerAction(action) {
   if (action === 'quarantine') {
-    alert('🛑 Threat Item Quarantined:\n• In-memory payload isolated and session locked.\n• Sender domain and detected IP addresses staged for enterprise mail gateway boundary blocklist.');
-  } else if (action === 'verify_sender') {
-    const from = document.getElementById('header-from').textContent;
-    alert(`📞 Official Channel Verification Protocol:\n• Target Sender: ${from}\n• Step 1: Do NOT reply or click links in this message.\n• Step 2: Look up the verified phone number or intranet contact in your corporate directory.\n• Step 3: Contact the sender to verify whether this request was legitimate.`);
-  } else if (action === 'safe_viewer') {
-    alert('🔍 Safe Offline Viewer Instructions:\n• Never double-click suspicious attachments in standard desktop applications.\n• Open strictly in an isolated air-gapped sandbox or static text previewer.\n• Ensure Macro Execution and JavaScript are disabled in viewer preferences.');
+    alert('Threat Item Quarantined: The raw payload has been isolated and sender IP staged for boundary blocklist.');
   } else if (action === 'whitelist') {
-    selectFeedbackVerdict('FALSE_POSITIVE');
-    const notes = document.getElementById('feedback-notes');
-    if (notes) {
-      notes.value = 'User reported as legitimate / false positive';
-      notes.focus();
-    }
+    alert('Recorded False Positive: Signal override stored in local memory telemetry.');
   } else if (action === 'export') {
     const artifact = {
       timestamp: new Date().toISOString(),
@@ -1317,138 +1007,10 @@ function triggerAction(action) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `safex-triage-report-${Date.now()}.json`;
+    a.download = `safex-report-${Date.now()}.json`;
     a.click();
   }
 }
-
-// User Feedback Feature (Requirement 4)
-let currentFeedbackVerdict = 'ACCURATE';
-
-function selectFeedbackVerdict(verdict) {
-  currentFeedbackVerdict = verdict;
-  const btnAcc = document.getElementById('fb-btn-accurate');
-  const btnFp = document.getElementById('fb-btn-fp');
-  const btnFn = document.getElementById('fb-btn-fn');
-
-  if (btnAcc) btnAcc.className = 'py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 text-center flex flex-col items-center gap-1';
-  if (btnFp) btnFp.className = 'py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 text-center flex flex-col items-center gap-1';
-  if (btnFn) btnFn.className = 'py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 text-center flex flex-col items-center gap-1';
-
-  if (verdict === 'ACCURATE' && btnAcc) {
-    btnAcc.className = 'py-2 px-1 rounded-xl border bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold text-center flex flex-col items-center gap-1';
-  } else if (verdict === 'FALSE_POSITIVE' && btnFp) {
-    btnFp.className = 'py-2 px-1 rounded-xl border bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold text-center flex flex-col items-center gap-1';
-  } else if (verdict === 'FALSE_NEGATIVE' && btnFn) {
-    btnFn.className = 'py-2 px-1 rounded-xl border bg-rose-500/20 border-rose-500/40 text-rose-300 font-semibold text-center flex flex-col items-center gap-1';
-  }
-}
-
-async function submitClassificationFeedback() {
-  const notesInput = document.getElementById('feedback-notes');
-  const notes = notesInput ? notesInput.value.trim() : '';
-  const score = parseInt(document.getElementById('verdict-score').textContent || '0', 10);
-  const rating = document.getElementById('verdict-label').textContent || 'LOW';
-
-  const formData = new FormData();
-  formData.append('sample_id', currentScenario || 'custom');
-  formData.append('sample_name', document.getElementById('email-subject').textContent || 'Triage Sample');
-  formData.append('user_verdict', currentFeedbackVerdict);
-  formData.append('notes', notes);
-  formData.append('assigned_score', score);
-  formData.append('assigned_rating', rating);
-
-  const btn = document.getElementById('btn-submit-feedback');
-  if (btn) btn.disabled = true;
-
-  try {
-    const res = await fetch('/api/feedback', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error('Failed to record feedback');
-    const data = await res.json();
-    alert(`Feedback Recorded: Thank you! Reported as ${currentFeedbackVerdict}. This helps tune SafeX heuristic thresholds.`);
-    if (notesInput) notesInput.value = '';
-    loadFeedbackStats();
-  } catch (err) {
-    alert('Error submitting feedback: ' + err.message);
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function loadFeedbackStats() {
-  try {
-    const res = await fetch('/api/feedback/stats');
-    if (!res.ok) return;
-    const stats = await res.json();
-    const accPill = document.getElementById('feedback-stat-accuracy');
-    const countLabel = document.getElementById('feedback-count-label');
-    const liveStats = document.getElementById('feedback-live-stats');
-    if (accPill) accPill.textContent = `Model Accuracy: ${stats.user_verified_accuracy_pct}%`;
-    if (countLabel) countLabel.textContent = `${stats.total_reports} reports logged (${stats.false_positive_count} FP, ${stats.false_negative_count} FN)`;
-    if (liveStats) liveStats.textContent = `${stats.total_reports} Reports Logged (${stats.user_verified_accuracy_pct}% Acc)`;
-  } catch (e) {
-    console.warn(e);
-  }
-}
-
-// ML vs Rule Benchmark Loader (Requirement 5)
-async function openBenchmarkModal() {
-  openModal('modal-benchmark');
-  try {
-    const res = await fetch('/api/evaluation/benchmark');
-    if (!res.ok) return;
-    const data = await res.json();
-
-    const rb = data.rule_based;
-    const ml = data.ml_based;
-
-    // Rule confusion matrix
-    document.getElementById('rule-tn').textContent = rb.confusion_matrix.tn;
-    document.getElementById('rule-fp').textContent = rb.confusion_matrix.fp;
-    document.getElementById('rule-fn').textContent = rb.confusion_matrix.fn;
-    document.getElementById('rule-tp').textContent = rb.confusion_matrix.tp;
-
-    document.getElementById('rule-acc').textContent = rb.metrics.accuracy_pct + '%';
-    document.getElementById('rule-prec').textContent = rb.metrics.precision_pct + '%';
-    document.getElementById('rule-rec').textContent = rb.metrics.recall_pct + '%';
-    document.getElementById('rule-f1').textContent = rb.metrics.f1_score;
-
-    // ML confusion matrix
-    document.getElementById('ml-tn').textContent = ml.confusion_matrix.tn;
-    document.getElementById('ml-fp').textContent = ml.confusion_matrix.fp;
-    document.getElementById('ml-fn').textContent = ml.confusion_matrix.fn;
-    document.getElementById('ml-tp').textContent = ml.confusion_matrix.tp;
-
-    document.getElementById('ml-acc').textContent = ml.metrics.accuracy_pct + '%';
-    document.getElementById('ml-prec').textContent = ml.metrics.precision_pct + '%';
-    document.getElementById('ml-rec').textContent = ml.metrics.recall_pct + '%';
-    document.getElementById('ml-f1').textContent = ml.metrics.f1_score;
-
-    // Populate samples table
-    const container = document.getElementById('benchmark-samples-table');
-    if (container && data.side_by_side_samples) {
-      container.innerHTML = data.side_by_side_samples.map(s => `
-        <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between gap-2 font-mono text-[11px]">
-          <div class="flex items-center gap-2 truncate">
-            <span class="px-1.5 py-0.5 rounded text-[10px] ${s.ground_truth === 'THREAT' ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'}">${s.ground_truth}</span>
-            <span class="text-slate-200 truncate">${escapeHtml(s.name)}</span>
-          </div>
-          <div class="flex items-center gap-3 shrink-0">
-            <span class="text-cyan-400">Rule: ${s.rule_score} (${s.rule_verdict})</span>
-            <span class="text-amber-400">ML: ${s.ml_prob}% (${s.ml_verdict})</span>
-          </div>
-        </div>
-      `).join('');
-    }
-  } catch (e) {
-    console.error('Failed to load benchmark data', e);
-  }
-}
-
-// Initialise feedback stats on boot
-document.addEventListener('DOMContentLoaded', () => {
-  loadFeedbackStats();
-});
 
 function openModal(id) {
   const el = document.getElementById(id);
@@ -1520,5 +1082,4 @@ function setQuickUrl(url) {
     runStandaloneLinkCheck();
   }
 }
-
 

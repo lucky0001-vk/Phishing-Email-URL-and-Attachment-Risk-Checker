@@ -127,11 +127,6 @@ class AttachmentInventory(BaseModel):
     score: int = 0
     signals: List[DetectionSignal] = Field(default_factory=list)
 
-    # Per-Attachment Report Card requirements (features & recommended action)
-    suspicious_features: List[str] = Field(default_factory=list)
-    recommended_action: str = "SAFE_TO_OPEN"  # 'QUARANTINE_PAYLOAD', 'INSPECT_IN_SAFE_OFFLINE_VIEWER', 'VERIFY_SENDER_BEFORE_OPENING', 'SAFE_TO_OPEN'
-    recommended_action_detail: str = ""
-
 
 class BodyAnalysis(BaseModel):
     urgency_phrases_detected: List[str] = Field(default_factory=list)
@@ -147,17 +142,7 @@ class BodyAnalysis(BaseModel):
     text_preview: str = ""
     is_html: bool = False
     score: int = 0
-    text_only_score: int = 0
-    url_only_score: int = 0
     signals: List[DetectionSignal] = Field(default_factory=list)
-
-
-class ActionRecommendation(BaseModel):
-    action_type: str = "VERIFY_SENDER"  # 'QUARANTINE', 'VERIFY_SENDER', 'SAFE_VIEWER', 'REPORT_SOC'
-    title: str
-    description: str
-    urgency: str = "MEDIUM"  # 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'
-    steps: List[str] = Field(default_factory=list)
 
 
 class SafeGuidance(BaseModel):
@@ -166,7 +151,6 @@ class SafeGuidance(BaseModel):
     verification_steps: List[str] = Field(default_factory=list)
     recommendations: List[str] = Field(default_factory=list)
     things_to_avoid: List[str] = Field(default_factory=list)
-    action_cards: List[ActionRecommendation] = Field(default_factory=list)
 
 
 class EmailAnalysisResult(BaseModel):
@@ -177,12 +161,9 @@ class EmailAnalysisResult(BaseModel):
     summary: str
     score_breakdown: Dict[str, int] = Field(
         default_factory=lambda: {
-            "sender_score": 0,
-            "body_score": 0,
-            "url_score": 0,
-            "attachment_score": 0,
             "header_score": 0,
             "body_url_score": 0,
+            "attachment_score": 0,
             "overall_score": 0,
         }
     )
