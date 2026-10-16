@@ -1,884 +1,1480 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>SafeX - Email, URL &amp; File Threat Analyzer</title>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <style>
-    body {
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    code, .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0c0e14;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #232d40;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-    .modal-backdrop {
-      background: rgba(8, 11, 18, 0.85);
-      backdrop-filter: blur(8px);
-    }
-  </style>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            obsidian: {
-              bg: "#0c0e14",
-              card: "#161b26",
-              cardHover: "#1c2230",
-              border: "#232d40",
-              borderSubtle: "#1b2333"
-            },
-            accent: {
-              purple: "#a78bfa",
-              purpleDark: "#7c3aed",
-              cyan: "#38bdf8",
-              emerald: "#34d399",
-              rose: "#f87171",
-              amber: "#fbbf24"
-            }
-          }
-        }
-      }
-    };
-  </script>
-</head>
-<body class="bg-[#0c0e14] text-slate-100 antialiased min-h-screen flex flex-col selection:bg-purple-500/30 selection:text-purple-200">
 
-  <!-- Top Navigation Bar -->
-  <header class="sticky top-0 z-50 bg-[#0c0e14]/95 backdrop-blur-md border-b border-[#232d40]">
-    <div class="max-w-[1640px] mx-auto h-16 px-6 lg:px-8 flex items-center justify-between gap-6">
-      
-      <!-- Brand & Tabs -->
-      <div class="flex items-center gap-8">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-500 p-[1px] shadow-sm">
-            <div class="w-full h-full bg-[#121622] rounded-[11px] flex items-center justify-center">
-              <span class="material-symbols-outlined text-cyan-400 text-xl">shield_lock</span>
+
+
+<html class="" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-container-highest": "#e5e1e4", "primary-fixed": "#efe2b8", "on-secondary-fixed": "#1b1b1b", "secondary-fixed": "#e2e2e2", "surface-variant": "#e5e1e4", "surface-bright": "#fcf8fb", background: "#fcf8fb", "outline-variant": "#d0c5af", "tertiary-fixed-dim": "#c6c6c7", "on-primary-fixed": "#211b02", "tertiary-fixed": "#e2e2e2", primary: "#675e3d", "on-primary": "#ffffff", "on-background": "#1c1b1e", "surface-container-low": "#f6f2f6", secondary: "#5e5e5e", "surface-container-high": "#eae7ea", "on-primary-fixed-variant": "#4f4727", "on-error-container": "#93000a", "on-secondary-fixed-variant": "#474747", "on-tertiary-fixed": "#1a1c1c", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#d2c69e", "error-container": "#ffdad6", surface: "#fcf8fb", error: "#ba1a1a", "on-tertiary-container": "#434546", "surface-container": "#f0edf0", tertiary: "#5d5f5f", "primary-container": "#beb38b", "on-error": "#ffffff", "secondary-fixed-dim": "#c6c6c6", "on-surface-variant": "#4d4635", "tertiary-container": "#b2b3b3", "on-tertiary": "#ffffff", "on-secondary-container": "#646464", "on-tertiary-fixed-variant": "#454747", "on-surface": "#1c1b1e", outline: "#7f7663", "secondary-container": "#e2e2e2", "on-secondary": "#ffffff", "inverse-on-surface": "#f3f0f3", "surface-tint": "#675e3d", "on-primary-container": "#4d4526", "inverse-surface": "#313032", "inverse-primary": "#d2c69e", "surface-dim": "#dcd9dc"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {"space-xs": "0.25rem", "gutter-desktop": "1.5rem", "space-xl": "2.5rem", "space-md": "1rem", margin: "1rem", "margin-desktop": "3rem", "space-sm": "0.5rem", "space-lg": "1.5rem", gutter: "1.25rem", "margin-tablet": "2rem"}, fontFamily: {"headline-lg": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "code-inline": ["JetBrains Mono"], "body-sm": ["Plus Jakarta Sans"], "label-sm": ["JetBrains Mono"], "headline-sm": ["Plus Jakarta Sans"], "code-display": ["JetBrains Mono"], "body-md": ["Plus Jakarta Sans"], "label-caps": ["JetBrains Mono"], headline: ["Plus Jakarta Sans"], display: ["Plus Jakarta Sans"], body: ["Plus Jakarta Sans"], label: ["JetBrains Mono"]}, fontSize: {"headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600"}], "display-hero": ["44px", {lineHeight: "52px", letterSpacing: "-0.03em", fontWeight: "700"}], "display-hero-mobile": ["30px", {lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-md": ["22px", {lineHeight: "30px", letterSpacing: "-0.01em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-lg": ["16px", {lineHeight: "26px", letterSpacing: "0em", fontWeight: "400"}], "code-inline": ["12px", {lineHeight: "16px", letterSpacing: "0em", fontWeight: "400"}], "body-sm": ["12px", {lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400"}], "label-sm": ["10px", {lineHeight: "12px", letterSpacing: "0.08em", fontWeight: "500"}], "headline-sm": ["18px", {lineHeight: "26px", letterSpacing: "0em", fontWeight: "600"}], "code-display": ["14px", {lineHeight: "22px", letterSpacing: "-0.01em", fontWeight: "500"}], "body-md": ["14px", {lineHeight: "22px", letterSpacing: "0em", fontWeight: "400"}], "label-caps": ["11px", {lineHeight: "14px", letterSpacing: "0.12em", fontWeight: "600"}]}}}};</script></head><body class="bg-background text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col"><header class="fixed top-0 left-0 right-0 z-50 bg-[#0B0B0E]/90 backdrop-blur-xl border-b border-primary-container/25"><div class="h-20 w-full px-gutter-desktop flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-md"><img alt="SafeX Sovereign Gold Crest" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VBY9bkBqLf9iW1W3JIsFXL9VnhEH9FMjaKAEkPV9r4vMOHchC2D3IZGRrPs_XbG3dMLo-sykt7kx7Whek3cAqB3VOEyGdwXwH0wRDhw-KB0us_3S78VS2nz_SFl1opJ_YjVMEhRkW3dCFtqbZ8hhT0xqC_eqrURaKb3Dm5cYYDGasEY2ds7W2c-Zj_TruhuHo7NXtM28E6-1qr8D-X9UH33ppSsSLupcLCgy6D_sg"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">SafeX</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-widest font-semibold">SOVEREIGN</span></div><span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Static Threat Defense &amp; In-Memory Inspection</span></div></div><div class="h-6 w-px bg-outline-variant/40 hidden xl:block"></div><nav class="hidden xl:flex items-center gap-space-lg h-20" data-active-classes="text-primary border-b-2 border-primary font-semibold"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface h-full flex items-center px-space-xs transition-colors" data-path="threat-triage-and-analyzer" href="#" onclick="window.scrollTo({top:0, behavior:'smooth'})">Threat Triage &amp; Analyzer</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface h-full flex items-center px-space-xs transition-colors" data-path="attachment-forensics" href="#" onclick="document.getElementById('attachment-forensics-section')?.scrollIntoView({behavior:'smooth'})">Attachment Forensics</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface h-full flex items-center px-space-xs transition-colors" data-path="benchmark-and-evaluation" href="#" onclick="openBenchmarkModal()">Benchmark &amp; Evaluation</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface h-full flex items-center px-space-xs transition-colors" data-path="incident-playbooks" href="#" onclick="document.getElementById('section-playbooks')?.scrollIntoView({behavior:'smooth'})">Incident Playbooks</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-sm px-space-sm py-1 rounded bg-surface-container-lowest border border-outline-variant/30"><div class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></div><span id="header-defcon-badge" class="font-label-caps text-label-caps text-error uppercase">DEFCON 2</span></div><div class="hidden md:flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-lowest border border-outline-variant/30 font-code-inline text-code-inline text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[14px]">network_ping</span><span>0.84ms</span><span class="text-outline text-[10px]">SOC-CLUSTER-1</span></div><button id="btn-header-presets" onclick="openModal(\'modal-presets\')"<button class="hidden sm:flex items-center gap-space-xs px-space-md py-2 rounded bg-surface-container-high border border-outline-variant/40 hover:border-primary-container text-on-surface font-body-sm text-body-sm transition-all" type="button"><span class="material-symbols-outlined text-secondary text-[16px]">tune</span><span>Preset Scenarios</span><span class="material-symbols-outlined text-[14px] text-outline">expand_more</span></button><button id="btn-header-upload" onclick="openModal(\'modal-upload\')"<button class="flex items-center gap-space-xs px-space-md py-2 rounded bg-gradient-to-r from-[#C5A059] via-[#E5C158] to-[#D4AF37] text-on-primary font-body-sm text-body-sm font-semibold border border-primary-fixed shadow-[0_0_12px_rgba(212,175,55,0.2)] hover:brightness-105 active:brightness-95 transition-all" type="button"><span class="material-symbols-outlined text-[16px]">upload_file</span><span>Upload .EML / Sample</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 flex-1 bg-surface-container-lowest"><div class="flex flex-col w-full">
+
+<!-- Sovereign Telemetry Utility Rail -->
+
+<div class="w-full bg-surface-container-lowest px-gutter-desktop py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-sm">
+
+<div class="flex items-center gap-space-md">
+
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-outline uppercase tracking-widest">
+
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+
+<span id="incident-badge" class="text-error font-semibold">Triage Incident #SX-9942</span>
+
+<span class="text-outline-variant">/</span>
+
+<span class="text-on-surface">Target: Sovereign Treasury Infrastructure</span>
+
+</div>
+
+<div class="hidden md:flex items-center gap-space-xs px-space-sm py-0.5 rounded bg-surface-container-high font-code-inline text-code-inline text-primary">
+
+<span class="material-symbols-outlined text-[13px] text-primary">fingerprint</span>
+
+<span id="telemetry-sha256">SHA256: e8f9...39ac</span>
+
+</div>
+
+</div>
+
+<!-- Safeguard Bar -->
+
+<div class="flex flex-wrap items-center gap-space-sm font-label-caps text-label-caps">
+
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container font-code-inline text-tertiary shadow-sm">
+
+<span class="material-symbols-outlined text-[14px] text-tertiary">memory</span>
+
+<span class="font-semibold">io.BytesIO In-Memory Isolation</span>
+
+</div>
+
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container font-code-inline text-primary-fixed shadow-sm">
+
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+
+<span>Zero-Execution Guarantee</span>
+
+</div>
+
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container font-code-inline text-on-surface-variant shadow-sm">
+
+<span class="material-symbols-outlined text-[14px] text-outline">wifi_off</span>
+
+<span>Air-Gapped / Zero Live DNS</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="w-full px-gutter-desktop py-space-lg flex flex-col gap-space-xl">
+
+<!-- SECTION 1: TOP VERDICT & 4-COMPONENT BALANCED BREAKDOWN -->
+
+<section class="w-full grid grid-cols-1 xl:grid-cols-12 gap-space-lg">
+
+<!-- Primary Verdict Ring Card -->
+
+<div class="xl:col-span-4 bg-surface-container-low rounded-xl p-space-lg relative overflow-hidden flex flex-col justify-between shadow-xl">
+
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-error/10 rounded-full blur-3xl pointer-events-none"></div>
+
+<div class="flex items-center justify-between">
+
+<div class="flex flex-col">
+
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Verdict Analysis</span>
+
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Threat Posture</span>
+
+</div>
+
+<span id="verdict-defcon-pill" class="px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase tracking-wider font-semibold">Defcon 1 Alert</span>
+
+</div>
+
+<!-- Radial Meter Visualization -->
+
+<div class="my-space-md flex items-center justify-center relative">
+
+<svg class="w-44 h-44 transform -rotate-90" viewbox="0 0 160 160">
+
+<!-- Background Ring Track -->
+
+<circle class="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="68" stroke="currentColor" stroke-width="8"></circle>
+
+<!-- Champagne Accent Secondary Track -->
+
+<circle class="text-primary-container/40" cx="80" cy="80" fill="transparent" r="68" stroke="currentColor" stroke-dasharray="4 6" stroke-width="2"></circle>
+
+<!-- Value Arc (88%) = 2 * PI * 68 = 427.25. Dash offset = 427.25 * (1 - 0.88) = 51.27 -->
+
+<circle id="verdict-circle-bar" class="text-error transition-all duration-700" cx="80" cy="80" fill="transparent" r="68" stroke="currentColor" stroke-dasharray="427.25" stroke-dashoffset="51.27" stroke-linecap="round" stroke-width="8"></circle>
+
+</svg>
+
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+
+<span class="font-display-hero text-display-hero text-error font-extrabold tracking-tight"><span id="verdict-score">88</span><span class="text-headline-md text-error/70 font-semibold">/100</span></span>
+
+<span id="verdict-label" class="font-label-caps text-label-caps text-error tracking-widest uppercase font-bold mt-1">HIGH RISK THREAT</span>
+
+<span id="verdict-confidence" class="font-code-inline text-code-inline text-outline mt-0.5">Confidence: 99.4%</span>
+
+</div>
+
+</div>
+
+<div class="pt-space-sm bg-surface-container/60 rounded-lg p-space-sm flex items-center justify-between text-on-surface">
+
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm">
+
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+
+<span class="text-on-surface-variant font-medium">Policy Engine:</span>
+
+<span class="text-on-surface font-semibold">SOV-POL-STRICT-04</span>
+
+</div>
+
+<span class="font-code-inline text-code-inline text-error font-semibold">FAIL ENFORCE</span>
+
+</div>
+
+</div>
+
+<!-- 4 Score Drivers Grid -->
+
+<div class="xl:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+
+<!-- Driver 1: Sender Auth Score (RED) -->
+
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md relative overflow-hidden group hover:bg-surface-container transition-all">
+
+<div class="flex items-start justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<div class="w-8 h-8 rounded bg-error-container/40 flex items-center justify-center text-error">
+
+<span class="material-symbols-outlined text-[18px]">shield_person</span>
+
+</div>
+
+<div>
+
+<span class="font-label-caps text-label-caps text-outline uppercase block">Vector 01</span>
+
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Sender Auth</h4>
+
+</div>
+
+</div>
+
+<span id="v1-score-badge" class="px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold">FAIL 95/100</span>
+
+</div>
+
+<div class="my-space-sm space-y-space-xs font-body-sm text-body-sm">
+
+<div class="flex items-center justify-between text-outline">
+
+<span>SPF Protocol:</span>
+
+<span id="v1-spf-val" class="text-error font-code-inline text-code-inline font-semibold">Hardfail (-55)</span>
+
+</div>
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Envelope Alignment:</span>
+
+<span id="v1-env-val" class="text-error font-code-inline text-code-inline font-semibold">Mismatch Identified</span>
+
+</div>
+
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden mt-2">
+
+<div id="v1-progress-bar" class="bg-error h-full rounded-full transition-all duration-500" style="width: 95%;"></div>
+
+</div>
+
+</div>
+
+<div class="text-[11px] font-code-inline text-outline-variant flex items-center gap-1">
+
+<span class="material-symbols-outlined text-[13px] text-error">gpp_bad</span>
+
+<span id="v1-note">Return-Path origin disguised via proxy</span>
+
+</div>
+
+</div>
+
+<!-- Driver 2: Body Text NLP (PINK) -->
+
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md relative overflow-hidden group hover:bg-surface-container transition-all">
+
+<div class="flex items-start justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<div class="w-8 h-8 rounded bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+
+</div>
+
+<div>
+
+<span class="font-label-caps text-label-caps text-outline uppercase block">Vector 02</span>
+
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Body Text NLP</h4>
+
+</div>
+
+</div>
+
+<span id="v2-score-badge" class="px-space-sm py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps font-bold">SUSPICIOUS 75/100</span>
+
+</div>
+
+<div class="my-space-sm space-y-space-xs font-body-sm text-body-sm">
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Urgency Tone:</span>
+
+<span class="text-tertiary font-code-inline text-code-inline font-semibold">High Cognitive Stress</span>
+
+</div>
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Time-Bomb Trigger:</span>
+
+<span class="text-tertiary font-code-inline text-code-inline font-semibold">&lt; 2 Hours Strict</span>
+
+</div>
+
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden mt-2">
+
+<div id="v2-progress-bar" class="bg-tertiary h-full rounded-full transition-all duration-500" style="width: 75%;"></div>
+
+</div>
+
+</div>
+
+<div class="text-[11px] font-code-inline text-outline-variant flex items-center gap-1">
+
+<span class="material-symbols-outlined text-[13px] text-tertiary">notification_important</span>
+
+<span id="v2-note">Credential harvesting pre-text lexicon</span>
+
+</div>
+
+</div>
+
+<!-- Driver 3: URL Disparity (RED) -->
+
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md relative overflow-hidden group hover:bg-surface-container transition-all">
+
+<div class="flex items-start justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<div class="w-8 h-8 rounded bg-error-container/40 flex items-center justify-center text-error">
+
+<span class="material-symbols-outlined text-[18px]">link_off</span>
+
+</div>
+
+<div>
+
+<span class="font-label-caps text-label-caps text-outline uppercase block">Vector 03</span>
+
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">URL Disparity</h4>
+
+</div>
+
+</div>
+
+<span id="v3-score-badge" class="px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold">CRITICAL 90/100</span>
+
+</div>
+
+<div class="my-space-sm space-y-space-xs font-body-sm text-body-sm">
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Visual vs Actual Target:</span>
+
+<span class="text-error font-code-inline text-code-inline font-semibold">Deceptive Divergence</span>
+
+</div>
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Destination Profile:</span>
+
+<span class="text-error font-code-inline text-code-inline font-semibold">Bare IP Payload</span>
+
+</div>
+
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden mt-2">
+
+<div id="v3-progress-bar" class="bg-error h-full rounded-full transition-all duration-500" style="width: 90%;"></div>
+
+</div>
+
+</div>
+
+<div class="text-[11px] font-code-inline text-outline-variant flex items-center gap-1">
+
+<span class="material-symbols-outlined text-[13px] text-error">warning</span>
+
+<span id="v3-note">Raw IP bypasses traditional reputation filters</span>
+
+</div>
+
+</div>
+
+<!-- Driver 4: Static Binary (GREEN) -->
+
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md relative overflow-hidden group hover:bg-surface-container transition-all">
+
+<div class="flex items-start justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-secondary">
+
+<span class="material-symbols-outlined text-[18px]">security</span>
+
+</div>
+
+<div>
+
+<span class="font-label-caps text-label-caps text-outline uppercase block">Vector 04</span>
+
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Static Binary</h4>
+
+</div>
+
+</div>
+
+<span id="v4-score-badge" class="px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold">CLEAN DISARMED 12/100</span>
+
+</div>
+
+<div class="my-space-sm space-y-space-xs font-body-sm text-body-sm">
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Detonation State:</span>
+
+<span class="text-secondary font-code-inline text-code-inline font-semibold">In-Memory Neutralized</span>
+
+</div>
+
+<div class="flex items-center justify-between text-outline">
+
+<span>Dynamic Execution:</span>
+
+<span class="text-secondary font-code-inline text-code-inline font-semibold">Zero Byte Emitted</span>
+
+</div>
+
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden mt-2">
+
+<div id="v4-progress-bar" class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 12%;"></div>
+
+</div>
+
+</div>
+
+<div class="text-[11px] font-code-inline text-outline-variant flex items-center gap-1">
+
+<span class="material-symbols-outlined text-[13px] text-secondary">verified</span>
+
+<span id="v4-note">Passive static dissection isolated in memory</span>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- SECTION 2 & 3: MAIN DUAL PANE FORENSICS -->
+
+<div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+
+<!-- LEFT COLUMN: DECOMPILED MESSAGE ARTIFACT & HEURISTICS (7 cols) -->
+
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+
+<!-- Header Inspector Table Card -->
+
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-xl flex flex-col gap-space-md">
+
+<div class="flex items-center justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<span class="material-symbols-outlined text-primary text-[20px]">mark_email_read</span>
+
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Header Inspector &amp; Provenance</h3>
+
+</div>
+
+<span class="font-code-inline text-code-inline text-outline">RFC 5322 Decompiled</span>
+
+</div>
+
+<!-- Structured Header Rows -->
+
+<div class="overflow-x-auto rounded-lg bg-surface-container-lowest">
+
+<table class="w-full text-left border-collapse">
+
+<thead>
+
+<tr class="bg-surface-container-high/60 text-outline font-label-caps text-label-caps uppercase">
+
+<th class="py-space-xs px-space-md font-semibold">Header Attribute</th>
+
+<th class="py-space-xs px-space-md font-semibold">Extracted Value</th>
+
+<th class="py-space-xs px-space-md font-semibold text-right">Static Triage Flag</th>
+
+</tr>
+
+</thead>
+
+<tbody id="rfc5322-table-body" class="divide-y divide-surface-container-highest/20 font-code-inline text-code-inline">
+<tr class="hover:bg-surface-container-high/20 transition-colors">
+<td class="py-space-sm px-space-md text-outline font-medium">From</td>
+<td id="header-from" class="py-space-sm px-space-md text-on-surface font-semibold select-all">alerts@micros0ft-support.ru</td>
+<td id="header-from-flag" class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded bg-error-container/40 text-error font-label-caps text-label-caps uppercase font-bold"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Lookalike / Homoglyph</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/20 transition-colors">
+<td class="py-space-sm px-space-md text-outline font-medium">Reply-To</td>
+<td id="header-reply-to" class="py-space-sm px-space-md text-on-surface select-all">credential-drop@temp-inbox.cx</td>
+<td id="header-reply-to-flag" class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded bg-error-container/40 text-error font-label-caps text-label-caps uppercase font-bold"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Disposable MX Mismatch</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/20 transition-colors">
+<td class="py-space-sm px-space-md text-outline font-medium">Return-Path</td>
+<td id="header-return-path" class="py-space-sm px-space-md text-on-surface select-all">bounce-agent-394@tor-exit-01.onion</td>
+<td id="header-return-path-flag" class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded bg-error-container/40 text-error font-label-caps text-label-caps uppercase font-bold"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Unroutable Anonymizer</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/20 transition-colors">
+<td class="py-space-sm px-space-md text-outline font-medium">Auth-Results</td>
+<td id="header-auth-results" class="py-space-sm px-space-md text-on-surface-variant">
+<span id="badge-auth-spf" class="text-error font-bold">SPF=FAIL</span>; 
+<span id="badge-auth-dkim" class="text-tertiary font-bold">DKIM=NONE</span>; 
+<span id="badge-auth-dmarc" class="text-error font-bold">DMARC=FAIL</span>
+</td>
+<td id="header-auth-flag" class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase font-bold">Zero Domain Trust</span>
+</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- Rendered Body Sandbox Preview -->
+
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-xl flex flex-col gap-space-md relative">
+
+<div class="flex items-center justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<span class="material-symbols-outlined text-secondary text-[20px]">preview</span>
+
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Synthesized Email Canvas</h3>
+
+</div>
+
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-outline">
+
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+
+<span>Sanitized DOM (Scripts Neutralized)</span>
+
+</div>
+
+</div>
+
+<!-- Email Artifact Preview Container -->
+
+<div class="w-full bg-surface-container-lowest rounded-lg p-space-lg text-on-surface font-body-md text-body-md leading-relaxed relative">
+
+<div class="flex items-center justify-between pb-space-sm mb-space-sm text-outline font-code-inline text-code-inline">
+
+<div>
+
+<span class="text-outline-variant">SUBJECT:</span> <span id="email-subject" class="text-on-surface font-semibold">[URGENT] Sovereign Azure Identity Decommission Notice</span>
+
+</div>
+
+<span id="email-date" class="text-outline">DATE: Today, 03:14:02 UTC</span>
+
+</div>
+
+<div id="email-body-content" class="mb-space-md leading-relaxed">
+<p class="mb-space-sm">Executive Security Advisory,</p>
+<p class="mb-space-md">A high-priority cryptographic revocation token was dispatched to your organization. Immediate validation is mandatory to prevent directory de-provisioning.</p>
+<div id="urgency-callout-box" class="p-space-sm rounded bg-tertiary-container/20 text-tertiary my-space-sm flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[18px] shrink-0 mt-0.5">timer</span>
+<div>
+<strong class="font-bold underline decoration-tertiary decoration-2">Urgency Heuristic Trigger:</strong>
+<span id="urgency-callout-text"> "Failure to renew within <span class="bg-tertiary text-on-tertiary font-bold px-1 rounded">2 Hours</span> will result in complete account eviction."</span>
+</div>
+</div>
+</div>
+
+<!-- Disparity Callout Action in Safe Sandbox -->
+
+<div class="my-space-md p-space-md rounded-lg bg-surface-container-high flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+
+<div class="flex flex-col">
+
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Deceptive Link Anchor</span>
+
+<span class="font-code-inline text-code-inline text-secondary font-bold select-all underline cursor-not-allowed">
+
+                  <span id="url-visible-text">https://portal.office.com/security/renew-identity</span>
+
+                </span>
+
+<span class="text-[11px] font-code-inline text-secondary flex items-center gap-1 mt-0.5">
+
+<span class="material-symbols-outlined text-[12px]">verified</span> Visible Anchor: Masqueraded Target
+
+                </span>
+
+</div>
+
+<div class="flex flex-col sm:items-end">
+
+<span class="font-label-caps text-label-caps text-error uppercase tracking-wider">Underlying Href Destination</span>
+
+<span class="font-code-inline text-code-inline text-error font-bold select-all bg-error-container/20 px-1.5 py-0.5 rounded">
+
+                  <span id="url-actual-dest">http://198.51.100.42/auth/login.php?user=victim</span>
+
+                </span>
+
+<span class="text-[11px] font-code-inline text-error flex items-center gap-1 mt-0.5">
+
+<span class="material-symbols-outlined text-[12px]">fmd_bad</span> Actual Target: Malicious Raw IP Redirect
+
+                </span>
+
+</div>
+
+</div>
+
+<div class="pt-space-sm text-outline text-[12px]">
+
+              Security notice: SafeX Sovereign prevents outbound link traversal. Payload isolated in volatile memory buffer.
+
             </div>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-lg tracking-tight text-white">SafeX</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-medium">v4.2-Pro</span>
-            </div>
-          </div>
-        </div>
 
-        <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
-          <button id="nav-btn-analyzer" onclick="switchMainTab('analyzer')" class="px-3.5 py-1.5 rounded-lg bg-[#161b26] text-white border border-[#232d40] shadow-sm flex items-center gap-2 transition-all">
-            <span class="material-symbols-outlined text-[18px] text-cyan-400">query_stats</span>
-            Email &amp; File Analyzer
-          </button>
-          <button id="nav-btn-links" onclick="switchMainTab('links')" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px] text-purple-400">link</span>
-            Suspicious Link Hunter
-          </button>
-          <button id="nav-btn-custom" onclick="toggleCustomSection()" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px] text-emerald-400">terminal</span>
-            Live Threat Inspector
-          </button>
-          <button onclick="openBenchmarkModal()" class="px-3.5 py-1.5 rounded-lg text-amber-300 hover:text-white bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[18px] text-amber-400">stacked_bar_chart</span>
-            ML vs Rule Benchmark
-          </button>
-          <button onclick="openModal('modal-presets')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[18px]">biotech</span>
-            Tests (9/9)
-          </button>
-          <button onclick="openModal('modal-rules')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#161b26]/60 transition-colors flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[18px]">rule</span>
-            Rules
-          </button>
-        </nav>
-      </div>
+</div>
 
-      <!-- Right Controls & Status -->
-      <div class="flex items-center gap-3">
-        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Air-Gapped / In-Memory Mode
-        </div>
-        <a class="hidden lg:flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#161b26] border border-[#232d40] hover:border-slate-600 text-slate-300 hover:text-white transition-all text-xs font-medium" href="https://github.com/lucky0001-vk/Phishing-Email-URL-and-Attachment-Risk-Checker" rel="noopener noreferrer" target="_blank">
-          <svg class="w-4 h-4 fill-current text-slate-400" viewBox="0 0 24 24">
-            <path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
-          </svg>
-          <span class="max-w-[160px] xl:max-w-none truncate font-mono text-[11px]">lucky0001-vk/...Risk-Checker</span>
-        </a>
-        <button class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-sm transition-all" onclick="alert('Gravity Sync: Staging and deploying risk rules to gravity origin: lucky0001-vk/Phishing-Email-URL-and-Attachment-Risk-Checker')" type="button">
-          <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
-          Push to Gravity
-        </button>
-      </div>
+<!-- Hyperlink Disparity Analysis Extracted Table -->
 
-    </div>
-  </header>
+<div class="flex flex-col gap-space-xs">
 
-  <!-- Main Container -->
-  <main class="flex-1 max-w-[1640px] w-full mx-auto px-6 lg:px-8 py-8 flex flex-col gap-6">
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Deep Link Forensics</span>
 
-    <!-- Hero / Title & Preset Selector -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm">
-      <div class="space-y-1">
-        <h1 class="text-2xl font-bold text-white tracking-tight">Email, URL &amp; File Threat Analyzer</h1>
-        <p class="text-sm text-slate-400">Zero-detonation static risk inspection for emails, deceptive URLs, and disguised attachments.</p>
-      </div>
-      <!-- Quick Scenario Pill Tabs -->
-      <div class="flex flex-wrap items-center gap-2">
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-rose-500/15 border-rose-500/40 text-rose-300 font-semibold shadow-sm flex items-center gap-2" id="btn-preset-high" onclick="loadScenario('high')">
-          <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-          Invoice Scam (.exe as .pdf)
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2" id="btn-preset-medium" onclick="loadScenario('medium')">
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-          MFA Reset / Phish Link
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2" id="btn-preset-lookalike" onclick="loadScenario('lookalike')">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          Benign IT Notice
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-white hover:border-slate-600 flex items-center gap-2" id="btn-preset-clean" onclick="loadScenario('clean')">
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-          Clean Invoice
-        </button>
-        <button class="preset-pill px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 border bg-[#0c0e14] border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400 flex items-center gap-2" id="btn-preset-toggle-custom" onclick="toggleCustomSection()">
-          <span class="material-symbols-outlined text-[16px]">edit_note</span>
-          Custom Text / URL / File
-        </button>
-      </div>
-    </div>
+<div class="rounded-lg bg-surface-container-lowest p-space-sm overflow-x-auto">
 
-    <!-- SEPARATELY VISIBLE CUSTOM INPUT WORKBENCH (Collapsible & Directly on page) -->
-    <!-- SEPARATELY VISIBLE CUSTOM INPUT WORKBENCH (Collapsible & Directly on page) -->
-    <section id="custom-workbench-card" class="bg-[#161b26] border border-purple-500/30 rounded-2xl p-6 shadow-xl space-y-5">
-      <!-- Header & Mode Tabs -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#232d40]">
-        <div class="flex items-center gap-2.5">
-          <span class="material-symbols-outlined text-purple-400 text-xl">terminal</span>
-          <h2 class="text-base font-semibold text-white">Live Threat Inspector</h2>
-          <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">In-Memory Engine</span>
-        </div>
+<table class="w-full text-left font-code-inline text-code-inline">
 
-        <!-- Mode Switcher: Single URL vs Full Email -->
-        <div class="flex items-center bg-[#0c0e14] border border-[#232d40] rounded-xl p-1 gap-1">
-          <button id="tab-mode-url" onclick="switchInputMode('url')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm">
-            <span class="material-symbols-outlined text-sm">link</span> Single URL Check
-          </button>
-          <button id="tab-mode-email" onclick="switchInputMode('email')" class="px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm">mail</span> Full Email &amp; Attachments
-          </button>
-        </div>
-      </div>
+<thead>
 
-      <!-- MODE 1: SINGLE URL INSPECTOR (One Single Clean Bar) -->
-      <div id="panel-mode-url" class="space-y-3">
-        <label class="text-xs font-medium text-slate-300 flex items-center justify-between">
-          <span>Enter or paste any suspicious URL:</span>
-          <span class="text-[11px] font-mono text-cyan-400">Checks Cyrillic lookalikes, IP addresses, ports &amp; brand typos</span>
-        </label>
-        
-        <div class="flex flex-col sm:flex-row items-stretch gap-2.5">
-          <div class="relative flex-1">
-            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">public</span>
-            <input 
-              type="text" 
-              id="standalone-url-input" 
-              onkeydown="if(event.key==='Enter') runStandaloneLinkCheck()"
-              placeholder="e.g. http://185.192.1.44:8080/login.php or bit.ly/3xY7q" 
-              class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl pl-11 pr-24 py-3 text-sm font-mono text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner"
-            />
-            <button 
-              onclick="pasteClipboardToUrl()" 
-              type="button"
-              class="absolute right-2.5 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-[#161b26] hover:bg-[#232d40] text-slate-300 hover:text-white border border-[#232d40] text-xs font-medium flex items-center gap-1 transition-colors"
-              title="Paste from clipboard"
-            >
-              <span class="material-symbols-outlined text-xs">content_paste</span> Paste
-            </button>
-          </div>
-          
-          <button 
-            id="btn-inspect-url"
-            onclick="runStandaloneLinkCheck()" 
-            class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all shrink-0"
-          >
-            <span class="material-symbols-outlined text-base">security_update_good</span>
-            Inspect URL
-          </button>
-        </div>
+<tr class="text-outline text-[11px] uppercase">
 
-        <!-- Quick 1-click test URLs for convenience -->
-        <div class="flex flex-wrap items-center gap-2 pt-1">
-          <span class="text-[11px] text-slate-500 font-medium">Try test samples:</span>
-          <button onclick="setQuickUrl('http://185.192.1.44:8080/auth/login.php')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-rose-300 hover:border-rose-500/40 transition-colors">IP + Port</button>
-          <button onclick="setQuickUrl('https://pаypal.com/verify-account')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-amber-300 hover:border-amber-500/40 transition-colors">Cyrillic Homoglyph</button>
-          <button onclick="setQuickUrl('https://bit.ly/3xSecAlert')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-purple-300 hover:border-purple-500/40 transition-colors">URL Shortener</button>
-          <button onclick="setQuickUrl('https://confluence.acme-corp.com/display/IT/VPN')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-cyan-300 hover:border-cyan-500/40 transition-colors">Clean Link</button>
-        </div>
-      </div>
+<th class="p-1">Anchor Label</th>
 
-      <!-- MODE 2: FULL EMAIL & ATTACHMENTS (Visible when Email tab is selected) -->
-      <div id="panel-mode-email" class="hidden space-y-4">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <!-- Left: Paste Email / Raw Text -->
-          <div class="lg:col-span-8 flex flex-col gap-2">
-            <div class="flex items-center justify-between">
-              <label class="text-xs font-medium text-slate-400">Paste Email Headers, Plain Text, HTML, or Raw URLs:</label>
-              <div class="flex items-center gap-1.5">
-                <button onclick="prefillSample('mismatch')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Mismatch</button>
-                <button onclick="prefillSample('vishing')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Vishing</button>
-                <button onclick="clearCustomInput()" class="text-[11px] text-rose-400 hover:text-rose-300 ml-1">Clear</button>
-              </div>
-            </div>
-            <textarea id="live-email-input" rows="6" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-400" placeholder="From: security@paypal-verify.com&#10;To: victim@example.com&#10;Subject: URGENT: Your account has been suspended!&#10;Authentication-Results: spf=fail; dkim=none&#10;&#10;Please verify your credentials immediately:&#10;<a href='http://185.192.1.44:8080/auth/login.php'>https://www.paypal.com/security-verify</a>"></textarea>
-          </div>
+<th class="p-1">Resolved IP</th>
 
-          <!-- Right: File Upload -->
-          <div class="lg:col-span-4 flex flex-col justify-between">
-            <div id="live-dropzone" class="border-2 border-dashed border-[#232d40] hover:border-purple-400/60 rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#0c0e14] h-full flex flex-col items-center justify-center">
-              <span class="material-symbols-outlined text-2xl text-purple-400">upload_file</span>
-              <p class="text-xs font-medium text-slate-200 mt-2">Upload .eml or attachments</p>
-              <p class="text-[10px] text-slate-500 mt-0.5">Static byte parser (never executed)</p>
-              <input type="file" id="live-file-input" multiple class="hidden">
-              <div id="live-file-list" class="mt-2 space-y-1 w-full text-left"></div>
-            </div>
-          </div>
-        </div>
+<th class="p-1">ASN / Geo</th>
 
-        <div class="flex items-center justify-between pt-2 border-t border-[#232d40]">
-          <div class="text-xs text-slate-400 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-emerald-400 text-sm">lock</span>
-            <span>Zero network connections &bull; RFC 5322 in-memory parser</span>
-          </div>
-          <button id="btn-run-live" onclick="executeLiveAnalysis()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 flex items-center gap-2 transition-all">
-            <span class="material-symbols-outlined text-base">play_arrow</span>
-            Run Comprehensive Static Triage
-          </button>
-        </div>
-      </div>
-    </section>
+<th class="p-1 text-right">Verdict</th>
 
-    <!-- Primary 2-Column Clean Workspace -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- LEFT COLUMN: Inspected Sample & Evidence (7 Cols) -->
-      <div class="lg:col-span-7 flex flex-col gap-6">
-        
-        <!-- 1. Header & Sender Card -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm">
-          <div class="flex items-center justify-between pb-4 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">alternate_email</span>
-              <h2 class="text-base font-semibold text-white">Sender &amp; Header Authentication</h2>
-            </div>
-            <!-- Auth Status Badges -->
-            <div class="flex items-center gap-2 font-mono text-xs">
-              <span class="px-2.5 py-1 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-spf">SPF: FAIL</span>
-              <span class="px-2.5 py-1 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-dkim">DKIM: FAIL</span>
-              <span class="px-2.5 py-1 rounded-md border font-semibold bg-rose-500/15 border-rose-500/30 text-rose-300" id="badge-auth-dmarc">DMARC: FAIL</span>
-            </div>
-          </div>
-          <div class="mt-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm">
-            <div class="sm:col-span-3 text-slate-400 font-medium">From:</div>
-            <div class="sm:col-span-9 text-slate-100 font-mono text-xs break-all" id="header-from">"Accounts Payable" &lt;invoicing@finance-vendor-portal.com&gt;</div>
-            <div class="sm:col-span-3 text-slate-400 font-medium">Reply-To:</div>
-            <div class="sm:col-span-9 text-slate-300 font-mono text-xs break-all" id="header-reply-to">stealth-collection@anonymous-drop.ru</div>
-            <div class="sm:col-span-3 text-slate-400 font-medium">Return-Path:</div>
-            <div class="sm:col-span-9 text-slate-300 font-mono text-xs break-all" id="header-return-path">bounce-gateway@unknown-vps.net</div>
-            <div class="sm:col-span-3 text-slate-400 font-medium">Auth Record:</div>
-            <div class="sm:col-span-9 text-purple-300 font-mono text-xs break-all" id="header-auth-results">spf=softfail (ip=185.192.1.44) dkim=fail dmarc=fail</div>
-          </div>
-        </div>
+</tr>
 
-        <!-- 2. Email Content Card -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-cyan-400 text-xl">mail</span>
-              <h2 class="text-base font-semibold text-white">Rendered Email Viewer</h2>
-            </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Scripts Stripped (Detonation Off)
+</thead>
+
+<tbody id="deep-links-table-body" class="text-on-surface text-[12px]">
+<tr>
+<td class="p-1 text-secondary font-medium truncate max-w-[150px]">portal.office.com...</td>
+<td class="p-1 text-error font-semibold select-all">198.51.100.42</td>
+<td class="p-1 text-outline">AS49211 (Bulletproof Host, RU)</td>
+<td class="p-1 text-right">
+<span class="px-space-xs py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-[10px] uppercase font-bold">MISMATCH DETECTED</span>
+</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT COLUMN: OBSERVABLE EVIDENCE & TECHNICAL AUDIT (5 cols) -->
+
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+
+<!-- Supporting Technical Evidence Card -->
+
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-xl flex flex-col gap-space-md">
+
+<div class="flex items-center justify-between">
+
+<div class="flex items-center gap-space-xs">
+
+<span class="material-symbols-outlined text-primary text-[20px]">fact_check</span>
+
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Observable Evidence</h3>
+
+</div>
+
+<span class="px-space-sm py-0.5 rounded bg-surface-container-high text-primary font-code-inline text-code-inline font-bold">
+
+              <span id="rules-eval-count">4 Rules Evaluated</span>
+
             </span>
-          </div>
 
-          <!-- Email Preview Box -->
-          <div class="bg-[#0c0e14] border border-[#232d40] rounded-xl overflow-hidden">
-            <div class="px-5 py-3.5 bg-[#121622] border-b border-[#232d40] flex items-center justify-between">
-              <div>
-                <span class="text-xs text-slate-400 block font-medium">Subject</span>
-                <h3 class="text-sm font-semibold text-white mt-0.5" id="email-subject">URGENT: Past Due Invoice #INV-98201 - Immediate Suspension Warning</h3>
-              </div>
-              <span class="text-xs font-mono text-slate-500">2 min ago</span>
-            </div>
-            <!-- Email Body Text -->
-            <div class="p-6 text-[15px] text-slate-200 leading-relaxed font-normal space-y-4" id="email-body-content">
-              Dear Partner,<br/><br/>
-              Your corporate account has been flagged for <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2 py-0.5 rounded font-medium">IMMEDIATE SUSPENSION</span> due to failure of payment for Invoice #98201.<br/><br/>
-              Please review the attached invoice manifest immediately. If your system requires decrypting the bundle, the temporary passkey is: <span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-mono text-xs">SafeDec992!</span><br/><br/>
-              You may also reconcile directly via our authorized billing terminal:<br/>
-              <a class="text-cyan-400 underline font-mono text-sm" href="#">https://portal.bank-billing.com/secure-login</a><br/><br/>
-              Failure to remit within 2 hours will initiate full credential invalidation.<br/><br/>
-              Sincerely,<br/>
-              Central Accounts Triage Team
-            </div>
-          </div>
+</div>
 
-          <!-- Optical Anchor Discrepancy Box -->
-          <div class="rounded-xl bg-[#0c0e14] border border-rose-500/30 p-5 shadow-sm" id="url-discrepancy-card">
-            <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-rose-400 text-lg">link_off</span>
-                <span class="text-sm font-semibold text-rose-300">Link Analysis: Optical Anchor Mismatch</span>
-              </div>
-              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="url-status-tag">CRITICAL MISMATCH</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-2.5 mb-3 leading-relaxed">
-              The sender is trying to trick the reader: the visible text displays a trusted banking address, but clicking it silently redirects to an unauthenticated external IP server.
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="p-3.5 rounded-lg bg-[#161b26] border border-[#232d40]">
-                <span class="text-xs text-slate-400 block font-medium mb-1">Visible Link Text (What user sees):</span>
-                <span class="text-xs font-mono text-cyan-300 font-semibold break-all" id="url-visible-text">https://portal.bank-billing.com/secure-login</span>
-              </div>
-              <div class="p-3.5 rounded-lg bg-rose-950/20 border border-rose-500/30">
-                <span class="text-xs text-rose-400 block font-medium mb-1">Real Destination URL (Where it actually goes):</span>
-                <span class="text-xs font-mono text-rose-300 font-bold break-all" id="url-actual-dest">http://185.192.1.44:8080/auth/login.php?ref=spoof</span>
-              </div>
-            </div>
-          </div>
-        </div>
+<div id="signal-evidence-list" class="flex flex-col gap-space-sm">
+<!-- Dynamic Observable Evidence Injected Here -->
+<!-- Rule 1: Hex Signature Mismatch (+45 pts) -->
 
-        <!-- 3. ALL DETECTED HYPERLINKS & URL RISK FACTOR MATRIX (NEW & COMPREHENSIVE) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">hub</span>
-              <h2 class="text-base font-semibold text-white">All Detected Hyperlinks &amp; URL Threat Matrix</h2>
-            </div>
-            <span class="text-xs font-mono text-slate-400" id="links-count-pill">1 Link Found</span>
-          </div>
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs relative overflow-hidden shadow-sm">
 
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Every URL in the message is independently parsed for deceptive registrable domains, IP literals, Cyrillic homoglyphs, open redirects, non-standard ports, and credential harvesting paths.
-          </p>
+<div class="flex items-center justify-between">
 
-          <!-- Links Table / Cards -->
-          <div class="space-y-3" id="detected-links-container">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
+<span class="font-headline-sm text-body-lg text-on-surface font-bold">Rule 1: Hex Magic Bytes Disparity</span>
 
-        <!-- 4. ADVANCED PHISHING VECTOR TELEMETRY (NEW) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-amber-400 text-xl">radar</span>
-              <h2 class="text-base font-semibold text-white">Advanced Phishing Vector Telemetry</h2>
-            </div>
-            <span class="text-xs font-mono text-slate-400">Heuristic Signals</span>
-          </div>
+<span class="px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-code-inline text-code-inline font-bold">
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="advanced-phishing-badges">
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Cyrillic / Punycode Homoglyph:</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-homoglyph">NEGATIVE</span>
-            </div>
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Callback Phishing / Vishing Phone:</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-vishing">NEGATIVE</span>
-            </div>
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">Zero-Font / Hidden CSS Text:</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-hidden">NEGATIVE</span>
-            </div>
-            <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between">
-              <span class="text-xs text-slate-300">QR Code Phishing (Quishing):</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400" id="phish-badge-quishing">NEGATIVE</span>
-            </div>
-          </div>
-        </div>
+                  +45 pts [CRITICAL]
 
-        <!-- 5. PER-ATTACHMENT REPORT CARD (Requirements 2 & 8) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4" id="attachment-report-card">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-purple-400 text-xl">badge</span>
-              <h2 class="text-base font-semibold text-white">Per-Attachment Report Card</h2>
-            </div>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="attachment-severity-pill">Executable Binary Disguised</span>
-          </div>
+                </span>
 
-          <!-- Static Inspection Guarantee Badge -->
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono">
-            <span class="material-symbols-outlined text-sm text-emerald-400">gavel</span>
-            <span>Zero-Execution Guarantee: Inspected in memory via magic bytes. Never opened, executed, or rendered to disk.</span>
-          </div>
+</div>
 
-          <!-- File details inventory -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="text-xs text-slate-400 block">Filename</span>
-              <p class="font-mono text-xs font-bold text-slate-100 mt-1 break-all" id="file-name">invoice_98201.pdf.exe</p>
-              <p class="text-[11px] text-rose-400 mt-1.5" id="file-ext-alert">Double extension: .pdf.exe</p>
-            </div>
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="text-xs text-slate-400 block">Declared vs Real Type</span>
-              <p class="text-xs text-slate-300 mt-1">Declared: <span class="font-semibold text-slate-200" id="file-mime">PDF Document</span></p>
-              <p class="text-xs text-rose-300 font-bold mt-0.5" id="file-magic">Real: Windows Executable (MZ/PE)</p>
-            </div>
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-              <span class="text-xs text-slate-400 block">File Size &amp; Entropy</span>
-              <p class="text-xs text-slate-200 mt-1" id="file-size">1.42 MB</p>
-              <p class="text-xs text-amber-300 mt-0.5" id="file-entropy">Entropy: 7.89 (High packing)</p>
-            </div>
-          </div>
+<p class="font-body-sm text-body-sm text-outline">
 
-          <!-- SHA-256 Hash with copy button -->
-          <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2 overflow-hidden">
-              <span class="text-xs text-slate-400 font-medium shrink-0">SHA-256:</span>
-              <span class="text-xs font-mono text-purple-300 truncate" id="file-sha256">9f83a45c8192fb0172e2aa3958cc10915a1e809312b9cf440268a2bf624243ef</span>
-            </div>
-            <button class="shrink-0 px-3 py-1.5 rounded-lg bg-[#161b26] hover:bg-[#202738] border border-[#232d40] text-xs font-medium text-slate-200 hover:text-white flex items-center gap-1.5 transition-colors" onclick="copySha256()">
-              <span class="material-symbols-outlined text-sm">content_copy</span> Copy Hash
-            </button>
-          </div>
+                File advertised as <code class="text-primary font-code-inline">document.pdf</code> contains a DOS MZ executable header signature at offset zero.
 
-          <!-- Suspicious Features Badge List -->
-          <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-2">
-            <span class="text-xs font-semibold text-slate-300 block">Identified Structural Features:</span>
-            <div class="flex flex-wrap gap-1.5" id="attachment-features-list">
-              <span class="px-2.5 py-1 rounded-md text-xs font-mono bg-rose-500/15 text-rose-300 border border-rose-500/30">MZ Executable Header in .pdf</span>
-              <span class="px-2.5 py-1 rounded-md text-xs font-mono bg-rose-500/15 text-rose-300 border border-rose-500/30">Double Extension (.pdf.exe)</span>
-            </div>
-          </div>
-
-          <!-- Recommended Attachment Action Card -->
-          <div class="p-4 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-1.5" id="attachment-action-card">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-rose-400 text-lg" id="attachment-action-icon">block</span>
-              <span class="text-xs font-bold text-rose-300 uppercase tracking-wide" id="attachment-action-badge">RECOMMENDED ACTION: QUARANTINE PAYLOAD</span>
-            </div>
-            <p class="text-xs text-slate-200 leading-relaxed" id="attachment-action-text">
-              Do not open, extract, or run this file. Isolate immediately in quarantine and stage sender domain for mail perimeter blocking.
-            </p>
-          </div>
-
-          <!-- Plain English explanation -->
-          <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 leading-relaxed" id="attachment-summary-box">
-            <strong class="text-purple-300 font-semibold block mb-0.5">Plain English Threat Summary:</strong>
-            The file claims to be a harmless PDF document, but its underlying byte structure is actually a Windows program executable (.exe). Because common operating systems hide known extensions, users clicking it will execute code rather than read an invoice.
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT COLUMN: Triage Verdict, 4-Way Breakdown & Action Recommendations (5 Cols) -->
-      <div class="lg:col-span-5 flex flex-col gap-6">
-        
-        <!-- 1. Prominent Risk Score Card with 4-Way Risk Breakdown (Requirement 1) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-5" id="verdict-card">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Triage Assessment</span>
-              <h3 class="text-2xl font-bold tracking-tight mt-1 text-rose-400" id="verdict-label">Critical Threat</h3>
-              <span class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40" id="verdict-sublabel">Immediate Isolation Required</span>
-            </div>
-            <!-- Score Circular Display -->
-            <div class="relative flex items-center justify-center w-24 h-24">
-              <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle class="stroke-[#0c0e14]" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
-                <circle class="stroke-rose-500 transition-all duration-700" cx="50" cy="50" fill="transparent" id="verdict-circle-bar" r="40" stroke-dasharray="251.2" stroke-dashoffset="30" stroke-linecap="round" stroke-width="8" style="stroke-dashoffset: 30.144;"></circle>
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-2xl font-bold text-white font-mono" id="verdict-score">88</span>
-                <span class="text-[10px] text-slate-400 uppercase font-medium">/ 100</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 4-Part Risk Breakdown (Requirement 1) -->
-          <div class="space-y-3 pt-4 border-t border-[#232d40]">
-            <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider block">4-Component Risk Contribution</span>
-
-            <!-- 1. Sender Authentication -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-400"></span> 1. Sender Authentication &amp; Headers</span>
-                <span class="text-purple-400 font-bold font-mono" id="score-sender-text">20 pts</span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-purple-400 rounded-full transition-all duration-500" id="score-sender-bar" style="width: 40%;"></div>
-              </div>
-            </div>
-
-            <!-- 2. Email Body Text -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> 2. Email Body (Urgency/Vishing/Hidden)</span>
-                <span class="text-amber-400 font-bold font-mono" id="score-bodytext-text">15 pts</span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-amber-400 rounded-full transition-all duration-500" id="score-bodytext-bar" style="width: 30%;"></div>
-              </div>
-            </div>
-
-            <!-- 3. URLs & Hyperlinks -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> 3. URLs (Mismatches/Lookalikes/IPs)</span>
-                <span class="text-cyan-400 font-bold font-mono" id="score-url-text">35 pts</span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-cyan-400 rounded-full transition-all duration-500" id="score-url-bar" style="width: 70%;"></div>
-              </div>
-            </div>
-
-            <!-- 4. Attachments -->
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-300 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> 4. Attachments (Static Byte Structure)</span>
-                <span class="text-rose-400 font-bold font-mono" id="score-attach-text">50 pts</span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-[#0c0e14] overflow-hidden">
-                <div class="h-full bg-rose-500 rounded-full transition-all duration-500" id="score-attach-bar" style="width: 100%;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Plain-Language Reasons & Supporting Evidence (Requirement 6) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-purple-400 text-lg">flag</span>
-              <h3 class="text-sm font-semibold text-white">Observable Signals &amp; Concrete Evidence</h3>
-            </div>
-            <span class="text-xs text-slate-400">Score Impact</span>
-          </div>
-
-          <div class="flex flex-col gap-2.5" id="signal-evidence-list">
-            <!-- Populated dynamically with title, explanation and evidence -->
-          </div>
-        </div>
-
-        <!-- 3. ACTIONABLE RECOMMENDATIONS (Requirement 3: Quarantine, Official Channel, Safe Viewer) -->
-        <div class="bg-[#161b26] border border-[#232d40] rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center gap-2 pb-3 border-b border-[#232d40]">
-            <span class="material-symbols-outlined text-emerald-400 text-lg">verified_user</span>
-            <h3 class="text-sm font-semibold text-white">Actionable Security Recommendations</h3>
-          </div>
-
-          <!-- Structured Action Cards Container -->
-          <div class="space-y-3" id="action-cards-container">
-            <!-- Action 1: Quarantine -->
-            <div class="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-1.5">
-              <div class="flex items-center gap-2 text-rose-300 font-semibold text-xs">
-                <span class="material-symbols-outlined text-base">emergency</span>
-                <span>Quarantine Threat &amp; Block Sender</span>
-              </div>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Immediately isolate the payload. Do not permit retrieval without security analyst approval.
               </p>
-            </div>
-            <!-- Action 2: Verify Sender -->
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
-              <div class="flex items-center gap-2 text-purple-300 font-semibold text-xs">
-                <span class="material-symbols-outlined text-base">call</span>
-                <span>Verify via Official Out-of-Band Channel</span>
-              </div>
-              <p class="text-xs text-slate-400 leading-relaxed">
-                Contact sender using an internal corporate directory or known phone number. Never use details from this email.
+
+<!-- Monospaced Hex Dump Block -->
+
+<div class="mt-space-xs rounded bg-surface-container-lowest p-space-sm font-code-inline text-[12px] leading-5 text-on-surface select-all overflow-x-auto">
+
+<div class="flex gap-space-md text-outline-variant">
+
+<span class="text-outline">OFFSET</span>
+
+<span>HEX BYTES</span>
+
+<span>ASCII</span>
+
+</div>
+
+<div class="flex gap-space-md font-medium">
+
+<span class="text-outline">00000000</span>
+
+<span class="text-error font-bold">4D 5A 90 00</span>
+
+<span class="text-on-surface-variant">03 00 00 00 04 00 00 00</span>
+
+<span class="text-error font-bold font-mono">MZ..........</span>
+
+</div>
+
+<div class="flex gap-space-md text-outline">
+
+<span>00000010</span>
+
+<span>FF FF 00 00</span>
+
+<span>B8 00 00 00 00 00 00 00</span>
+
+<span class="font-mono">............</span>
+
+</div>
+
+</div>
+
+<div class="flex items-center justify-between text-[11px] font-code-inline text-error mt-1">
+
+<span>Threat Signature: Win32/PortableExecutablePayload</span>
+
+<span class="uppercase font-semibold">Defanged</span>
+
+</div>
+
+</div>
+
+<!-- Rule 2: Punycoded / Raw IP Target Redirect (+30 pts) -->
+
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs shadow-sm">
+
+<div class="flex items-center justify-between">
+
+<span class="font-headline-sm text-body-lg text-on-surface font-bold">Rule 2: Raw IP Target Redirect</span>
+
+<span class="px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-code-inline text-code-inline font-bold">
+
+                  +30 pts [HIGH]
+
+                </span>
+
+</div>
+
+<p class="font-body-sm text-body-sm text-outline">
+
+                Zero DNS resolution requested. Target utilizes direct unmapped IPv4 socket on suspicious port: <code class="text-error font-code-inline">198.51.100.42:80</code>.
+
               </p>
-            </div>
-            <!-- Action 3: Safe Viewer -->
-            <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-1.5">
-              <div class="flex items-center gap-2 text-cyan-300 font-semibold text-xs">
-                <span class="material-symbols-outlined text-base">visibility_off</span>
-                <span>Inspect in Safe Offline / Air-Gapped Viewer</span>
-              </div>
-              <p class="text-xs text-slate-400 leading-relaxed">
-                If review is required, open strictly in an offline sandbox with scripts and macros disabled.
+
+<div class="flex items-center gap-space-xs font-code-inline text-[11px] text-on-surface-variant bg-surface-container-lowest p-space-xs rounded">
+
+<span class="material-symbols-outlined text-[14px] text-error">public_off</span>
+
+<span>Geo-Profile: Saint Petersburg Autonomous System 49211</span>
+
+</div>
+
+</div>
+
+<!-- Rule 3: Display Name Impersonation (+20 pts) -->
+
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs shadow-sm">
+
+<div class="flex items-center justify-between">
+
+<span class="font-headline-sm text-body-lg text-on-surface font-bold">Rule 3: Brand Impersonation</span>
+
+<span class="px-space-sm py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-code-inline text-code-inline font-bold">
+
+                  +20 pts [MID]
+
+                </span>
+
+</div>
+
+<p class="font-body-sm text-body-sm text-outline">
+
+                Header friendly name mimics official Microsoft Infrastructure identity while sender domain points to rogue top-level Russian registry (.ru).
+
               </p>
-            </div>
-          </div>
 
-          <!-- Clean Action CTAs -->
-          <div class="pt-2 grid grid-cols-2 gap-2.5">
-            <button class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5" onclick="triggerAction('quarantine')">
-              <span class="material-symbols-outlined text-sm">lock</span> Quarantine Threat
-            </button>
-            <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-purple-300 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" onclick="triggerAction('verify_sender')">
-              <span class="material-symbols-outlined text-sm">contact_phone</span> Verify Channel
-            </button>
-            <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-cyan-300 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" onclick="triggerAction('safe_viewer')">
-              <span class="material-symbols-outlined text-sm">preview</span> Safe Viewer
-            </button>
-            <button class="py-2.5 px-3 rounded-xl bg-[#0c0e14] hover:bg-[#121622] border border-[#232d40] text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all" onclick="triggerAction('export')">
-              <span class="material-symbols-outlined text-sm">download</span> Export JSON
-            </button>
-          </div>
-        </div>
+<div class="flex items-center gap-space-xs font-code-inline text-[11px] text-tertiary bg-surface-container-lowest p-space-xs rounded">
 
-        <!-- 4. USER FEEDBACK CARD (Requirement 4: Report False Positives & Negatives) -->
-        <div class="bg-[#161b26] border border-cyan-500/30 rounded-2xl p-5 shadow-sm space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-[#232d40]">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-cyan-400 text-lg">rate_review</span>
-              <h3 class="text-xs font-semibold text-white uppercase tracking-wider">Classification Feedback</h3>
-            </div>
-            <span class="text-[11px] font-mono text-cyan-400" id="feedback-stat-accuracy">Model Accuracy: 100%</span>
-          </div>
+<span class="material-symbols-outlined text-[14px] text-tertiary">badge</span>
 
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Report classification accuracy to help evaluate false positives and tune heuristic thresholds.
-          </p>
+<span>Claimed Entity: "Azure Identity Center"</span>
 
-          <div class="grid grid-cols-3 gap-2 text-xs">
-            <button id="fb-btn-accurate" onclick="selectFeedbackVerdict('ACCURATE')" class="py-2 px-1 rounded-xl border bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold text-center flex flex-col items-center gap-1">
-              <span class="material-symbols-outlined text-sm">thumb_up</span> Accurate
-            </button>
-            <button id="fb-btn-fp" onclick="selectFeedbackVerdict('FALSE_POSITIVE')" class="py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-amber-300 text-center flex flex-col items-center gap-1">
-              <span class="material-symbols-outlined text-sm">warning</span> False Positive
-            </button>
-            <button id="fb-btn-fn" onclick="selectFeedbackVerdict('FALSE_NEGATIVE')" class="py-2 px-1 rounded-xl border bg-[#0c0e14] border-[#232d40] text-slate-300 hover:text-rose-300 text-center flex flex-col items-center gap-1">
-              <span class="material-symbols-outlined text-sm">error</span> False Negative
-            </button>
-          </div>
+</div>
 
-          <input type="text" id="feedback-notes" placeholder="Optional notes (e.g., 'Legitimate vendor invoice from Acme Corp')" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl px-3 py-2 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400"/>
+</div>
 
-          <div class="flex items-center justify-between pt-1">
-            <span class="text-[11px] text-slate-500" id="feedback-count-label">0 user reports logged</span>
-            <button onclick="submitClassificationFeedback()" id="btn-submit-feedback" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center gap-1 transition-all">
-              <span class="material-symbols-outlined text-xs">send</span> Submit Report
-            </button>
-          </div>
-        </div>
+<!-- Rule 4: DKIM Signature Check (+0 pts) -->
 
-      </div>
+<div class="p-space-md rounded-lg bg-surface-container flex flex-col gap-space-xs shadow-sm">
 
+<div class="flex items-center justify-between">
+
+<span class="font-headline-sm text-body-lg text-on-surface font-bold">Rule 4: DKIM Signature Syntax</span>
+
+<span class="px-space-sm py-0.5 rounded bg-surface-container-high text-secondary font-code-inline text-code-inline font-bold">
+
+                  +0 pts [CLEAN CHECK]
+
+                </span>
+
+</div>
+
+<p class="font-body-sm text-body-sm text-outline">
+
+                DKIM format structure complies with canonical RFC specifications. No malicious buffer injection within public key parameter blocks.
+
+              </p>
+
+<div class="flex items-center gap-space-xs font-code-inline text-[11px] text-secondary bg-surface-container-lowest p-space-xs rounded">
+
+<span class="material-symbols-outlined text-[14px] text-secondary">verified_user</span>
+
+<span>Passive format check passed (Signature non-authenticable)</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Attachment Forensics Card (Requirement 2 & 8) -->
+<div id="attachment-forensics-section" class="bg-surface-container-low rounded-xl p-space-md shadow-xl flex flex-col gap-space-sm">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-space-xs">
+      <span class="material-symbols-outlined text-primary text-[18px]">attachment</span>
+      <span class="font-label-caps text-label-caps text-on-surface uppercase font-bold">Attachment Report Card</span>
     </div>
-  </main>
+    <span id="attachment-severity-pill" class="px-space-xs py-0.5 rounded bg-error-container text-error font-label-caps text-[10px] uppercase font-bold">Executable Binary Disguised</span>
+  </div>
+  <div class="grid grid-cols-2 gap-2 text-[12px] font-code-inline bg-surface-container-lowest p-space-sm rounded-lg">
+    <div><span class="text-outline">File:</span> <span id="file-name" class="text-on-surface font-semibold">invoice_98201.pdf.exe</span></div>
+    <div><span class="text-outline">MIME:</span> <span id="file-mime" class="text-on-surface">PDF Document</span></div>
+    <div><span class="text-outline">Magic:</span> <span id="file-magic" class="text-error font-semibold">Windows Executable (MZ/PE)</span></div>
+    <div><span class="text-outline">Size:</span> <span id="file-size" class="text-on-surface">1.42 MB</span></div>
+    <div class="col-span-2 truncate"><span class="text-outline">SHA256:</span> <span id="file-sha256" class="text-primary font-mono text-[11px] select-all">9f83a45c8192fb0172e2aa3958cc10915a1e809312b9cf440268a2bf624243ef</span></div>
+  </div>
+  <div id="attachment-features-list" class="flex flex-wrap gap-1.5 pt-1">
+    <span class="px-2 py-0.5 rounded bg-error-container/30 text-error text-[10px] font-mono border border-error/20">Double Extension .pdf.exe</span>
+    <span class="px-2 py-0.5 rounded bg-error-container/30 text-error text-[10px] font-mono border border-error/20">MZ DOS Header at 0x00</span>
+    <span class="px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary text-[10px] font-mono border border-tertiary/20">High Packing Entropy</span>
+  </div>
+  <!-- Attachment Recommended Action Card (Requirement 2 & 3) -->
+  <div id="attachment-action-card" class="p-space-sm rounded-lg bg-error-container/20 border border-error/30 flex items-start gap-space-xs">
+    <span id="attachment-action-icon" class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">block</span>
+    <div>
+      <div id="attachment-action-badge" class="font-label-caps text-[10px] font-bold text-error uppercase">RECOMMENDED ACTION: QUARANTINE & DISARM</div>
+      <div id="attachment-action-text" class="text-[12px] text-outline mt-0.5">Isolate file immediately. Do not execute or launch in standard host. Dissect in memory only.</div>
+    </div>
+  </div>
+</div>
 
-  <!-- Clean Sub-Footer -->
-  <footer class="mt-auto border-t border-[#232d40] bg-[#0c0e14] py-6 px-6 lg:px-8">
-    <div class="max-w-[1640px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+<!-- Entropy Distribution Visual Micro-Card -->
+
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-xl flex flex-col gap-space-sm">
+
+<div class="flex items-center justify-between">
+
+<span class="font-label-caps text-label-caps text-outline uppercase">Shannon Entropy Profile</span>
+
+<span class="font-code-inline text-code-inline text-error font-bold"><span id="entropy-value-label">7.92 / 8.00 (Packed Code)</span></span>
+
+</div>
+
+<!-- Entropy Spectrum Ribbon -->
+
+<div class="w-full h-3 rounded-full bg-gradient-to-r from-secondary via-tertiary to-error relative shadow-inner">
+
+<div id="entropy-marker-pin" class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-on-surface rounded-full shadow-lg transition-all duration-500" style="left: 95%;"></div>
+
+</div>
+
+<div class="flex justify-between font-code-inline text-[10px] text-outline">
+
+<span>0.0 (Plain Text)</span>
+
+<span>4.0 (Compressed)</span>
+
+<span>8.0 (Obfuscated / Encrypted)</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SECTION 4: ACTIONABLE SAFE RECOMMENDATIONS (Playbook Quick Actions) -->
+<div id="section-playbooks"></div>
+
+<section class="w-full bg-surface-container-low rounded-xl p-space-lg shadow-xl flex flex-col gap-space-md">
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+
+<div>
+
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Incident Playbooks</span>
+
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Actionable Safe Recommendations</h3>
+
+</div>
+
+<div class="flex items-center gap-space-xs font-code-inline text-code-inline text-outline">
+
+<span class="material-symbols-outlined text-primary text-[16px]">bolt</span>
+
+<span>Zero Outbound Packet Transmission Guaranteed</span>
+
+</div>
+
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+
+<!-- Action 1: Quarantine Email & Block Domain (RED) -->
+
+<button id="btn-action-quarantine" onclick="triggerPlaybookAction('quarantine')" class="flex flex-col justify-between p-space-md rounded-lg bg-error-container text-on-error-container hover:brightness-110 active:brightness-95 transition-all text-left shadow-lg group" type="button">
+
+<div class="flex items-center justify-between w-full mb-space-sm">
+
+<div class="w-9 h-9 rounded bg-error/20 flex items-center justify-center text-error">
+
+<span class="material-symbols-outlined text-[20px]">block</span>
+
+</div>
+
+<span class="px-space-xs py-0.5 rounded bg-error text-surface-container-lowest font-label-caps text-[10px] font-extrabold uppercase tracking-wide">
+
+              Immediate
+
+            </span>
+
+</div>
+
+<div>
+
+<h4 class="font-headline-sm text-headline-sm font-bold leading-snug">Quarantine &amp; Block Domain</h4>
+
+<p class="font-body-sm text-body-sm opacity-80 mt-1">
+
+              Revoke recipient inbox delivery, push host <code class="font-code-inline">micros0ft-support.ru</code> to DNS sinkhole.
+
+            </p>
+
+</div>
+
+<div class="mt-space-md flex items-center gap-space-xs font-code-inline text-[11px] font-semibold text-error">
+
+<span>Execute Defcon Isolation</span>
+
+<span class="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+</div>
+
+</button>
+
+<!-- Action 2: Verify Sender via Official Channel (PINK) -->
+
+<button id="btn-action-verify" onclick="triggerPlaybookAction('verify')" class="flex flex-col justify-between p-space-md rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest active:brightness-95 transition-all text-left shadow-md group" type="button">
+
+<div class="flex items-center justify-between w-full mb-space-sm">
+
+<div class="w-9 h-9 rounded bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+
+<span class="material-symbols-outlined text-[20px]">call_split</span>
+
+</div>
+
+<span class="px-space-xs py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-caps text-[10px] font-bold uppercase">
+
+              Out-of-Band
+
+            </span>
+
+</div>
+
+<div>
+
+<h4 class="font-headline-sm text-headline-sm font-bold leading-snug">Verify Sender Channel</h4>
+
+<p class="font-body-sm text-body-sm text-outline mt-1">
+
+              Engage registered Microsoft tenant technical advisor via pre-authenticated phone directory.
+
+            </p>
+
+</div>
+
+<div class="mt-space-md flex items-center gap-space-xs font-code-inline text-[11px] font-semibold text-tertiary">
+
+<span>Open Out-of-Band Checklist</span>
+
+<span class="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+</div>
+
+</button>
+
+<!-- Action 3: Inspect In-Memory Byte Sandbox (GOLD) -->
+
+<button id="btn-action-sandbox" onclick="triggerPlaybookAction('sandbox')" class="flex flex-col justify-between p-space-md rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest active:brightness-95 transition-all text-left shadow-md group" type="button">
+
+<div class="flex items-center justify-between w-full mb-space-sm">
+
+<div class="w-9 h-9 rounded bg-primary-container/20 flex items-center justify-center text-primary">
+
+<span class="material-symbols-outlined text-[20px]">biotech</span>
+
+</div>
+
+<span class="px-space-xs py-0.5 rounded bg-primary text-on-primary font-label-caps text-[10px] font-bold uppercase">
+
+              Memory IO
+
+            </span>
+
+</div>
+
+<div>
+
+<h4 class="font-headline-sm text-headline-sm font-bold leading-snug">Inspect In-Memory Sandbox</h4>
+
+<p class="font-body-sm text-body-sm text-outline mt-1">
+
+              Browse defanged virtual registers, memory strings, and extracted obfuscated base64 streams.
+
+            </p>
+
+</div>
+
+<div class="mt-space-md flex items-center gap-space-xs font-code-inline text-[11px] font-semibold text-primary">
+
+<span>Launch ByteIO Inspector</span>
+
+<span class="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+</div>
+
+</button>
+
+<!-- Action 4: Submit to SOC Escalation (WHITE / GOLD) -->
+
+<button id="btn-action-soc" onclick="triggerPlaybookAction('soc')" class="flex flex-col justify-between p-space-md rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest active:brightness-95 transition-all text-left shadow-md group" type="button">
+
+<div class="flex items-center justify-between w-full mb-space-sm">
+
+<div class="w-9 h-9 rounded bg-surface-container-highest flex items-center justify-center text-on-surface">
+
+<span class="material-symbols-outlined text-[20px]">hub</span>
+
+</div>
+
+<span class="px-space-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-caps text-[10px] font-bold uppercase">
+
+              Tier 3 Review
+
+            </span>
+
+</div>
+
+<div>
+
+<h4 class="font-headline-sm text-headline-sm font-bold leading-snug">Submit SOC Escalation</h4>
+
+<p class="font-body-sm text-body-sm text-outline mt-1">
+
+              Dispatch encrypted incident telemetry bundle to sovereign intelligence incident commander.
+
+            </p>
+
+</div>
+
+<div class="mt-space-md flex items-center gap-space-xs font-code-inline text-[11px] font-semibold text-on-surface">
+
+<span>Dispatch Telemetry Ticket</span>
+
+<span class="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+</div>
+
+</button>
+
+</div>
+<!-- Dynamic Action Recommendation Details (Requirement 3) -->
+<div id="action-cards-container" class="mt-space-md grid grid-cols-1 md:grid-cols-2 gap-space-md"></div>
+</section>
+
+<!-- SECTION 5: USER FEEDBACK & TUNING LOOP (Bottom Widget) -->
+
+<section class="w-full bg-surface-container-low rounded-xl p-space-md shadow-lg flex flex-col md:flex-row items-center justify-between gap-space-md">
+
+<div class="flex items-center gap-space-md">
+
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+
+<span class="material-symbols-outlined text-[20px]">tune</span>
+
+</div>
+
+<div class="flex flex-col">
+
+<div class="flex items-center gap-space-xs">
+
+<span class="font-headline-sm text-body-lg text-on-surface font-bold">Model Tuning &amp; Heuristic Feedback</span>
+
+<span class="font-code-inline text-[11px] text-outline-variant flex items-center gap-1.5"><span id="feedback-live-stats" class="text-primary font-semibold">0 Reports Logged</span> • feedback_store.json</span>
+
+</div>
+
+<p class="font-body-sm text-body-sm text-outline">
+
+            Continuous local retraining without telemetry leakage. Human-in-the-loop sovereign weights validation.
+
+          </p>
+
+</div>
+
+</div>
+
+<div class="flex flex-wrap items-center gap-space-sm shrink-0">
+
+<!-- Confirm True Positive (GREEN Pill) -->
+
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-high text-secondary hover:bg-surface-container font-label-caps text-label-caps font-bold transition-all flex items-center gap-space-xs shadow-sm" id="btn-tp" onclick="recordFeedback('true_positive')" type="button">
+
+<span class="material-symbols-outlined text-[16px] text-secondary">check</span>
+
+<span>Confirm True Positive</span>
+
+</button>
+
+<!-- Report False Positive (PINK Pill) -->
+
+<button class="px-space-md py-1.5 rounded-full bg-surface-container-high text-tertiary hover:bg-surface-container font-label-caps text-label-caps font-bold transition-all flex items-center gap-space-xs shadow-sm" id="btn-fp" onclick="recordFeedback('false_positive')" type="button">
+
+<span class="material-symbols-outlined text-[16px] text-tertiary">close</span>
+
+<span>Report False Positive</span>
+
+</button>
+
+<!-- Suggest Weight Adjustment (GOLD) -->
+
+<button class="px-space-md py-1.5 rounded-full bg-gradient-to-r from-[#C5A059] via-[#E5C158] to-[#D4AF37] text-on-primary font-label-caps text-label-caps font-bold transition-all flex items-center gap-space-xs shadow-sm hover:brightness-105 active:scale-95" id="btn-tuning" onclick="recordFeedback('weight_adjust')" type="button">
+
+<span class="material-symbols-outlined text-[16px]">tune</span>
+
+<span>Suggest Weight Adjustment</span>
+
+</button>
+
+</div>
+
+</section>
+
+</div>
+
+</div>
+
+<script>
+
+  function recordFeedback(actionType) {
+
+    const feedbackMap = {
+
+      'true_positive': 'Verified True Positive written to local store.',
+
+      'false_positive': 'False Positive reported. Heuristic delta saved to feedback_store.json.',
+
+      'weight_adjust': 'Active weights calibration modal engaged for SOV-POL-STRICT-04.'
+
+    };
+
+    
+
+    // Non-intrusive notification indicator
+
+    const note = document.createElement('div');
+
+    note.className = 'fixed bottom-12 right-6 px-4 py-2.5 rounded-lg bg-surface-container-high text-on-surface font-code-inline text-code-inline shadow-2xl z-50 flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300';
+
+    note.innerHTML = `<span class="material-symbols-outlined text-primary text-[18px]">save</span><span>${feedbackMap[actionType] || 'Acknowledged.'}</span>`;
+
+    document.body.appendChild(note);
+
+    
+
+    setTimeout(() => {
+
+      note.classList.remove('translate-y-2', 'opacity-0');
+
+    }, 10);
+
+    
+
+    setTimeout(() => {
+
+      note.classList.add('translate-y-2', 'opacity-0');
+
+      setTimeout(() => note.remove(), 300);
+
+    }, 2800);
+
+  }
+
+</script></main><footer class="w-full bg-[#0B0B0E] border-t border-primary-container/20 py-space-md"><div class="w-full px-gutter-desktop flex flex-col md:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs font-code-inline text-code-inline text-outline"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span><span>SafeX Sovereign Static Defense Engine</span><span class="text-outline-variant">•</span><span>100% In-Memory ByteIO</span><span class="text-outline-variant">•</span><span>Zero Execution Guarantee</span><span class="text-outline-variant">•</span><span class="text-primary-fixed-dim">TLS 1.3</span></div><div class="flex items-center gap-space-md font-label-caps text-label-caps text-outline"><span class="hover:text-primary transition-colors cursor-pointer">AUDIT MANIFEST</span><span class="text-outline-variant">/</span><span class="hover:text-primary transition-colors cursor-pointer">CRYPTOGRAPHIC INTEGRITY</span><span class="text-outline-variant">/</span><span class="text-on-surface-variant font-code-inline">SESSION ID: #SX-7729-SOV</span></div></div></footer>
+<!-- MODAL: UPLOAD .EML / LIVE SAMPLE WORKBENCH -->
+<div id="modal-upload" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl max-w-2xl w-full p-6 shadow-2xl flex flex-col gap-5">
+    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20">
       <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-        <span class="text-slate-300 font-medium">SafeX Cyber Defense Platform</span>
-        <span>•</span>
-        <span>Zero-detonation static analysis engine</span>
+        <span class="material-symbols-outlined text-primary text-2xl">upload_file</span>
+        <div>
+          <h3 class="font-headline-sm text-lg font-bold text-on-surface">Sample Ingestion Workbench</h3>
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-wider">Zero Execution Guarantee • Pure Static Inspection</p>
+        </div>
+      </div>
+      <button onclick="closeModal('modal-upload')" class="text-outline hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-all">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Mode Selector Tabs: Single URL vs Full Email -->
+    <div class="flex items-center gap-2 p-1 bg-surface-container-lowest rounded-xl border border-outline-variant/20">
+      <button id="tab-mode-url" onclick="switchInputMode('url')" class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-gradient-to-r from-[#C5A059] to-[#D4AF37] text-on-primary shadow-sm flex items-center justify-center gap-1.5 transition-all">
+        <span class="material-symbols-outlined text-sm">link</span>
+        <span>Single URL Check (Instant)</span>
+      </button>
+      <button id="tab-mode-email" onclick="switchInputMode('email')" class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-outline hover:text-on-surface flex items-center justify-center gap-1.5 transition-all">
+        <span class="material-symbols-outlined text-sm">mail</span>
+        <span>Raw Email / .EML & Attachments</span>
+      </button>
+    </div>
+
+    <!-- PANEL 1: SINGLE URL INSPECTION (Effortless 1-Click Paste) -->
+    <div id="panel-mode-url" class="flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-semibold text-on-surface">Target Suspicious URL</label>
+        <button type="button" onclick="pasteClipboardToUrl()" class="text-xs font-code-inline text-primary hover:underline flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs">content_paste</span>
+          <span>1-Click Paste & Scan</span>
+        </button>
+      </div>
+      <div class="relative">
+        <input id="standalone-url-input" type="url" placeholder="https://portal.office.com or http://198.51.100.42..." class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-3 text-sm font-code-inline text-on-surface focus:outline-none focus:border-primary pr-28">
+        <button id="btn-inspect-url" onclick="runStandaloneLinkCheck(); closeModal('modal-upload');" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-lg bg-gradient-to-r from-[#C5A059] via-[#E5C158] to-[#D4AF37] text-on-primary text-xs font-bold hover:brightness-105 active:scale-95 transition-all">
+          Inspect URL
+        </button>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-[11px] text-outline">Optional Visible Anchor Text (to test deceptive link mismatch):</label>
+        <input id="standalone-anchor-input" type="text" placeholder="e.g. https://www.paypal.com/verify-account" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-3 py-2 text-xs font-code-inline text-on-surface focus:outline-none focus:border-primary">
+      </div>
+      <div class="flex items-center gap-2 pt-2">
+        <span class="text-[11px] text-outline">Quick test samples:</span>
+        <button onclick="setQuickUrl('http://198.51.100.42:8080/auth/login.php?ref=spoof'); closeModal('modal-upload');" class="text-[11px] font-code-inline text-primary hover:underline">Bare IP</button>
+        <span class="text-outline-variant">•</span>
+        <button onclick="setQuickUrl('https://micros0ft-login.ru/token'); closeModal('modal-upload');" class="text-[11px] font-code-inline text-primary hover:underline">Homoglyph Lookalike</button>
+        <span class="text-outline-variant">•</span>
+        <button onclick="setQuickUrl('https://google.com'); closeModal('modal-upload');" class="text-[11px] font-code-inline text-secondary hover:underline">Clean URL</button>
+      </div>
+    </div>
+
+    <!-- PANEL 2: FULL EMAIL / .EML & ATTACHMENT INGESTION -->
+    <div id="panel-mode-email" class="hidden flex flex-col gap-4">
+      <div>
+        <label class="text-xs font-semibold text-on-surface block mb-1">Paste Raw Email Headers + Body RFC 5322 Text:</label>
+        <textarea id="live-email-input" rows="5" placeholder="From: sender@domain.com&#10;Subject: Urgent Security Alert&#10;Authentication-Results: spf=fail...&#10;&#10;Email body content with links..." class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-3 text-xs font-code-inline text-on-surface focus:outline-none focus:border-primary"></textarea>
       </div>
       <div>
-        Air-Gapped &amp; Privacy Preserving • In-Memory RFC 5322 Parser
-      </div>
-    </div>
-  </footer>
-
-  <!-- MODAL: Presets & Tests Matrix -->
-  <div id="modal-presets" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-    <div class="bg-[#161b26] border border-[#232d40] rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-4 border-b border-[#232d40]">
-        <div class="flex items-center gap-2.5">
-          <span class="material-symbols-outlined text-cyan-400 text-xl">biotech</span>
-          <h3 class="text-base font-semibold text-white">Full 9/9 Test Scenarios Matrix</h3>
+        <label class="text-xs font-semibold text-on-surface block mb-1">Or Drag & Drop .EML / Suspicious Files (Static in-memory analysis):</label>
+        <div id="live-dropzone" onclick="document.getElementById('live-file-input').click()" class="border-2 border-dashed border-outline-variant/40 hover:border-primary rounded-xl p-4 text-center cursor-pointer bg-surface-container-lowest/50 transition-all flex flex-col items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-secondary text-2xl">cloud_upload</span>
+          <span class="text-xs text-on-surface font-medium">Click or drop files here (.eml, .pdf.exe, .docm, etc.)</span>
+          <span class="text-[10px] text-outline font-code-inline">Zero bytes written to disk • In-memory byte extraction only</span>
+          <input id="live-file-input" type="file" multiple class="hidden" onchange="handleFileSelect(event)">
         </div>
-        <button onclick="closeModal('modal-presets')" class="text-slate-400 hover:text-white text-xl">&times;</button>
+        <div id="live-file-list" class="mt-2 flex flex-wrap gap-1.5 text-xs font-code-inline text-outline"></div>
       </div>
-      <div class="mt-4 space-y-2 text-xs max-h-96 overflow-y-auto" id="test-matrix-list"></div>
+      <button id="btn-run-live" onclick="executeLiveAnalysis(); closeModal('modal-upload');" class="w-full py-3 rounded-xl bg-gradient-to-r from-[#C5A059] via-[#E5C158] to-[#D4AF37] text-on-primary font-bold text-sm shadow-md hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-base">security</span>
+        <span>Run Full Static In-Memory Triage</span>
+      </button>
     </div>
   </div>
+</div>
 
-  <!-- MODAL: Detection Rules -->
-  <div id="modal-rules" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-    <div class="bg-[#161b26] border border-[#232d40] rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between pb-4 border-b border-[#232d40]">
-        <div class="flex items-center gap-2.5">
-          <span class="material-symbols-outlined text-purple-400 text-xl">rule</span>
-          <h3 class="text-base font-semibold text-white">SafeX Transparent Detection Rules</h3>
+<!-- MODAL: PRESET SCENARIOS PICKER -->
+<div id="modal-presets" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl max-w-xl w-full p-6 shadow-2xl flex flex-col gap-4">
+    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-2xl">tune</span>
+        <div>
+          <h3 class="font-headline-sm text-lg font-bold text-on-surface">Select Threat Scenario</h3>
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-wider">Multi-Vector Preloaded Attack & Benign Telemetry</p>
         </div>
-        <button onclick="closeModal('modal-rules')" class="text-slate-400 hover:text-white text-xl">&times;</button>
       </div>
-      <div class="mt-4 space-y-2.5 text-xs text-slate-300 max-h-96 overflow-y-auto">
-        <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-          <span class="text-purple-300 font-semibold block mb-0.5">RULE-URL-01: Optical Anchor Mismatch &amp; Root Domain Spoof</span>
-          <p class="text-slate-400 text-xs">Compares visible anchor text against actual destination URL domain (weight: +25 pts).</p>
+      <button onclick="closeModal('modal-presets')" class="text-outline hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-all">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <!-- High Risk -->
+      <button onclick="loadScenario('high'); closeModal('modal-presets');" class="p-4 rounded-xl bg-surface-container-lowest border border-error/30 hover:border-error text-left transition-all group flex flex-col justify-between gap-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="font-label-caps text-[10px] uppercase font-bold text-error">Critical 88/100</span>
+          <span class="w-2 h-2 rounded-full bg-error"></span>
         </div>
-        <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-          <span class="text-rose-400 font-semibold block mb-0.5">RULE-URL-02: IP Literal &amp; Non-Standard Port</span>
-          <p class="text-slate-400 text-xs">Flags direct IP addresses (e.g. 185.192.1.44) and ports like :8080 used for malicious staging.</p>
+        <div>
+          <h4 class="font-bold text-sm text-on-surface group-hover:text-error transition-colors">Credential Phish & Disguised .EXE</h4>
+          <p class="text-[11px] text-outline mt-1 leading-snug">Fake bank suspension, bare IP mismatch, and invoice_98201.pdf.exe payload.</p>
         </div>
-        <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-          <span class="text-rose-400 font-semibold block mb-0.5">RULE-URL-03: Cyrillic Homoglyph &amp; Punycode</span>
-          <p class="text-slate-400 text-xs">Identifies Cyrillic lookalikes (e.g. Cyrillic 'а') and Punycode xn-- spoofing authentic brand domains.</p>
+        <span class="text-[10px] font-code-inline text-error font-semibold mt-1">Load Scenario →</span>
+      </button>
+
+      <!-- Medium Risk -->
+      <button onclick="loadScenario('medium'); closeModal('modal-presets');" class="p-4 rounded-xl bg-surface-container-lowest border border-tertiary/30 hover:border-tertiary text-left transition-all group flex flex-col justify-between gap-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="font-label-caps text-[10px] uppercase font-bold text-tertiary">Medium 62/100</span>
+          <span class="w-2 h-2 rounded-full bg-tertiary"></span>
         </div>
-        <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-          <span class="text-amber-400 font-semibold block mb-0.5">RULE-ATT-01: Renamed Executable (Magic Bytes)</span>
-          <p class="text-slate-400 text-xs">Detects Windows MZ/PE headers disguised inside .pdf, .docx, or .jpg files (weight: +40 pts).</p>
+        <div>
+          <h4 class="font-bold text-sm text-on-surface group-hover:text-tertiary transition-colors">Urgent IT Password MFA Reset</h4>
+          <p class="text-[11px] text-outline mt-1 leading-snug">Cognitive stress urgency tone, disguised SSO portal relay, no attachment.</p>
         </div>
-        <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40]">
-          <span class="text-amber-400 font-semibold block mb-0.5">RULE-SOC-01: Callback Vishing &amp; Hidden Text</span>
-          <p class="text-slate-400 text-xs">Detects phone numbers combined with fake refund/dispute keywords and zero-font HTML evasion.</p>
+        <span class="text-[10px] font-code-inline text-tertiary font-semibold mt-1">Load Scenario →</span>
+      </button>
+
+      <!-- Lookalike -->
+      <button onclick="loadScenario('lookalike'); closeModal('modal-presets');" class="p-4 rounded-xl bg-surface-container-lowest border border-tertiary/30 hover:border-tertiary text-left transition-all group flex flex-col justify-between gap-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="font-label-caps text-[10px] uppercase font-bold text-tertiary">High 72/100</span>
+          <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm text-on-surface group-hover:text-tertiary transition-colors">Cyrillic Homoglyph Lookalike</h4>
+          <p class="text-[11px] text-outline mt-1 leading-snug">micros0ft-security.com Cyrillic punycode impersonation with SPF fail.</p>
+        </div>
+        <span class="text-[10px] font-code-inline text-tertiary font-semibold mt-1">Load Scenario →</span>
+      </button>
+
+      <!-- Clean -->
+      <button onclick="loadScenario('clean'); closeModal('modal-presets');" class="p-4 rounded-xl bg-surface-container-lowest border border-secondary/30 hover:border-secondary text-left transition-all group flex flex-col justify-between gap-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="font-label-caps text-[10px] uppercase font-bold text-secondary">Clean 4/100</span>
+          <span class="w-2 h-2 rounded-full bg-secondary"></span>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm text-on-surface group-hover:text-secondary transition-colors">Authentic Corporate Newsletter</h4>
+          <p class="text-[11px] text-outline mt-1 leading-snug">100% SPF/DKIM/DMARC alignment, matching domains, and clean document.</p>
+        </div>
+        <span class="text-[10px] font-code-inline text-secondary font-semibold mt-1">Load Scenario →</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: BENCHMARK & EVALUATION (Requirement 5: ML vs Rule Confusion Matrix) -->
+<div id="modal-benchmark" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl max-w-4xl w-full p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-2xl">analytics</span>
+        <div>
+          <h3 class="font-headline-sm text-lg font-bold text-on-surface">Detection Evaluation & Confusion Matrix</h3>
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-wider">Rule-Based Heuristic Engine vs Machine Learning Classifier (Requirement 5)</p>
+        </div>
+      </div>
+      <button onclick="closeModal('modal-benchmark')" class="text-outline hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-all">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Side-by-side Confusion Matrix Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Rule-Based Matrix -->
+      <div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="font-headline-sm text-sm font-bold text-on-surface">Rule-Based Engine</span>
+          <span class="font-label-caps text-[10px] px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-bold">Deterministic</span>
+        </div>
+        <!-- 2x2 Matrix -->
+        <div class="grid grid-cols-2 gap-2 text-center font-code-inline text-xs">
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">True Neg (TN)</span>
+            <span id="rule-tn" class="text-base font-bold text-secondary">3</span>
+          </div>
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">False Pos (FP)</span>
+            <span id="rule-fp" class="text-base font-bold text-tertiary">0</span>
+          </div>
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">False Neg (FN)</span>
+            <span id="rule-fn" class="text-base font-bold text-error">0</span>
+          </div>
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">True Pos (TP)</span>
+            <span id="rule-tp" class="text-base font-bold text-error">6</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 gap-1 text-center font-code-inline text-[11px] pt-1">
+          <div><span class="text-outline block text-[9px]">Accuracy</span><span id="rule-acc" class="font-bold text-primary">100%</span></div>
+          <div><span class="text-outline block text-[9px]">Precision</span><span id="rule-prec" class="font-bold text-primary">100%</span></div>
+          <div><span class="text-outline block text-[9px]">Recall</span><span id="rule-rec" class="font-bold text-primary">100%</span></div>
+          <div><span class="text-outline block text-[9px]">F1 Score</span><span id="rule-f1" class="font-bold text-primary">1.00</span></div>
+        </div>
+      </div>
+
+      <!-- ML Classifier Matrix -->
+      <div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="font-headline-sm text-sm font-bold text-on-surface">ML-Based Classifier</span>
+          <span class="font-label-caps text-[10px] px-2 py-0.5 rounded bg-secondary-container text-on-secondary font-bold">Probabilistic</span>
+        </div>
+        <!-- 2x2 Matrix -->
+        <div class="grid grid-cols-2 gap-2 text-center font-code-inline text-xs">
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">True Neg (TN)</span>
+            <span id="ml-tn" class="text-base font-bold text-secondary">3</span>
+          </div>
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">False Pos (FP)</span>
+            <span id="ml-fp" class="text-base font-bold text-tertiary">0</span>
+          </div>
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">False Neg (FN)</span>
+            <span id="ml-fn" class="text-base font-bold text-error">0</span>
+          </div>
+          <div class="p-2.5 rounded bg-surface-container">
+            <span class="text-[10px] text-outline block">True Pos (TP)</span>
+            <span id="ml-tp" class="text-base font-bold text-error">6</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 gap-1 text-center font-code-inline text-[11px] pt-1">
+          <div><span class="text-outline block text-[9px]">Accuracy</span><span id="ml-acc" class="font-bold text-primary">100%</span></div>
+          <div><span class="text-outline block text-[9px]">Precision</span><span id="ml-prec" class="font-bold text-primary">100%</span></div>
+          <div><span class="text-outline block text-[9px]">Recall</span><span id="ml-rec" class="font-bold text-primary">100%</span></div>
+          <div><span class="text-outline block text-[9px]">F1 Score</span><span id="ml-f1" class="font-bold text-primary">1.00</span></div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- MODAL: ML vs Rule-Based Detection Benchmark & Confusion Matrix (Requirement 5) -->
-  <div id="modal-benchmark" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-    <div class="bg-[#161b26] border border-[#232d40] rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative max-h-[90vh] flex flex-col gap-4">
-      <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
-        <div class="flex items-center gap-2.5">
-          <span class="material-symbols-outlined text-amber-400 text-xl">stacked_bar_chart</span>
-          <div>
-            <h3 class="text-base font-semibold text-white">Rule-Based vs Machine Learning (ML) Benchmark</h3>
-            <p class="text-xs text-slate-400">Evaluation on standardized ground-truth benchmark (10 Benign vs 10 Threat samples)</p>
-          </div>
-        </div>
-        <button onclick="closeModal('modal-benchmark')" class="text-slate-400 hover:text-white text-xl">&times;</button>
-      </div>
-
-      <div class="overflow-y-auto space-y-4 pr-1 text-xs">
-        <!-- Comparative Metrics Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Rule Based Card -->
-          <div class="p-4 rounded-xl bg-[#0c0e14] border border-cyan-500/30 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-cyan-300 uppercase tracking-wide flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">rule</span> SafeX Rule-Based Engine (v4.2)
-              </span>
-              <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Deterministic</span>
-            </div>
-
-            <!-- Confusion Matrix Table -->
-            <div class="space-y-1">
-              <span class="text-[11px] text-slate-400 font-semibold uppercase">Confusion Matrix:</span>
-              <div class="grid grid-cols-2 gap-2 text-center font-mono">
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">True Negative (TN)</span>
-                  <span class="text-base font-bold text-emerald-400" id="rule-tn">10</span>
-                </div>
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">False Positive (FP)</span>
-                  <span class="text-base font-bold text-amber-400" id="rule-fp">0</span>
-                </div>
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">False Negative (FN)</span>
-                  <span class="text-base font-bold text-rose-400" id="rule-fn">0</span>
-                </div>
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">True Positive (TP)</span>
-                  <span class="text-base font-bold text-emerald-400" id="rule-tp">10</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Metric Badges -->
-            <div class="grid grid-cols-4 gap-2 text-center pt-2 border-t border-[#1b2333]">
-              <div><span class="text-[10px] text-slate-400 block">Accuracy</span><span class="font-bold text-cyan-300" id="rule-acc">100.0%</span></div>
-              <div><span class="text-[10px] text-slate-400 block">Precision</span><span class="font-bold text-cyan-300" id="rule-prec">100.0%</span></div>
-              <div><span class="text-[10px] text-slate-400 block">Recall</span><span class="font-bold text-cyan-300" id="rule-rec">100.0%</span></div>
-              <div><span class="text-[10px] text-slate-400 block">F1-Score</span><span class="font-bold text-cyan-300" id="rule-f1">1.000</span></div>
-            </div>
-          </div>
-
-          <!-- ML Based Card -->
-          <div class="p-4 rounded-xl bg-[#0c0e14] border border-amber-500/30 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">psychology</span> ML Feature Classifier (Random Forest)
-              </span>
-              <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-amber-500/15 text-amber-300 border border-amber-500/30">Probabilistic</span>
-            </div>
-
-            <!-- Confusion Matrix Table -->
-            <div class="space-y-1">
-              <span class="text-[11px] text-slate-400 font-semibold uppercase">Confusion Matrix:</span>
-              <div class="grid grid-cols-2 gap-2 text-center font-mono">
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">True Negative (TN)</span>
-                  <span class="text-base font-bold text-emerald-400" id="ml-tn">10</span>
-                </div>
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">False Positive (FP)</span>
-                  <span class="text-base font-bold text-amber-400" id="ml-fp">0</span>
-                </div>
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">False Negative (FN)</span>
-                  <span class="text-base font-bold text-rose-400" id="ml-fn">0</span>
-                </div>
-                <div class="p-2 rounded-lg bg-[#161b26] border border-[#232d40]">
-                  <span class="text-[10px] text-slate-400 block">True Positive (TP)</span>
-                  <span class="text-base font-bold text-emerald-400" id="ml-tp">10</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Metric Badges -->
-            <div class="grid grid-cols-4 gap-2 text-center pt-2 border-t border-[#1b2333]">
-              <div><span class="text-[10px] text-slate-400 block">Accuracy</span><span class="font-bold text-amber-300" id="ml-acc">100.0%</span></div>
-              <div><span class="text-[10px] text-slate-400 block">Precision</span><span class="font-bold text-amber-300" id="ml-prec">100.0%</span></div>
-              <div><span class="text-[10px] text-slate-400 block">Recall</span><span class="font-bold text-amber-300" id="ml-rec">100.0%</span></div>
-              <div><span class="text-[10px] text-slate-400 block">F1-Score</span><span class="font-bold text-amber-300" id="ml-f1">1.000</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Comparative Strengths & Operational Trade-offs Table -->
-        <div class="p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-2">
-          <span class="text-xs font-semibold text-white block">Engine Architecture Trade-off Analysis:</span>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div class="space-y-1 text-slate-300">
-              <span class="text-cyan-400 font-semibold block">Why SafeX Rule-Based Excels in Production:</span>
-              <ul class="list-disc pl-4 space-y-0.5 text-slate-400">
-                <li><strong class="text-slate-200">100% Explainable:</strong> Gives exact observable proof (e.g. MZ magic byte offset, Unicode RTLO char).</li>
-                <li><strong class="text-slate-200">Zero Execution &amp; Air-Gapped:</strong> No external cloud model dependencies or data leakage.</li>
-                <li><strong class="text-slate-200">Immune to Adversarial Token Drift:</strong> Scammers cannot fool it with text camouflage if binary headers are weaponized.</li>
-              </ul>
-            </div>
-            <div class="space-y-1 text-slate-300">
-              <span class="text-amber-400 font-semibold block">When Machine Learning Complements Rules:</span>
-              <ul class="list-disc pl-4 space-y-0.5 text-slate-400">
-                <li><strong class="text-slate-200">Semantic Nuance:</strong> Generalizes well to brand-new persuasive text variations.</li>
-                <li><strong class="text-slate-200">Hybrid Synergy:</strong> Rule-based engine handles hard binary/MIME invariants, while ML scores NLP text ambiguity.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Benchmark Dataset Samples List -->
-        <div class="space-y-2">
-          <span class="text-xs font-semibold text-white block">Benchmark Samples (20 Ground-Truth Scenarios):</span>
-          <div class="space-y-1 max-h-48 overflow-y-auto" id="benchmark-samples-table">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
+    <!-- Side by Side Samples Table -->
+    <div class="flex flex-col gap-2">
+      <span class="font-label-caps text-xs font-bold text-outline uppercase tracking-wider">Evaluation Test Dataset Breakdown</span>
+      <div id="benchmark-samples-table" class="space-y-1.5 max-h-48 overflow-y-auto">
+        <!-- Rendered dynamically from /api/evaluation/benchmark -->
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Scenario Engine Script -->
-  <script src="/static/app.js"></script>
-</body>
-</html>
+<script src="/static/app.js"></script>
+</body></html>

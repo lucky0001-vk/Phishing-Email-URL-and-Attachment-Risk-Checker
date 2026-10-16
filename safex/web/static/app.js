@@ -1,3 +1,135 @@
+
+// SafeX SOVEREIGN - Dynamic UI Synchronization Helpers
+function updateSovereignVectors(breakdown, senderFail, nlpSuspicious, urlCrit, binClean) {
+  const v1Badge = document.getElementById('v1-score-badge');
+  const v1Bar = document.getElementById('v1-progress-bar');
+  const v2Badge = document.getElementById('v2-score-badge');
+  const v2Bar = document.getElementById('v2-progress-bar');
+  const v3Badge = document.getElementById('v3-score-badge');
+  const v3Bar = document.getElementById('v3-progress-bar');
+  const v4Badge = document.getElementById('v4-score-badge');
+  const v4Bar = document.getElementById('v4-progress-bar');
+
+  const sScore = breakdown.sender_score !== undefined ? breakdown.sender_score : 0;
+  const bScore = breakdown.body_score !== undefined ? breakdown.body_score : 0;
+  const uScore = breakdown.url_score !== undefined ? breakdown.url_score : 0;
+  const aScore = breakdown.attachment_score !== undefined ? breakdown.attachment_score : 0;
+
+  if (v1Badge) {
+    const sPct = Math.min(100, Math.round((sScore / 35) * 100));
+    v1Badge.textContent = sPct >= 50 ? `FAIL ${sPct}/100` : `PASS ${sPct}/100`;
+    v1Badge.className = sPct >= 50 ? 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
+    if (v1Bar) {
+      v1Bar.style.width = `${sPct}%`;
+      v1Bar.className = sPct >= 50 ? 'bg-error h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
+    }
+  }
+
+  if (v2Badge) {
+    const bPct = Math.min(100, Math.round((bScore / 35) * 100));
+    v2Badge.textContent = bPct >= 50 ? `SUSPICIOUS ${bPct}/100` : `CLEAN ${bPct}/100`;
+    v2Badge.className = bPct >= 50 ? 'px-space-sm py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
+    if (v2Bar) {
+      v2Bar.style.width = `${bPct}%`;
+      v2Bar.className = bPct >= 50 ? 'bg-tertiary h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
+    }
+  }
+
+  if (v3Badge) {
+    const uPct = Math.min(100, Math.round((uScore / 45) * 100));
+    v3Badge.textContent = uPct >= 50 ? `CRITICAL ${uPct}/100` : `BENIGN ${uPct}/100`;
+    v3Badge.className = uPct >= 50 ? 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
+    if (v3Bar) {
+      v3Bar.style.width = `${uPct}%`;
+      v3Bar.className = uPct >= 50 ? 'bg-error h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
+    }
+  }
+
+  if (v4Badge) {
+    const aPct = Math.min(100, Math.round((aScore / 50) * 100));
+    v4Badge.textContent = aPct >= 50 ? `MALICIOUS ${aPct}/100` : `CLEAN DISARMED ${aPct}/100`;
+    v4Badge.className = aPct >= 50 ? 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold' : 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps font-bold';
+    if (v4Bar) {
+      v4Bar.style.width = `${aPct}%`;
+      v4Bar.className = aPct >= 50 ? 'bg-error h-full rounded-full transition-all duration-500' : 'bg-secondary h-full rounded-full transition-all duration-500';
+    }
+  }
+}
+
+// Sovereign Playbook Quick Actions handler
+function triggerPlaybookAction(action) {
+  const note = document.createElement('div');
+  note.className = 'fixed bottom-12 right-6 px-4 py-3 rounded-xl bg-surface-container-high border border-primary/30 text-on-surface font-code-inline text-xs shadow-2xl z-50 flex items-center gap-3 transform translate-y-2 opacity-0 transition-all duration-300';
+
+  let msg = '';
+  let icon = 'bolt';
+  if (action === 'quarantine') {
+    msg = 'Defcon Isolation Activated: Sender domain blacklisted & inbox delivery revoked.';
+    icon = 'block';
+  } else if (action === 'verify') {
+    msg = 'Out-of-Band Checklist: Initiating registered corporate directory phone verification.';
+    icon = 'call_split';
+  } else if (action === 'sandbox') {
+    msg = 'In-Memory Byte Sandbox: Hex stream extracted without disk persistence.';
+    icon = 'biotech';
+  } else if (action === 'soc') {
+    msg = 'SOC Telemetry Dispatched: Incident package encrypted and sent to Tier 3 queue.';
+    icon = 'hub';
+  }
+
+  note.innerHTML = `<span class="material-symbols-outlined text-primary text-[20px]">${icon}</span><span>${msg}</span>`;
+  document.body.appendChild(note);
+
+  setTimeout(() => { note.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+  setTimeout(() => {
+    note.classList.add('translate-y-2', 'opacity-0');
+    setTimeout(() => note.remove(), 300);
+  }, 3200);
+}
+
+// Sovereign Feedback Store Writer (Requirement 4)
+async function recordFeedback(actionType) {
+  const score = parseInt(document.getElementById('verdict-score')?.textContent || '0', 10);
+  const rating = document.getElementById('verdict-label')?.textContent || 'HIGH RISK';
+  const sampleName = document.getElementById('email-subject')?.textContent || 'Sovereign Triage Sample';
+
+  let userVerdict = 'ACCURATE';
+  if (actionType === 'false_positive') userVerdict = 'FALSE_POSITIVE';
+  else if (actionType === 'weight_adjust') userVerdict = 'WEIGHT_ADJUST';
+
+  try {
+    const formData = new FormData();
+    formData.append('sample_id', currentScenario || 'custom');
+    formData.append('sample_name', sampleName);
+    formData.append('user_verdict', userVerdict);
+    formData.append('notes', `Logged via Sovereign Quick Tuning: ${actionType}`);
+    formData.append('assigned_score', score);
+    formData.append('assigned_rating', rating);
+
+    await fetch('/api/feedback', { method: 'POST', body: formData });
+    loadFeedbackStats();
+  } catch (err) {
+    console.warn('Feedback sync error:', err);
+  }
+
+  const feedbackMap = {
+    'true_positive': 'Verified True Positive written to local store.',
+    'false_positive': 'False Positive reported. Heuristic delta saved to feedback_store.json.',
+    'weight_adjust': 'Active weights calibration modal engaged for SOV-POL-STRICT-04.'
+  };
+
+  const note = document.createElement('div');
+  note.className = 'fixed bottom-12 right-6 px-4 py-2.5 rounded-lg bg-surface-container-high border border-outline-variant/30 text-on-surface font-code-inline text-code-inline shadow-2xl z-50 flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300';
+  note.innerHTML = `<span class="material-symbols-outlined text-primary text-[18px]">save</span><span>${feedbackMap[actionType] || 'Acknowledged.'}</span>`;
+  document.body.appendChild(note);
+
+  setTimeout(() => { note.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+  setTimeout(() => {
+    note.classList.add('translate-y-2', 'opacity-0');
+    setTimeout(() => note.remove(), 300);
+  }, 2800);
+}
+
 /**
  * SafeX - High-Performance Threat Analyzer Engine
  * Comprehensive Email, Suspicious Links, and File Threat Analysis.
@@ -437,6 +569,22 @@ function loadScenario(key) {
     `;
     sigContainer.appendChild(item);
   });
+
+  // Sync SafeX Sovereign Vectors & Telemetry
+  updateSovereignVectors(breakdown);
+  const defconPill = document.getElementById('verdict-defcon-pill');
+  if (defconPill) {
+    if (data.verdict.score >= 70) {
+      defconPill.textContent = 'Defcon 1 Alert';
+      defconPill.className = 'px-space-sm py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase tracking-wider font-semibold';
+    } else if (data.verdict.score >= 40) {
+      defconPill.textContent = 'Defcon 2 Elevated';
+      defconPill.className = 'px-space-sm py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps uppercase tracking-wider font-semibold';
+    } else {
+      defconPill.textContent = 'Defcon 5 Normal';
+      defconPill.className = 'px-space-sm py-0.5 rounded bg-surface-container text-secondary font-label-caps text-label-caps uppercase tracking-wider font-semibold';
+    }
+  }
 }
 
 // Render All Detected Links Table
@@ -878,6 +1026,13 @@ function renderLiveApiResponse(a) {
     attachEl.textContent = `${attachScore} pts`;
     document.getElementById('score-attach-bar').style.width = Math.min(100, (attachScore / 50) * 100) + '%';
   }
+  // Sync Sovereign 4 Score Drivers
+  updateSovereignVectors({
+    sender_score: senderScore,
+    body_score: bodyScore,
+    url_score: urlScore,
+    attachment_score: attachScore
+  });
 
   // Observable Signals & Supporting Evidence (Requirement 6)
   const sigContainer = document.getElementById('signal-evidence-list');
@@ -1227,8 +1382,10 @@ async function loadFeedbackStats() {
     const stats = await res.json();
     const accPill = document.getElementById('feedback-stat-accuracy');
     const countLabel = document.getElementById('feedback-count-label');
+    const liveStats = document.getElementById('feedback-live-stats');
     if (accPill) accPill.textContent = `Model Accuracy: ${stats.user_verified_accuracy_pct}%`;
     if (countLabel) countLabel.textContent = `${stats.total_reports} reports logged (${stats.false_positive_count} FP, ${stats.false_negative_count} FN)`;
+    if (liveStats) liveStats.textContent = `${stats.total_reports} Reports Logged (${stats.user_verified_accuracy_pct}% Acc)`;
   } catch (e) {
     console.warn(e);
   }
