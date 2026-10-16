@@ -49,6 +49,12 @@ async def serve_app_js():
     return FileResponse(os.path.join(STATIC_DIR, "app.js"))
 
 
+@app.get("/styles.css")
+async def serve_styles_css():
+    from fastapi.responses import FileResponse
+    return FileResponse(os.path.join(STATIC_DIR, "styles.css"))
+
+
 @app.get("/api/samples")
 async def list_samples():
     """Returns catalog of pre-configured test scenarios."""
