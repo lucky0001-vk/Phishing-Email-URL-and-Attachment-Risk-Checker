@@ -50,27 +50,27 @@ const SCENARIOS = {
     },
     attachment: {
       name: 'invoice_98201.pdf.exe',
-      nameAlert: 'Double extension: .pdf.exe',
+      nameAlert: 'Disguised double extension: .pdf.exe',
       mimeDeclared: 'PDF Document',
-      magicBytes: 'Real: Windows Executable (MZ/PE)',
+      magicBytes: 'Actually is: Windows Program (.exe)',
       size: '1.42 MB',
-      entropy: 'Entropy: 7.89 (High packing)',
+      entropy: 'Compressed byte structure',
       sha256: '9f83a45c8192fb0172e2aa3958cc10915a1e809312b9cf440268a2bf624243ef',
-      severity: 'Executable Binary Disguised',
+      severity: 'Dangerous: Hidden Program (.exe)',
       theme: 'rose'
     },
     verdict: {
-      label: 'Critical Threat',
+      label: 'DANGEROUS SCAM',
       score: 88,
-      badgeText: 'Immediate Isolation Required',
+      badgeText: 'Do not click anything or open files',
       theme: 'rose',
       bodyScore: 74,
       attachScore: 96,
       signals: [
-        { weight: '+40 pts', tag: 'Renamed Executable', desc: 'File is an application (.exe) disguised with a .pdf extension.', level: 'rose' },
-        { weight: '+25 pts', tag: 'Deceptive Hyperlink', desc: 'Link text shows bank-billing.com but directs to an untrusted IP address.', level: 'rose' },
-        { weight: '+15 pts', tag: 'Disguised Double Extension', desc: 'Filename hides real executable payload from unsuspecting users.', level: 'rose' },
-        { weight: '+8 pts', tag: 'Authentication Failures', desc: 'Sender failed SPF and DKIM domain validation records.', level: 'amber' }
+        { weight: '+40 pts', tag: 'Hidden Program (.exe)', desc: 'This file is a computer program (.exe) pretending to be a PDF invoice.', level: 'rose' },
+        { weight: '+25 pts', tag: 'Fake Web Link', desc: 'The link text shows a bank website, but it takes you to an untrusted server address.', level: 'rose' },
+        { weight: '+15 pts', tag: 'Hidden File Extension', desc: 'The filename hides the real program ending so it looks like a document.', level: 'rose' },
+        { weight: '+8 pts', tag: 'Failed Sender Check', desc: 'The email failed standard security checks proving who sent it.', level: 'amber' }
       ]
     }
   },
@@ -116,26 +116,26 @@ const SCENARIOS = {
     },
     attachment: {
       name: 'MFA_Enrollment_Guide.html',
-      nameAlert: 'Active HTML script wrapper',
+      nameAlert: 'Contains web script code',
       mimeDeclared: 'HTML Document',
-      magicBytes: 'Real: Embedded JavaScript Harvester',
+      magicBytes: 'Actually is: Script that can steal logins',
       size: '24.1 KB',
-      entropy: 'Entropy: 5.12 (Script form)',
+      entropy: 'Script form',
       sha256: '4bca3109a909247f12e87c0aef435c2491a3a60a7e08920bc8b6c4e098864f1d',
-      severity: 'Suspicious Credential Harvester',
+      severity: 'Suspicious Password Form',
       theme: 'amber'
     },
     verdict: {
-      label: 'Suspicious Risk',
+      label: 'SUSPICIOUS - BE CAREFUL',
       score: 64,
-      badgeText: 'Credential Harvest Risk',
+      badgeText: 'May try to steal your password',
       theme: 'amber',
       bodyScore: 78,
       attachScore: 50,
       signals: [
-        { weight: '+35 pts', tag: 'Typosquat / Lookalike Domain', desc: 'Domain okta-support-securityhub.com was registered 48h ago.', level: 'amber' },
-        { weight: '+20 pts', tag: 'Hard SPF Fail', desc: 'Sending MTA does not match official Okta identity infrastructure.', level: 'rose' },
-        { weight: '+9 pts', tag: 'HTML Password Form', desc: 'Attachment contains disguised password submission forms.', level: 'amber' }
+        { weight: '+35 pts', tag: 'Lookalike Website Name', desc: 'Domain okta-support-securityhub.com was only created 2 days ago.', level: 'amber' },
+        { weight: '+20 pts', tag: 'Failed Sender Check', desc: 'The sending server does not match the real company.', level: 'rose' },
+        { weight: '+9 pts', tag: 'Password Input Box', desc: 'Attachment contains disguised password forms.', level: 'amber' }
       ]
     }
   },
@@ -177,24 +177,24 @@ const SCENARIOS = {
       name: 'VPN_Migration_Procedure_v5.pdf',
       nameAlert: 'Verified Clean Standard PDF',
       mimeDeclared: 'PDF Document',
-      magicBytes: 'Real: Clean PDF Structure (%PDF-1.7)',
+      magicBytes: 'Actually is: Normal PDF document (%PDF-1.7)',
       size: '412.4 KB',
-      entropy: 'Entropy: 6.01 (Standard fonts)',
+      entropy: 'Standard document fonts',
       sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-      severity: 'Verified Benign PDF',
+      severity: 'Safe Document',
       theme: 'emerald'
     },
     verdict: {
-      label: 'Benign Notice',
+      label: 'SAFE EMAIL',
       score: 18,
-      badgeText: 'Internal Corporate Notice',
+      badgeText: 'Safe company email',
       theme: 'emerald',
       bodyScore: 24,
       attachScore: 12,
       signals: [
-        { weight: '-20 pts', tag: 'Strict DMARC / SPF Pass', desc: 'Origin verified from internal Acme Corp relay IPs.', level: 'emerald' },
-        { weight: '-15 pts', tag: 'Authentic Attachment', desc: 'No macro code or launch primitives detected in PDF tree.', level: 'emerald' },
-        { weight: '+12 pts', tag: 'Urgent Wording (Routine)', desc: '"ACTION REQUIRED" used for standard operational bulletin.', level: 'slate' }
+        { weight: '-20 pts', tag: 'Passed Sender Checks', desc: 'Confirmed sent from genuine company servers.', level: 'emerald' },
+        { weight: '-15 pts', tag: 'Safe File Attachment', desc: 'No dangerous code or hidden programs found.', level: 'emerald' },
+        { weight: '+12 pts', tag: 'Urgent Tone (Normal)', desc: 'Standard business reminder about scheduled maintenance.', level: 'slate' }
       ]
     }
   },
@@ -236,24 +236,24 @@ const SCENARIOS = {
       name: 'AWS_Tax_Invoice_840192842.pdf',
       nameAlert: 'Verified Clean Standard PDF',
       mimeDeclared: 'PDF Document',
-      magicBytes: 'Real: Clean PDF Structure (%PDF-1.6)',
+      magicBytes: 'Actually is: Normal PDF document (%PDF-1.6)',
       size: '184.2 KB',
-      entropy: 'Entropy: 5.45 (Standard text)',
+      entropy: 'Standard document fonts',
       sha256: 'a12f38bc901a5201994e63bb018241947265910248293aaec8472910482941aa',
-      severity: 'Verified Benign Document',
+      severity: 'Safe Document',
       theme: 'emerald'
     },
     verdict: {
-      label: 'Clean Traffic',
+      label: 'SAFE EMAIL',
       score: 6,
-      badgeText: 'Authentic Business Invoice',
+      badgeText: 'Safe verified invoice',
       theme: 'emerald',
       bodyScore: 8,
       attachScore: 4,
       signals: [
-        { weight: '-30 pts', tag: 'Cryptographic DKIM Valid', desc: 'Valid cryptographic signature from verified AWS domain.', level: 'emerald' },
-        { weight: '-20 pts', tag: 'Zero Anchor Mismatch', desc: 'Visible text matches target anchor https://console.aws.amazon.com.', level: 'emerald' },
-        { weight: '-10 pts', tag: 'Clean Document Structure', desc: 'No executable segments or suspicious code blocks.', level: 'emerald' }
+        { weight: '-30 pts', tag: 'Verified Sender Signature', desc: 'Digitally verified signature from official Amazon domain.', level: 'emerald' },
+        { weight: '-20 pts', tag: 'Genuine Web Link', desc: 'The link text and destination both go to the real console.aws.amazon.com.', level: 'emerald' },
+        { weight: '-10 pts', tag: 'Safe File Structure', desc: 'Clean document with no harmful code.', level: 'emerald' }
       ]
     }
   }
@@ -405,31 +405,85 @@ function loadScenario(key) {
   if (actBox && data.attachment) {
     if (isHigh) {
       if (actIcon) actIcon.textContent = 'block';
-      if (actTitle) actTitle.textContent = 'Actionable Recommendation';
+      if (actTitle) actTitle.textContent = 'What You Should Do With This File';
       if (actBadge) {
-        actBadge.textContent = 'QUARANTINE';
+        actBadge.textContent = 'DANGEROUS: DO NOT OPEN';
         actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold';
       }
-      if (actText) actText.textContent = 'Quarantine immediately — do NOT execute or open. Block sender domain at mail gateway.';
+      if (actText) actText.textContent = 'DO NOT OPEN THIS FILE! Quarantine or delete it immediately. It could harm your computer.';
       actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-rose-500/30 flex items-start gap-3.5';
     } else if (isMed) {
       if (actIcon) actIcon.textContent = 'visibility';
-      if (actTitle) actTitle.textContent = 'Actionable Recommendation';
+      if (actTitle) actTitle.textContent = 'What You Should Do With This File';
       if (actBadge) {
-        actBadge.textContent = 'SAFE VIEWER';
+        actBadge.textContent = 'INSPECT SAFELY';
         actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold';
       }
-      if (actText) actText.textContent = 'Inspect in an isolated sandbox or safe plain-text viewer. Do not enter credentials.';
+      if (actText) actText.textContent = 'Do not enter passwords. If you must review it for work, use a safe read-only previewer or ask IT.';
       actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-amber-500/30 flex items-start gap-3.5';
     } else {
       if (actIcon) actIcon.textContent = 'verified';
-      if (actTitle) actTitle.textContent = 'Actionable Recommendation';
+      if (actTitle) actTitle.textContent = 'What You Should Do With This File';
       if (actBadge) {
-        actBadge.textContent = 'BENIGN DOCUMENT';
+        actBadge.textContent = 'SAFE FILE';
         actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold';
       }
-      if (actText) actText.textContent = 'Safe document verified — standard handling in normal viewer.';
+      if (actText) actText.textContent = 'Safe document verified — safe to view and open normally.';
       actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-emerald-500/30 flex items-start gap-3.5';
+    }
+  }
+
+  // Guidance steps for scenario
+  const guideSteps = document.getElementById('triage-guidance-steps');
+  if (guideSteps) {
+    if (isHigh) {
+      guideSteps.innerHTML = `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30">
+          <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+          <div>
+            <h4 class="text-xs font-semibold text-rose-300">Do not open, click, or reply</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Keep this message isolated. Never click links or download attachments on your computer.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/30">
+          <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 font-bold text-xs flex items-center justify-center shrink-0">2</span>
+          <div>
+            <h4 class="text-xs font-semibold text-purple-300">Verify the sender directly</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Contact the purported sender using an official phone number or website you already know.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+          <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">3</span>
+          <div>
+            <h4 class="text-xs font-semibold text-cyan-300">Inspect file safely</h4>
+            <p class="text-xs text-slate-300 mt-0.5">DO NOT open on your computer. If you must review it for work, ask IT to check it in a safe isolated viewer.</p>
+          </div>
+        </div>`;
+    } else if (isMed) {
+      guideSteps.innerHTML = `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+          <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+          <div>
+            <h4 class="text-xs font-semibold text-amber-300">Do not enter passwords or credentials</h4>
+            <p class="text-xs text-slate-300 mt-0.5">The login link goes to an untrusted domain that may steal your login information.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/30">
+          <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 font-bold text-xs flex items-center justify-center shrink-0">2</span>
+          <div>
+            <h4 class="text-xs font-semibold text-purple-300">Verify with your IT helpdesk</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Check if an actual MFA reset was requested through your official company portal.</p>
+          </div>
+        </div>`;
+    } else {
+      guideSteps.innerHTML = `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-[#0c0e14] border border-[#232d40]">
+          <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">✓</span>
+          <div>
+            <h4 class="text-xs font-semibold text-white">Safe to open and handle normally</h4>
+            <p class="text-xs text-slate-400 mt-0.5">All security checks passed. The sender and files appear genuine.</p>
+          </div>
+        </div>`;
     }
   }
 
@@ -469,12 +523,12 @@ function renderDetectedLinks(links) {
   const countPill = document.getElementById('links-count-pill');
   if (!container) return;
 
-  if (countPill) countPill.textContent = `${links.length} Link${links.length === 1 ? '' : 's'} Inspected`;
+  if (countPill) countPill.textContent = `${links.length} Link${links.length === 1 ? '' : 's'} Found`;
 
   if (!links.length) {
     container.innerHTML = `
       <div class="p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] text-center text-xs text-slate-400">
-        No hyperlinks discovered in this message sample.
+        No web links found in this email.
       </div>
     `;
     return;
@@ -512,20 +566,20 @@ function renderDetectedLinks(links) {
           </div>
           <div class="flex items-center gap-2">
             <span class="px-2 py-0.5 rounded text-[11px] font-mono border ${riskBadgeColor}">
-              Score: ${lk.risk_score !== undefined ? lk.risk_score : (lk.score_impact || 0)} / 100 (${lk.risk_level || 'ANALYZED'})
+              Risk: ${lk.risk_score !== undefined ? lk.risk_score : (lk.score_impact || 0)} / 100
             </span>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
-          <div class="sm:col-span-3 text-slate-400 font-medium">Visible Anchor:</div>
+          <div class="sm:col-span-3 text-slate-400 font-medium">What the link says:</div>
           <div class="sm:col-span-9 font-mono text-cyan-300 break-all select-all">${escapeHtml(lk.anchor_text || '(Plain Destination URL)')}</div>
-          <div class="sm:col-span-3 text-slate-400 font-medium">Actual Destination:</div>
+          <div class="sm:col-span-3 text-slate-400 font-medium">Where it actually goes:</div>
           <div class="sm:col-span-9 font-mono text-rose-300 break-all select-all font-semibold">${escapeHtml(lk.url)}</div>
         </div>
 
         <div class="flex flex-wrap gap-1.5 pt-1 border-t border-[#1b2333]">
-          ${tagsHtml || '<span class="text-[11px] text-slate-500 font-mono">No threat tags triggered</span>'}
+          ${tagsHtml || '<span class="text-[11px] text-slate-500 font-mono">Clean (No scam patterns detected)</span>'}
         </div>
       </div>
     `;
@@ -541,15 +595,15 @@ function updatePhishingVectors(pv) {
       el.textContent = labelActive;
       el.className = 'text-[11px] font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold';
     } else {
-      el.textContent = labelNeg || 'NEGATIVE';
+      el.textContent = labelNeg || 'Clean (Not Found)';
       el.className = 'text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400';
     }
   };
 
-  setV('phish-badge-homoglyph', pv.homoglyph, 'POSITIVE (Deceptive Cyrillic/IDN)');
-  setV('phish-badge-vishing', pv.vishing, 'POSITIVE (Callback Phone Detected)');
-  setV('phish-badge-hidden', pv.hiddenText, 'POSITIVE (Hidden CSS Text)');
-  setV('phish-badge-quishing', pv.quishing, 'POSITIVE (QR Phish Prompt)');
+  setV('phish-badge-homoglyph', pv.homoglyph, 'Warning: Lookalike Letters Found');
+  setV('phish-badge-vishing', pv.vishing, 'Warning: Fake Phone Scam Detected');
+  setV('phish-badge-hidden', pv.hiddenText, 'Warning: Invisible Text Found');
+  setV('phish-badge-quishing', pv.quishing, 'Warning: QR Code Prompt Found');
 }
 
 // Standalone URL Fast-Check (Single Clean Input)
@@ -597,15 +651,15 @@ async function runStandaloneLinkCheck() {
     const discCard = document.getElementById('url-discrepancy-card');
 
     if (la.is_mismatch) {
-      tagEl.textContent = 'CRITICAL MISMATCH';
+      tagEl.textContent = 'DANGEROUS MISMATCH';
       tagEl.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
       discCard.className = 'rounded-xl bg-[#0c0e14] border border-rose-500/30 p-5 shadow-sm';
     } else if (la.risk_score >= 50) {
-      tagEl.textContent = 'HIGH RISK LINK';
+      tagEl.textContent = 'DANGEROUS LINK';
       tagEl.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
       discCard.className = 'rounded-xl bg-[#0c0e14] border border-rose-500/30 p-5 shadow-sm';
     } else {
-      tagEl.textContent = 'CLEAN STRUCTURE';
+      tagEl.textContent = 'CLEAN LINK';
       tagEl.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
       discCard.className = 'rounded-xl bg-[#0c0e14] border border-emerald-500/30 p-5 shadow-sm';
     }
@@ -617,8 +671,8 @@ async function runStandaloneLinkCheck() {
     const vCircle = document.getElementById('verdict-circle-bar');
 
     vScore.textContent = la.risk_score;
-    vLabel.textContent = la.risk_level === 'CRITICAL' ? 'Critical URL Threat' : (la.risk_level === 'HIGH' ? 'Suspicious URL' : (la.risk_level === 'MEDIUM' ? 'Caution Advised' : 'Benign URL'));
-    vSub.textContent = la.risk_score >= 50 ? 'Immediate Isolation Recommended' : 'Standard Web Hygiene';
+    vLabel.textContent = la.risk_level === 'CRITICAL' ? 'DANGEROUS LINK' : (la.risk_level === 'HIGH' ? 'SUSPICIOUS LINK' : (la.risk_level === 'MEDIUM' ? 'CAUTION ADVISED' : 'SAFE LINK'));
+    vSub.textContent = la.risk_score >= 50 ? 'Do not open this website' : 'Safe to browse';
 
     const circumference = 251.2;
     const offset = circumference - (la.risk_score / 100) * circumference;
@@ -725,7 +779,7 @@ function renderLiveApiResponse(a) {
     document.getElementById('url-visible-text').textContent = mismatchLink.anchor_text || mismatchLink.url;
     document.getElementById('url-actual-dest').textContent = mismatchLink.url;
     if (mismatchLink.is_mismatch) {
-      tagEl.textContent = 'CRITICAL MISMATCH';
+      tagEl.textContent = 'DANGEROUS MISMATCH';
       tagEl.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
       discCard.className = 'rounded-xl bg-[#0c0e14] border border-rose-500/30 p-5 shadow-sm';
     } else {
@@ -736,7 +790,7 @@ function renderLiveApiResponse(a) {
   } else {
     document.getElementById('url-visible-text').textContent = 'No hyperlinks found in message body';
     document.getElementById('url-actual-dest').textContent = 'N/A';
-    tagEl.textContent = 'ZERO LINKS';
+    tagEl.textContent = 'NO LINKS FOUND';
     tagEl.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-slate-800 text-slate-400 border border-slate-700';
     discCard.className = 'rounded-xl bg-[#0c0e14] border border-[#232d40] p-5 shadow-sm';
   }
@@ -754,20 +808,20 @@ function renderLiveApiResponse(a) {
   const sevPill = document.getElementById('attachment-severity-pill');
   if (primaryAtt) {
     document.getElementById('file-name').textContent = primaryAtt.filename;
-    let alertMsg = 'Standard static layout verified';
-    if (primaryAtt.is_double_extension) alertMsg = `Double extension: .${primaryAtt.filename.split('.').slice(-2).join('.')}`;
-    else if (primaryAtt.has_rtlo) alertMsg = 'Unicode RTLO Deception Detected';
-    else if (primaryAtt.type_mismatch) alertMsg = 'Type mismatch: Declared MIME differs from magic bytes';
-    else if (primaryAtt.has_vba_macros) alertMsg = 'VBA Macros detected in Office structure';
+    let alertMsg = 'Standard clean file layout';
+    if (primaryAtt.is_double_extension) alertMsg = `Disguised double extension: .${primaryAtt.filename.split('.').slice(-2).join('.')}`;
+    else if (primaryAtt.has_rtlo) alertMsg = 'Hidden reversed filename trick (RTLO)';
+    else if (primaryAtt.type_mismatch) alertMsg = 'Type mismatch: Pretends to be one file but is another';
+    else if (primaryAtt.has_vba_macros) alertMsg = 'Contains macro script code';
 
     document.getElementById('file-ext-alert').textContent = alertMsg;
     document.getElementById('file-mime').textContent = primaryAtt.declared_mime_type || 'Unknown';
     document.getElementById('file-magic').textContent = primaryAtt.magic_signature || 'N/A';
     document.getElementById('file-size').textContent = primaryAtt.size_human;
-    document.getElementById('file-entropy').textContent = 'Analyzed byte distribution';
+    document.getElementById('file-entropy').textContent = 'Compressed byte structure';
     document.getElementById('file-sha256').textContent = primaryAtt.sha256 || '—';
 
-    sevPill.textContent = primaryAtt.risk_level === 'MALICIOUS' ? 'Executable Binary Disguised' : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'Suspicious Attachment' : 'Verified Benign Document');
+    sevPill.textContent = primaryAtt.risk_level === 'MALICIOUS' ? 'Dangerous: Hidden Program (.exe)' : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'Suspicious File' : 'Safe Document');
     sevPill.className = primaryAtt.risk_level === 'MALICIOUS' 
       ? 'px-3 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40'
       : (primaryAtt.risk_level === 'SUSPICIOUS' ? 'px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40');
@@ -779,7 +833,7 @@ function renderLiveApiResponse(a) {
     document.getElementById('file-size').textContent = '0 B';
     document.getElementById('file-entropy').textContent = 'N/A';
     document.getElementById('file-sha256').textContent = '—';
-    sevPill.textContent = 'No Attachment';
+    sevPill.textContent = 'No Attached File';
     sevPill.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700';
   }
 
@@ -789,17 +843,21 @@ function renderLiveApiResponse(a) {
   const vSub = document.getElementById('verdict-sublabel');
   const vCircle = document.getElementById('verdict-circle-bar');
 
-  vLabel.textContent = a.verdict;
   vScore.textContent = score;
 
   let theme = 'emerald';
-  let badgeText = 'Authentic Traffic';
+  let badgeText = 'Standard safe email';
   if (rating === 'CRITICAL' || rating === 'HIGH') {
     theme = 'rose';
-    badgeText = 'Immediate Isolation Required';
+    vLabel.textContent = 'DANGEROUS SCAM';
+    badgeText = 'Do not click links or open files';
   } else if (rating === 'MEDIUM') {
     theme = 'amber';
-    badgeText = 'Credential Harvest Risk';
+    vLabel.textContent = 'SUSPICIOUS - BE CAREFUL';
+    badgeText = 'Check with sender before clicking';
+  } else {
+    vLabel.textContent = 'SAFE EMAIL';
+    badgeText = 'Standard safe email';
   }
   vSub.textContent = badgeText;
 
@@ -849,34 +907,39 @@ function renderLiveApiResponse(a) {
 
   if (actBox) {
     if (primaryAtt) {
-      const rec = primaryAtt.recommended_action || (primaryAtt.risk_level === 'MALICIOUS' ? 'Quarantine immediately — do NOT execute or open.' : 'Inspect in safe isolated viewer.');
-      if (actText) actText.textContent = rec;
       if (primaryAtt.risk_level === 'MALICIOUS') {
         if (actIcon) actIcon.textContent = 'block';
+        if (actTitle) actTitle.textContent = 'What You Should Do With This File';
         if (actBadge) {
-          actBadge.textContent = 'QUARANTINE';
+          actBadge.textContent = 'DANGEROUS: DO NOT OPEN';
           actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold';
         }
+        if (actText) actText.textContent = 'DO NOT OPEN THIS FILE! Quarantine or delete it immediately. It could harm your computer.';
         actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-rose-500/30 flex items-start gap-3.5';
       } else if (primaryAtt.risk_level === 'SUSPICIOUS') {
         if (actIcon) actIcon.textContent = 'visibility';
+        if (actTitle) actTitle.textContent = 'What You Should Do With This File';
         if (actBadge) {
-          actBadge.textContent = 'SAFE VIEWER';
+          actBadge.textContent = 'INSPECT SAFELY';
           actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold';
         }
+        if (actText) actText.textContent = 'Do not enter passwords. If you must review it for work, use a safe read-only previewer or ask IT.';
         actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-amber-500/30 flex items-start gap-3.5';
       } else {
         if (actIcon) actIcon.textContent = 'verified';
+        if (actTitle) actTitle.textContent = 'What You Should Do With This File';
         if (actBadge) {
-          actBadge.textContent = 'BENIGN DOCUMENT';
+          actBadge.textContent = 'SAFE FILE';
           actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold';
         }
+        if (actText) actText.textContent = 'Safe document verified — safe to view and open normally.';
         actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-emerald-500/30 flex items-start gap-3.5';
       }
     } else {
+      if (actTitle) actTitle.textContent = 'What You Should Do With This File';
       if (actText) actText.textContent = 'No file payload attached to this message.';
       if (actBadge) {
-        actBadge.textContent = 'NO ATTACHMENT';
+        actBadge.textContent = 'NO ATTACHED FILE';
         actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
       }
       actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-start gap-3.5';
@@ -935,8 +998,8 @@ function renderLiveApiResponse(a) {
         <div class="flex items-start gap-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30">
           <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
           <div>
-            <h4 class="text-xs font-semibold text-rose-300">Quarantine &amp; Isolate Immediately</h4>
-            <p class="text-xs text-slate-300 mt-0.5">Keep message isolated. Never click links or run attachments on your computer.</p>
+            <h4 class="text-xs font-semibold text-rose-300">Do not open, click, or reply</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Keep this message isolated. Never click links or download attachments on your computer.</p>
           </div>
         </div>`;
     }
@@ -946,8 +1009,8 @@ function renderLiveApiResponse(a) {
         <div class="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/30">
           <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 font-bold text-xs flex items-center justify-center shrink-0">${stepsHtml ? 2 : 1}</span>
           <div>
-            <h4 class="text-xs font-semibold text-purple-300">Verify Sender via Official Channel</h4>
-            <p class="text-xs text-slate-300 mt-0.5">Contact the purported sender out-of-band using an internal corporate directory or known phone number.</p>
+            <h4 class="text-xs font-semibold text-purple-300">Verify the sender directly</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Contact the person or company using an official phone number or website you already know.</p>
           </div>
         </div>`;
     }
@@ -957,8 +1020,8 @@ function renderLiveApiResponse(a) {
         <div class="flex items-start gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
           <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">3</span>
           <div>
-            <h4 class="text-xs font-semibold text-cyan-300">Inspect in Safe Sandboxed Viewer</h4>
-            <p class="text-xs text-slate-300 mt-0.5">${primaryAtt && primaryAtt.risk_level === 'MALICIOUS' ? 'Do NOT open on workstation. Inspect in isolated malware sandbox only.' : 'Inspect file in a safe plain-text or read-only document viewer.'}</p>
+            <h4 class="text-xs font-semibold text-cyan-300">Inspect file safely</h4>
+            <p class="text-xs text-slate-300 mt-0.5">${primaryAtt && primaryAtt.risk_level === 'MALICIOUS' ? 'DO NOT open on your computer. If you must review it for work, ask IT to check it in a safe isolated viewer.' : 'Inspect file in a safe plain-text or read-only document viewer.'}</p>
           </div>
         </div>`;
     }
@@ -968,8 +1031,8 @@ function renderLiveApiResponse(a) {
         <div class="flex items-start gap-3 p-3 rounded-xl bg-[#0c0e14] border border-[#232d40]">
           <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">✓</span>
           <div>
-            <h4 class="text-xs font-semibold text-white">Standard Handling Verified</h4>
-            <p class="text-xs text-slate-400 mt-0.5">Static checks verified clean document structure and valid cryptographic sender authentication.</p>
+            <h4 class="text-xs font-semibold text-white">Safe to open and handle normally</h4>
+            <p class="text-xs text-slate-400 mt-0.5">All security checks passed. The sender and files appear genuine.</p>
           </div>
         </div>`;
     }
@@ -1150,9 +1213,9 @@ function copySha256() {
 
 function triggerAction(action) {
   if (action === 'quarantine') {
-    alert('Threat Item Quarantined: The raw payload has been isolated and sender IP staged for boundary blocklist.');
+    alert('Threat Quarantined: This email and its files have been safely isolated and blocked.');
   } else if (action === 'whitelist') {
-    alert('Recorded False Positive: Signal override stored in local memory telemetry.');
+    alert('Feedback Saved: Marked this email as safe in your local session.');
   } else if (action === 'export') {
     const artifact = {
       timestamp: new Date().toISOString(),
@@ -1325,13 +1388,14 @@ async function submitInlineFeedback(verdict) {
     });
 
     if (res.ok) {
-      alert(`Thank you! Recorded feedback: [${verdict}]. This will be used in continuous evaluation.`);
+      const label = verdict === 'ACCURATE' ? 'Accurate (Correct)' : (verdict === 'FALSE_POSITIVE' ? 'False Alarm (Safe)' : 'Missed Scam (Risky)');
+      alert(`Thank you! Recorded feedback: [${label}]. This helps improve detection accuracy.`);
       fetchFeedbackStats();
     } else {
       alert(`Feedback recorded locally.`);
     }
   } catch (e) {
-    alert(`Feedback logged: [${verdict}]`);
+    alert(`Feedback logged.`);
   }
 }
 
@@ -1361,7 +1425,7 @@ async function submitModalFeedback() {
     });
 
     if (res.ok) {
-      alert('Feedback successfully submitted and stored in local telemetry store.');
+      alert('Thank you! Your feedback has been saved successfully.');
       if (notesInput) notesInput.value = '';
       fetchFeedbackStats();
     } else {

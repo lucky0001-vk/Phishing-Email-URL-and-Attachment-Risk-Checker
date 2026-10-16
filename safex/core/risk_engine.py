@@ -111,6 +111,19 @@ def evaluate_email_risk(
             )
         )
 
+    if has_zip_pw_match:
+        correlation_bonus += 20
+        all_signals.append(
+            DetectionSignal(
+                category="attachment",
+                name="Correlated Archive Password Evasion Vector",
+                severity="high",
+                score_impact=20,
+                description="Encrypted ZIP archive with password provided in email body deliberately evades automated gateway detection.",
+                evidence="Archive Password in Body + Encrypted ZIP"
+            )
+        )
+
     # Raw sum
     raw_score = header_score + body_url_score + attachment_score + correlation_bonus
 

@@ -169,7 +169,7 @@ def _analyze_single_link(url: str, anchor_text: str) -> LinkAnalysis:
         # Strip scheme if present in anchor text
         clean_anchor = re.sub(r"^https?://", "", anchor_text.strip(), flags=re.IGNORECASE)
         # Check if anchor text looks like a URL or domain
-        text_domain_match = re.search(r"([a-zA-Z0-9\-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)", clean_anchor)
+        text_domain_match = re.search(r"([a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*(?:\.[a-zA-Z]{2,})(?:/[^\s]*)?)", clean_anchor)
         if text_domain_match:
             display_candidate = text_domain_match.group(1).lower()
             display_host = display_candidate.split("/")[0].split(":")[0]
