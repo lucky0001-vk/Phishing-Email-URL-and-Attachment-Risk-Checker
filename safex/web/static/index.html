@@ -164,64 +164,112 @@
     </div>
 
     <!-- SEPARATELY VISIBLE CUSTOM INPUT WORKBENCH (Collapsible & Directly on page) -->
-    <section id="custom-workbench-card" class="bg-[#161b26] border border-purple-500/30 rounded-2xl p-6 shadow-xl space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-[#232d40]">
+    <!-- SEPARATELY VISIBLE CUSTOM INPUT WORKBENCH (Collapsible & Directly on page) -->
+    <section id="custom-workbench-card" class="bg-[#161b26] border border-purple-500/30 rounded-2xl p-6 shadow-xl space-y-5">
+      <!-- Header & Mode Tabs -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#232d40]">
         <div class="flex items-center gap-2.5">
           <span class="material-symbols-outlined text-purple-400 text-xl">terminal</span>
-          <h2 class="text-base font-semibold text-white">Live Custom Threat Input Terminal</h2>
-          <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">Direct In-Memory Inspection</span>
+          <h2 class="text-base font-semibold text-white">Live Threat Inspector</h2>
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">In-Memory Engine</span>
         </div>
-        <div class="flex items-center gap-2">
-          <button onclick="prefillSample('mismatch')" class="text-xs px-2.5 py-1 rounded-lg bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Sample: Link Mismatch</button>
-          <button onclick="prefillSample('ip')" class="text-xs px-2.5 py-1 rounded-lg bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Sample: IP Literal</button>
-          <button onclick="prefillSample('homoglyph')" class="text-xs px-2.5 py-1 rounded-lg bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Sample: Cyrillic Homoglyph</button>
-          <button onclick="prefillSample('vishing')" class="text-xs px-2.5 py-1 rounded-lg bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Sample: Vishing Phone</button>
-          <button onclick="clearCustomInput()" class="text-xs text-rose-400 hover:text-rose-300 ml-2">Clear</button>
+
+        <!-- Mode Switcher: Single URL vs Full Email -->
+        <div class="flex items-center bg-[#0c0e14] border border-[#232d40] rounded-xl p-1 gap-1">
+          <button id="tab-mode-url" onclick="switchInputMode('url')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-sm">link</span> Single URL Check
+          </button>
+          <button id="tab-mode-email" onclick="switchInputMode('email')" class="px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">mail</span> Full Email &amp; Attachments
+          </button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <!-- Left: Paste Email / Raw Text -->
-        <div class="lg:col-span-8 flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-medium text-slate-400">Paste Email Headers, Plain Text, HTML, or Raw URLs:</label>
-            <span class="text-[11px] font-mono text-slate-500">Auto-detects every embedded URL</span>
-          </div>
-          <textarea id="live-email-input" rows="6" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-400" placeholder="From: security@paypal-verify.com&#10;To: victim@example.com&#10;Subject: URGENT: Your account has been suspended!&#10;Authentication-Results: spf=fail; dkim=none&#10;&#10;Please verify your credentials immediately:&#10;<a href='http://185.192.1.44:8080/auth/login.php'>https://www.paypal.com/security-verify</a>"></textarea>
-        </div>
-
-        <!-- Right: Standalone URL / File Upload -->
-        <div class="lg:col-span-4 flex flex-col gap-3">
-          <!-- Standalone URL Fast-Check -->
-          <div class="p-3.5 rounded-xl bg-[#0c0e14] border border-[#232d40] space-y-2">
-            <span class="text-xs font-semibold text-cyan-300 block">Quick Standalone URL Hunter</span>
-            <input type="text" id="standalone-url-input" placeholder="e.g. http://185.192.1.44:8080/login.php or bit.ly/xyz" class="w-full bg-[#161b26] border border-[#232d40] rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400"/>
-            <input type="text" id="standalone-anchor-input" placeholder="Optional visible anchor text (e.g. https://bank.com)" class="w-full bg-[#161b26] border border-[#232d40] rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400"/>
-            <button onclick="runStandaloneLinkCheck()" class="w-full py-1.5 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 border border-cyan-500/40 text-xs font-semibold flex items-center justify-center gap-1 transition-colors">
-              <span class="material-symbols-outlined text-sm">link</span> Inspect This URL Only
+      <!-- MODE 1: SINGLE URL INSPECTOR (One Single Clean Bar) -->
+      <div id="panel-mode-url" class="space-y-3">
+        <label class="text-xs font-medium text-slate-300 flex items-center justify-between">
+          <span>Enter or paste any suspicious URL:</span>
+          <span class="text-[11px] font-mono text-cyan-400">Checks Cyrillic lookalikes, IP addresses, ports &amp; brand typos</span>
+        </label>
+        
+        <div class="flex flex-col sm:flex-row items-stretch gap-2.5">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">public</span>
+            <input 
+              type="text" 
+              id="standalone-url-input" 
+              onkeydown="if(event.key==='Enter') runStandaloneLinkCheck()"
+              placeholder="e.g. http://185.192.1.44:8080/login.php or bit.ly/3xY7q" 
+              class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl pl-11 pr-24 py-3 text-sm font-mono text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner"
+            />
+            <button 
+              onclick="pasteClipboardToUrl()" 
+              type="button"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-[#161b26] hover:bg-[#232d40] text-slate-300 hover:text-white border border-[#232d40] text-xs font-medium flex items-center gap-1 transition-colors"
+              title="Paste from clipboard"
+            >
+              <span class="material-symbols-outlined text-xs">content_paste</span> Paste
             </button>
           </div>
+          
+          <button 
+            id="btn-inspect-url"
+            onclick="runStandaloneLinkCheck()" 
+            class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all shrink-0"
+          >
+            <span class="material-symbols-outlined text-base">security_update_good</span>
+            Inspect URL
+          </button>
+        </div>
 
-          <!-- File Drag-and-Drop Zone -->
-          <div id="live-dropzone" class="border-2 border-dashed border-[#232d40] hover:border-purple-400/60 rounded-xl p-3 text-center cursor-pointer transition-colors bg-[#0c0e14] flex flex-col items-center justify-center">
-            <span class="material-symbols-outlined text-xl text-purple-400">upload_file</span>
-            <p class="text-xs text-slate-300 mt-1">Upload .eml or attachment files</p>
-            <p class="text-[10px] text-slate-500">Static byte parser (never executed)</p>
-            <input type="file" id="live-file-input" multiple class="hidden">
-            <div id="live-file-list" class="mt-1 space-y-1 w-full"></div>
-          </div>
+        <!-- Quick 1-click test URLs for convenience -->
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <span class="text-[11px] text-slate-500 font-medium">Try test samples:</span>
+          <button onclick="setQuickUrl('http://185.192.1.44:8080/auth/login.php')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-rose-300 hover:border-rose-500/40 transition-colors">IP + Port</button>
+          <button onclick="setQuickUrl('https://pаypal.com/verify-account')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-amber-300 hover:border-amber-500/40 transition-colors">Cyrillic Homoglyph</button>
+          <button onclick="setQuickUrl('https://bit.ly/3xSecAlert')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-purple-300 hover:border-purple-500/40 transition-colors">URL Shortener</button>
+          <button onclick="setQuickUrl('https://confluence.acme-corp.com/display/IT/VPN')" class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#0c0e14] hover:bg-[#161b26] border border-[#232d40] text-cyan-300 hover:border-cyan-500/40 transition-colors">Clean Link</button>
         </div>
       </div>
 
-      <div class="flex items-center justify-between pt-2 border-t border-[#232d40]">
-        <div class="text-xs text-slate-400 flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-emerald-400 text-sm">lock</span>
-          <span>Zero network connections &bull; RFC 5322 in-memory parser</span>
+      <!-- MODE 2: FULL EMAIL & ATTACHMENTS (Visible when Email tab is selected) -->
+      <div id="panel-mode-email" class="hidden space-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Left: Paste Email / Raw Text -->
+          <div class="lg:col-span-8 flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-medium text-slate-400">Paste Email Headers, Plain Text, HTML, or Raw URLs:</label>
+              <div class="flex items-center gap-1.5">
+                <button onclick="prefillSample('mismatch')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Mismatch</button>
+                <button onclick="prefillSample('vishing')" class="text-[11px] px-2 py-0.5 rounded bg-[#0c0e14] border border-[#232d40] text-slate-300 hover:text-white">Vishing</button>
+                <button onclick="clearCustomInput()" class="text-[11px] text-rose-400 hover:text-rose-300 ml-1">Clear</button>
+              </div>
+            </div>
+            <textarea id="live-email-input" rows="6" class="w-full bg-[#0c0e14] border border-[#232d40] rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-400" placeholder="From: security@paypal-verify.com&#10;To: victim@example.com&#10;Subject: URGENT: Your account has been suspended!&#10;Authentication-Results: spf=fail; dkim=none&#10;&#10;Please verify your credentials immediately:&#10;<a href='http://185.192.1.44:8080/auth/login.php'>https://www.paypal.com/security-verify</a>"></textarea>
+          </div>
+
+          <!-- Right: File Upload -->
+          <div class="lg:col-span-4 flex flex-col justify-between">
+            <div id="live-dropzone" class="border-2 border-dashed border-[#232d40] hover:border-purple-400/60 rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#0c0e14] h-full flex flex-col items-center justify-center">
+              <span class="material-symbols-outlined text-2xl text-purple-400">upload_file</span>
+              <p class="text-xs font-medium text-slate-200 mt-2">Upload .eml or attachments</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Static byte parser (never executed)</p>
+              <input type="file" id="live-file-input" multiple class="hidden">
+              <div id="live-file-list" class="mt-2 space-y-1 w-full text-left"></div>
+            </div>
+          </div>
         </div>
-        <button id="btn-run-live" onclick="executeLiveAnalysis()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 flex items-center gap-2 transition-all">
-          <span class="material-symbols-outlined text-base">play_arrow</span>
-          Run Comprehensive Static Triage
-        </button>
+
+        <div class="flex items-center justify-between pt-2 border-t border-[#232d40]">
+          <div class="text-xs text-slate-400 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-emerald-400 text-sm">lock</span>
+            <span>Zero network connections &bull; RFC 5322 in-memory parser</span>
+          </div>
+          <button id="btn-run-live" onclick="executeLiveAnalysis()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 flex items-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-base">play_arrow</span>
+            Run Comprehensive Static Triage
+          </button>
+        </div>
       </div>
     </section>
 

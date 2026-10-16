@@ -496,13 +496,25 @@ function updatePhishingVectors(pv) {
   setV('phish-badge-quishing', pv.quishing, 'POSITIVE (QR Phish Prompt)');
 }
 
-// Standalone URL Fast-Check
+// Standalone URL Fast-Check (Single Clean Input)
 async function runStandaloneLinkCheck() {
-  const input = document.getElementById('standalone-url-input').value.trim();
-  const anchor = document.getElementById('standalone-anchor-input').value.trim();
+  const urlEl = document.getElementById('standalone-url-input');
+  const input = urlEl ? urlEl.value.trim() : '';
+  const anchorEl = document.getElementById('standalone-anchor-input');
+  const anchor = anchorEl ? anchorEl.value.trim() : '';
+
   if (!input) {
-    alert('Please enter a URL to inspect.');
+    alert('Please enter or paste a URL to inspect.');
+    if (urlEl) urlEl.focus();
     return;
+  }
+
+  const btn = document.getElementById('btn-inspect-url');
+  let prevBtn = '';
+  if (btn) {
+    prevBtn = btn.innerHTML;
+    btn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Scanning...`;
+    btn.disabled = true;
   }
 
   try {
@@ -577,6 +589,11 @@ async function runStandaloneLinkCheck() {
 
   } catch (err) {
     alert('Failed to analyze link: ' + err.message);
+  } finally {
+    if (btn && prevBtn) {
+      btn.innerHTML = prevBtn;
+      btn.disabled = false;
+    }
   }
 }
 
@@ -1005,3 +1022,56 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+// Switch between Single URL mode and Full Email/Attachment mode
+function switchInputMode(mode) {
+  const panelUrl = document.getElementById('panel-mode-url');
+  const panelEmail = document.getElementById('panel-mode-email');
+  const tabUrl = document.getElementById('tab-mode-url');
+  const tabEmail = document.getElementById('tab-mode-email');
+
+  if (mode === 'url') {
+    panelUrl.classList.remove('hidden');
+    panelEmail.classList.add('hidden');
+    tabUrl.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm';
+    tabEmail.className = 'px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+    const input = document.getElementById('standalone-url-input');
+    if (input) input.focus();
+  } else {
+    panelUrl.classList.add('hidden');
+    panelEmail.classList.remove('hidden');
+    tabEmail.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 shadow-sm';
+    tabUrl.className = 'px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+    const text = document.getElementById('live-email-input');
+    if (text) text.focus();
+  }
+}
+
+// 1-Click Paste from Clipboard directly into the single URL input
+async function pasteClipboardToUrl() {
+  const input = document.getElementById('standalone-url-input');
+  if (!input) return;
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
+      input.value = text.trim();
+      input.focus();
+      // Auto-trigger inspection for effortless 1-click experience
+      runStandaloneLinkCheck();
+    }
+  } catch (e) {
+    // If browser permission denied, focus so user can Ctrl+V
+    input.focus();
+    input.select();
+  }
+}
+
+// Quick 1-click test URL filler
+function setQuickUrl(url) {
+  const input = document.getElementById('standalone-url-input');
+  if (input) {
+    input.value = url;
+    runStandaloneLinkCheck();
+  }
+}
+
