@@ -1,0 +1,8 @@
+From: Accounts Payable <billing@supplier-hub.net>
+To: accounting@company.com
+Subject: Outstanding Overdue Invoice #INV-88912
+Date: Fri, 16 Oct 2026 11:15:00 +0000
+Authentication-Results: spf=softfail; dkim=none
+
+Please find attached our updated overdue invoice. Prompt remittance advice required.
+Review the invoice attached to reconcile the balance immediately.

@@ -1,0 +1,12 @@
+From: Billing Services <invoices@cloudprovider.com>
+To: accounts@enterprise.com
+Subject: Monthly Cloud Services Invoice #94821
+Date: Fri, 16 Oct 2026 15:00:00 +0000
+Authentication-Results: spf=pass smtp.mailfrom=cloudprovider.com; dkim=pass; dmarc=pass
+
+Hello,
+
+Your monthly cloud services invoice for September is now available. Attached is the static PDF statement.
+Thank you for your business.
+
+CloudProvider Billing Team

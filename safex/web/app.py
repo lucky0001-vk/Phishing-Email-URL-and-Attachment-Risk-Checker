@@ -1,0 +1,143 @@
+"""
+SafeX FastAPI Web Application
+Provides high-performance REST APIs and serves the mesmerizing Cyber Defense UI.
+"""
+
+import os
+from typing import List, Optional
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, JSONResponse
+from safex.core.analyzer import analyze_email
+from safex.core.test_samples import get_test_samples
+
+app = FastAPI(
+    title="SafeX Threat Defense Engine",
+    description="Static Email, URL, and Attachment Phishing & Malware Decision-Support Tool",
+    version="2.0.0"
+)
+
+# Current file directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+# Mount static files
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_index():
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    with open(index_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@app.get("/api/samples")
+async def list_samples():
+    """Returns catalog of pre-configured test scenarios."""
+    samples = get_test_samples()
+    catalog = []
+    for k, v in samples.items():
+        catalog.append({
+            "key": k,
+            "id": v["id"],
+            "title": v["title"],
+            "description": v["description"],
+            "expected_verdict": v["expected_verdict"],
+            "has_attachments": len(v["attachments"]) > 0,
+            "attachment_names": [att[0] for att in v["attachments"]]
+        })
+    return catalog
+
+
+@app.get("/api/sample/{sample_id}")
+async def run_sample_analysis(sample_id: int):
+    """Run static analysis on one of the 9 pre-configured test scenarios."""
+    samples = get_test_samples()
+    target_sample = None
+    for k, v in samples.items():
+        if v["id"] == sample_id:
+            target_sample = v
+            break
+
+    if not target_sample:
+        raise HTTPException(status_code=404, detail=f"Sample #{sample_id} not found.")
+
+    result = analyze_email(target_sample["email_text"], target_sample["attachments"])
+    return {
+        "sample_meta": {
+            "id": target_sample["id"],
+            "title": target_sample["title"],
+            "description": target_sample["description"],
+            "expected_verdict": target_sample["expected_verdict"],
+        },
+        "analysis": result.model_dump()
+    }
+
+
+@app.post("/api/analyze")
+async def analyze_custom_input(
+    email_text: Optional[str] = Form(None),
+    eml_file: Optional[UploadFile] = File(None),
+    attachments: Optional[List[UploadFile]] = File(None)
+):
+    """
+    Analyze custom email input:
+    - Text pasted in textarea, or
+    - Uploaded .eml RFC822 file, and/or
+    - Multiple standalone uploaded attachment files.
+    """
+    raw_content = b""
+    if eml_file and eml_file.filename:
+        raw_content = await eml_file.read()
+    elif email_text:
+        raw_content = email_text.encode("utf-8")
+
+    external_atts = []
+    if attachments:
+        for att in attachments:
+            if att.filename:
+                att_bytes = await att.read()
+                external_atts.append((
+                    att.filename,
+                    att_bytes,
+                    att.content_type or "application/octet-stream"
+                ))
+
+    if not raw_content and not external_atts:
+        raise HTTPException(status_code=400, detail="Please provide either email text, an .eml file, or attachment files.")
+
+    result = analyze_email(raw_content, external_atts)
+    return {
+        "analysis": result.model_dump()
+    }
+
+
+@app.post("/api/analyze-link")
+async def analyze_standalone_url(
+    url: str = Form(...),
+    anchor_text: Optional[str] = Form("")
+):
+    """
+    Dedicated endpoint to analyze any standalone URL or link statically
+    without requiring an entire email container.
+    """
+    from safex.core.url_analyzer import _analyze_single_link
+    clean_url = url.strip()
+    if not clean_url.startswith(("http://", "https://")):
+        clean_url = "http://" + clean_url
+    la = _analyze_single_link(clean_url, anchor_text.strip() if anchor_text else "")
+    return {
+        "link_analysis": la.model_dump()
+    }
+
+
+def start_server(host="127.0.0.1", port=8000):
+    """Entry point for starting the web server."""
+    import uvicorn
+    print(f"🚀 SafeX Cyber Defense Platform starting on http://{host}:{port}")
+    uvicorn.run("safex.web.app:app", host=host, port=port, reload=False)
+
+
+if __name__ == "__main__":
+    start_server()
