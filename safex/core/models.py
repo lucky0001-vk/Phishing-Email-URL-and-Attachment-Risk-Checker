@@ -125,6 +125,7 @@ class AttachmentInventory(BaseModel):
     # Classification & explanation
     risk_level: str = "CLEAN"  # 'CLEAN', 'LOW', 'SUSPICIOUS', 'MALICIOUS', 'UNKNOWN'
     score: int = 0
+    recommended_action: str = "Standard safe handling"
     signals: List[DetectionSignal] = Field(default_factory=list)
 
 
@@ -151,6 +152,9 @@ class SafeGuidance(BaseModel):
     verification_steps: List[str] = Field(default_factory=list)
     recommendations: List[str] = Field(default_factory=list)
     things_to_avoid: List[str] = Field(default_factory=list)
+    quarantine_recommended: bool = False
+    sender_verification_required: bool = False
+    safe_viewer_recommended: bool = False
 
 
 class EmailAnalysisResult(BaseModel):
@@ -161,9 +165,12 @@ class EmailAnalysisResult(BaseModel):
     summary: str
     score_breakdown: Dict[str, int] = Field(
         default_factory=lambda: {
+            "sender_score": 0,
+            "body_score": 0,
+            "url_score": 0,
+            "attachment_score": 0,
             "header_score": 0,
             "body_url_score": 0,
-            "attachment_score": 0,
             "overall_score": 0,
         }
     )

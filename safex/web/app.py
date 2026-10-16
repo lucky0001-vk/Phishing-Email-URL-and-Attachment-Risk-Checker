@@ -36,10 +36,17 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
 async def serve_index():
     index_path = os.path.join(STATIC_DIR, "index.html")
     with open(index_path, "r", encoding="utf-8") as f:
         return f.read()
+
+
+@app.get("/app.js")
+async def serve_app_js():
+    from fastapi.responses import FileResponse
+    return FileResponse(os.path.join(STATIC_DIR, "app.js"))
 
 
 @app.get("/api/samples")
@@ -139,6 +146,52 @@ async def analyze_standalone_url(
     la = _analyze_single_link(clean_url, anchor_text.strip() if anchor_text else "")
     return {
         "link_analysis": la.model_dump()
+    }
+
+
+@app.get("/api/benchmark")
+async def get_benchmark_comparison():
+    """
+    Evaluates rule-based engine vs simulated ML classifier on 20 benchmark test samples.
+    Returns confusion matrices, precision, recall, f1-score, and side-by-side predictions.
+    """
+    from safex.core.evaluation_engine import evaluate_benchmark
+    results = evaluate_benchmark()
+    return results
+
+
+@app.get("/api/feedback")
+async def get_user_feedback():
+    """Get aggregated feedback statistics and recent submissions."""
+    from safex.core.feedback_store import get_feedback_stats
+    return get_feedback_stats()
+
+
+@app.post("/api/feedback")
+async def submit_user_feedback(
+    sample_id: str = Form("custom"),
+    sample_name: str = Form("User Ingestion"),
+    user_verdict: str = Form("ACCURATE"),
+    notes: Optional[str] = Form(""),
+    assigned_score: int = Form(0),
+    assigned_rating: str = Form("LOW")
+):
+    """
+    Submit user feedback to report incorrect classifications, false positives, or confirm accuracy.
+    """
+    from safex.core.feedback_store import record_feedback
+    record = record_feedback({
+        "sample_id": sample_id,
+        "sample_name": sample_name,
+        "user_verdict": user_verdict,
+        "notes": notes or "",
+        "assigned_score": assigned_score,
+        "assigned_rating": assigned_rating,
+    })
+    return {
+        "status": "success",
+        "message": "Feedback recorded successfully for continuous evaluation.",
+        "record": record
     }
 
 

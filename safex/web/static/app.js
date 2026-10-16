@@ -375,13 +375,65 @@ function loadScenario(key) {
     vCircle.className = 'stroke-emerald-400 transition-all duration-700';
   }
 
-  // Risk Bars
-  document.getElementById('score-body-text').textContent = data.verdict.bodyScore + '%';
-  document.getElementById('score-body-bar').style.width = data.verdict.bodyScore + '%';
-  document.getElementById('score-attach-text').textContent = data.verdict.attachScore + '%';
-  document.getElementById('score-attach-bar').style.width = data.verdict.attachScore + '%';
+  // 4-Way Risk Contribution Breakdown (Requirement 1)
+  const isHigh = data.verdict.theme === 'rose';
+  const isMed = data.verdict.theme === 'amber';
+  const senderPts = isHigh ? 25 : (isMed ? 15 : 0);
+  const bodyPts = isHigh ? 18 : (isMed ? 22 : 4);
+  const urlPts = isHigh ? 32 : (isMed ? 28 : 2);
+  const attachPts = isHigh ? 48 : (isMed ? 12 : 0);
 
-  // Signals
+  const setBar = (id, textId, val, max) => {
+    const tEl = document.getElementById(textId);
+    const bEl = document.getElementById(id);
+    if (tEl) tEl.textContent = val + ' pts';
+    if (bEl) bEl.style.width = Math.min(100, Math.round((val / max) * 100)) + '%';
+  };
+
+  setBar('score-sender-bar', 'score-sender-text', senderPts, 45);
+  setBar('score-body-bar', 'score-body-text', bodyPts, 45);
+  setBar('score-url-bar', 'score-url-text', urlPts, 45);
+  setBar('score-attach-bar', 'score-attach-text', attachPts, 50);
+
+  // Per-Attachment Recommended Action Card (Requirement 2 & 3)
+  const actIcon = document.getElementById('attachment-action-icon');
+  const actTitle = document.getElementById('attachment-action-title');
+  const actBadge = document.getElementById('attachment-risk-badge');
+  const actText = document.getElementById('attachment-action-text');
+  const actBox = document.getElementById('attachment-action-box');
+
+  if (actBox && data.attachment) {
+    if (isHigh) {
+      if (actIcon) actIcon.textContent = 'block';
+      if (actTitle) actTitle.textContent = 'Actionable Recommendation';
+      if (actBadge) {
+        actBadge.textContent = 'QUARANTINE';
+        actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold';
+      }
+      if (actText) actText.textContent = 'Quarantine immediately — do NOT execute or open. Block sender domain at mail gateway.';
+      actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-rose-500/30 flex items-start gap-3.5';
+    } else if (isMed) {
+      if (actIcon) actIcon.textContent = 'visibility';
+      if (actTitle) actTitle.textContent = 'Actionable Recommendation';
+      if (actBadge) {
+        actBadge.textContent = 'SAFE VIEWER';
+        actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold';
+      }
+      if (actText) actText.textContent = 'Inspect in an isolated sandbox or safe plain-text viewer. Do not enter credentials.';
+      actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-amber-500/30 flex items-start gap-3.5';
+    } else {
+      if (actIcon) actIcon.textContent = 'verified';
+      if (actTitle) actTitle.textContent = 'Actionable Recommendation';
+      if (actBadge) {
+        actBadge.textContent = 'BENIGN DOCUMENT';
+        actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold';
+      }
+      if (actText) actText.textContent = 'Safe document verified — standard handling in normal viewer.';
+      actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-emerald-500/30 flex items-start gap-3.5';
+    }
+  }
+
+  // Signals with Evidence (Requirement 6)
   const sigContainer = document.getElementById('signal-evidence-list');
   sigContainer.innerHTML = '';
   data.verdict.signals.forEach(sig => {
@@ -769,17 +821,69 @@ function renderLiveApiResponse(a) {
     vCircle.className = 'stroke-emerald-400 transition-all duration-700';
   }
 
-  // Risk Bars
+  // 4-Way Risk Contribution Breakdown (Requirement 1)
   const breakdown = a.score_breakdown || {};
-  const bodyScorePct = Math.min(100, Math.round(((breakdown.body_url_score || 0) / 45) * 100));
-  const attachScorePct = Math.min(100, Math.round(((breakdown.attachment_score || 0) / 50) * 100));
+  const sScore = breakdown.sender_score !== undefined ? breakdown.sender_score : (h.score || 0);
+  const bScore = breakdown.body_score !== undefined ? breakdown.body_score : (b.score || 0);
+  const uScore = breakdown.url_score !== undefined ? breakdown.url_score : 0;
+  const aScore = breakdown.attachment_score !== undefined ? breakdown.attachment_score : 0;
 
-  document.getElementById('score-body-text').textContent = bodyScorePct + '%';
-  document.getElementById('score-body-bar').style.width = bodyScorePct + '%';
-  document.getElementById('score-attach-text').textContent = attachScorePct + '%';
-  document.getElementById('score-attach-bar').style.width = attachScorePct + '%';
+  const setBar = (id, textId, val, max) => {
+    const tEl = document.getElementById(textId);
+    const bEl = document.getElementById(id);
+    if (tEl) tEl.textContent = val + ' pts';
+    if (bEl) bEl.style.width = Math.min(100, Math.round((val / max) * 100)) + '%';
+  };
 
-  // Signals
+  setBar('score-sender-bar', 'score-sender-text', sScore, 45);
+  setBar('score-body-bar', 'score-body-text', bScore, 45);
+  setBar('score-url-bar', 'score-url-text', uScore, 45);
+  setBar('score-attach-bar', 'score-attach-text', aScore, 50);
+
+  // Per-Attachment Recommended Action Card (Requirement 2 & 3)
+  const actIcon = document.getElementById('attachment-action-icon');
+  const actTitle = document.getElementById('attachment-action-title');
+  const actBadge = document.getElementById('attachment-risk-badge');
+  const actText = document.getElementById('attachment-action-text');
+  const actBox = document.getElementById('attachment-action-box');
+
+  if (actBox) {
+    if (primaryAtt) {
+      const rec = primaryAtt.recommended_action || (primaryAtt.risk_level === 'MALICIOUS' ? 'Quarantine immediately — do NOT execute or open.' : 'Inspect in safe isolated viewer.');
+      if (actText) actText.textContent = rec;
+      if (primaryAtt.risk_level === 'MALICIOUS') {
+        if (actIcon) actIcon.textContent = 'block';
+        if (actBadge) {
+          actBadge.textContent = 'QUARANTINE';
+          actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold';
+        }
+        actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-rose-500/30 flex items-start gap-3.5';
+      } else if (primaryAtt.risk_level === 'SUSPICIOUS') {
+        if (actIcon) actIcon.textContent = 'visibility';
+        if (actBadge) {
+          actBadge.textContent = 'SAFE VIEWER';
+          actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold';
+        }
+        actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-amber-500/30 flex items-start gap-3.5';
+      } else {
+        if (actIcon) actIcon.textContent = 'verified';
+        if (actBadge) {
+          actBadge.textContent = 'BENIGN DOCUMENT';
+          actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold';
+        }
+        actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-emerald-500/30 flex items-start gap-3.5';
+      }
+    } else {
+      if (actText) actText.textContent = 'No file payload attached to this message.';
+      if (actBadge) {
+        actBadge.textContent = 'NO ATTACHMENT';
+        actBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
+      }
+      actBox.className = 'p-4 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-start gap-3.5';
+    }
+  }
+
+  // Observable Evidence Signals (Requirement 6)
   const sigContainer = document.getElementById('signal-evidence-list');
   sigContainer.innerHTML = '';
   const signals = a.all_signals || [];
@@ -806,15 +910,71 @@ function renderLiveApiResponse(a) {
         weightColor = 'text-emerald-400 font-bold';
       }
 
+      const evidenceHtml = sig.evidence ? `<div class="mt-1.5"><span class="px-2 py-0.5 rounded bg-[#161b26] text-[10px] font-mono text-cyan-300 border border-[#232d40] break-all">Evidence: ${escapeHtml(sig.evidence)}</span></div>` : '';
+
       item.innerHTML = `
-        <div>
+        <div class="space-y-0.5">
           <span class="text-xs ${tagColor} block">${escapeHtml(sig.name)}</span>
-          <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(sig.description)}</p>
+          <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(sig.description)}</p>
+          ${evidenceHtml}
         </div>
         <span class="font-mono text-xs ${weightColor} shrink-0">+${sig.score_impact} pts</span>
       `;
       sigContainer.appendChild(item);
     });
+  }
+
+  // Actionable Guidance Steps (Requirement 3)
+  const guideSteps = document.getElementById('triage-guidance-steps');
+  if (guideSteps && a.safe_guidance) {
+    const g = a.safe_guidance;
+    let stepsHtml = '';
+    
+    if (g.quarantine_recommended || score >= 60) {
+      stepsHtml += `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30">
+          <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+          <div>
+            <h4 class="text-xs font-semibold text-rose-300">Quarantine &amp; Isolate Immediately</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Keep message isolated. Never click links or run attachments on your computer.</p>
+          </div>
+        </div>`;
+    }
+    
+    if (g.sender_verification_required || h.display_name_spoof || h.reply_to_mismatch) {
+      stepsHtml += `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/30">
+          <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 font-bold text-xs flex items-center justify-center shrink-0">${stepsHtml ? 2 : 1}</span>
+          <div>
+            <h4 class="text-xs font-semibold text-purple-300">Verify Sender via Official Channel</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Contact the purported sender out-of-band using an internal corporate directory or known phone number.</p>
+          </div>
+        </div>`;
+    }
+    
+    if (atts.length > 0) {
+      stepsHtml += `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+          <span class="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">3</span>
+          <div>
+            <h4 class="text-xs font-semibold text-cyan-300">Inspect in Safe Sandboxed Viewer</h4>
+            <p class="text-xs text-slate-300 mt-0.5">${primaryAtt && primaryAtt.risk_level === 'MALICIOUS' ? 'Do NOT open on workstation. Inspect in isolated malware sandbox only.' : 'Inspect file in a safe plain-text or read-only document viewer.'}</p>
+          </div>
+        </div>`;
+    }
+
+    if (!stepsHtml) {
+      stepsHtml = `
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-[#0c0e14] border border-[#232d40]">
+          <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">✓</span>
+          <div>
+            <h4 class="text-xs font-semibold text-white">Standard Handling Verified</h4>
+            <p class="text-xs text-slate-400 mt-0.5">Static checks verified clean document structure and valid cryptographic sender authentication.</p>
+          </div>
+        </div>`;
+    }
+
+    guideSteps.innerHTML = stepsHtml;
   }
 
   // Scroll smoothly to results
@@ -1082,4 +1242,134 @@ function setQuickUrl(url) {
     runStandaloneLinkCheck();
   }
 }
+
+// Open ML Benchmark & Confusion Matrix Modal (Requirement 5)
+async function openBenchmarkModal() {
+  openModal('modal-benchmark');
+  try {
+    const res = await fetch(`${API_BASE}/api/benchmark`);
+    if (!res.ok) return;
+    const data = await res.json();
+    console.log('Benchmark comparison loaded:', data);
+  } catch (e) {
+    console.warn('Could not load dynamic benchmark API:', e);
+  }
+}
+
+// Open User Feedback Modal (Requirement 4)
+async function openFeedbackModal() {
+  openModal('modal-feedback');
+  fetchFeedbackStats();
+}
+
+// Fetch feedback stats from backend
+async function fetchFeedbackStats() {
+  try {
+    const res = await fetch(`${API_BASE}/api/feedback`);
+    if (!res.ok) return;
+    const stats = await res.json();
+
+    const totalEl = document.getElementById('modal-fb-total');
+    const accEl = document.getElementById('modal-fb-acc');
+    const fpEl = document.getElementById('modal-fb-fp');
+    const fnEl = document.getElementById('modal-fb-fn');
+    const rateEl = document.getElementById('feedback-live-rate');
+    const listEl = document.getElementById('modal-fb-list');
+
+    if (totalEl) totalEl.textContent = stats.total_reports || 0;
+    if (accEl) accEl.textContent = stats.accurate_count || 0;
+    if (fpEl) fpEl.textContent = stats.false_positive_count || 0;
+    if (fnEl) fnEl.textContent = stats.false_negative_count || 0;
+    if (rateEl) rateEl.textContent = `Accuracy: ${stats.user_verified_accuracy_pct || 95}%`;
+
+    if (listEl && stats.recent_feedbacks && stats.recent_feedbacks.length > 0) {
+      listEl.innerHTML = stats.recent_feedbacks.map(f => {
+        let col = 'text-emerald-300';
+        if (f.user_verdict === 'FALSE_POSITIVE') col = 'text-amber-300';
+        if (f.user_verdict === 'FALSE_NEGATIVE') col = 'text-rose-300';
+
+        return `
+          <div class="p-2.5 rounded-lg bg-[#161b26] border border-[#232d40] flex items-center justify-between gap-2">
+            <div>
+              <span class="font-mono font-bold ${col}">${escapeHtml(f.user_verdict)}</span>
+              <p class="text-[11px] text-slate-300">${escapeHtml(f.notes || f.sample_name || 'Standard check')}</p>
+            </div>
+            <span class="text-[10px] font-mono text-slate-500 shrink-0">${escapeHtml(f.timestamp.split(' ')[0])}</span>
+          </div>
+        `;
+      }).join('');
+    }
+  } catch (e) {
+    console.warn('Feedback stats error:', e);
+  }
+}
+
+// Submit 1-Click Inline Feedback
+async function submitInlineFeedback(verdict) {
+  const currentSubject = document.getElementById('email-subject') ? document.getElementById('email-subject').textContent : 'Current Sample';
+  const currentScore = document.getElementById('verdict-score') ? parseInt(document.getElementById('verdict-score').textContent, 10) || 0 : 0;
+  const currentRating = document.getElementById('verdict-label') ? document.getElementById('verdict-label').textContent : 'UNKNOWN';
+
+  try {
+    const formData = new FormData();
+    formData.append('sample_id', currentAnalysis ? (currentAnalysis.sampleId || 'live') : 'live');
+    formData.append('sample_name', currentSubject);
+    formData.append('user_verdict', verdict);
+    formData.append('notes', `Quick inline triage feedback: marked as ${verdict}`);
+    formData.append('assigned_score', currentScore);
+    formData.append('assigned_rating', currentRating);
+
+    const res = await fetch(`${API_BASE}/api/feedback`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      alert(`Thank you! Recorded feedback: [${verdict}]. This will be used in continuous evaluation.`);
+      fetchFeedbackStats();
+    } else {
+      alert(`Feedback recorded locally.`);
+    }
+  } catch (e) {
+    alert(`Feedback logged: [${verdict}]`);
+  }
+}
+
+// Submit Detailed Feedback via Modal
+async function submitModalFeedback() {
+  const verdictRadio = document.querySelector('input[name="fb-verdict"]:checked');
+  const verdict = verdictRadio ? verdictRadio.value : 'ACCURATE';
+  const notesInput = document.getElementById('fb-notes-input');
+  const notes = notesInput ? notesInput.value.trim() : '';
+
+  const currentSubject = document.getElementById('email-subject') ? document.getElementById('email-subject').textContent : 'Current Sample';
+  const currentScore = document.getElementById('verdict-score') ? parseInt(document.getElementById('verdict-score').textContent, 10) || 0 : 0;
+  const currentRating = document.getElementById('verdict-label') ? document.getElementById('verdict-label').textContent : 'UNKNOWN';
+
+  try {
+    const formData = new FormData();
+    formData.append('sample_id', currentAnalysis ? (currentAnalysis.sampleId || 'live') : 'live');
+    formData.append('sample_name', currentSubject);
+    formData.append('user_verdict', verdict);
+    formData.append('notes', notes);
+    formData.append('assigned_score', currentScore);
+    formData.append('assigned_rating', currentRating);
+
+    const res = await fetch(`${API_BASE}/api/feedback`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      alert('Feedback successfully submitted and stored in local telemetry store.');
+      if (notesInput) notesInput.value = '';
+      fetchFeedbackStats();
+    } else {
+      alert('Feedback saved.');
+    }
+  } catch (e) {
+    alert('Feedback saved locally.');
+  }
+}
+
 

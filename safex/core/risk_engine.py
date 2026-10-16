@@ -43,6 +43,22 @@ def evaluate_email_risk(
     body_url_score = body_analysis.score
     attachment_score = min(max_attachment_score, 50)
 
+    # 4-Way Distinct Breakdown
+    sender_score = min(header_score, 45)
+    url_score = min(sum(lk.score_impact for lk in body_analysis.links), 45)
+    body_only_score = min(sum(s.score_impact for s in body_analysis.signals if s.category == "body"), 45)
+
+    # Per-attachment recommended action
+    for att in attachments:
+        if att.risk_level == "MALICIOUS" or att.type_mismatch or att.rtlo_detected or att.known_hash_match:
+            att.recommended_action = "Quarantine immediately — do NOT execute or open. Block sender domain."
+        elif att.risk_level == "SUSPICIOUS" or att.has_vba_macros or (att.is_archive and att.archive_encrypted):
+            att.recommended_action = "Inspect in an isolated sandbox or safe read-only viewer. Do not enable macros."
+        elif att.status in ["UNSCANNED", "UNKNOWN"]:
+            att.recommended_action = "Inspect in an isolated safe viewer (file exceeds limits or corrupt)."
+        else:
+            att.recommended_action = "Safe document verified — standard handling in default viewer."
+
     # 3. Multi-indicator combination & correlation adjustments
     # Check for strong correlations:
     # A) Display Name Spoof + Authentication Failure
@@ -168,9 +184,12 @@ def evaluate_email_risk(
         verdict=verdict,
         summary=summary,
         score_breakdown={
+            "sender_score": sender_score,
+            "body_score": body_only_score,
+            "url_score": url_score,
+            "attachment_score": attachment_score,
             "header_score": header_score,
             "body_url_score": body_url_score,
-            "attachment_score": attachment_score,
             "overall_score": overall_score,
         },
         header_analysis=header_analysis,
@@ -205,37 +224,51 @@ def _generate_safe_guidance(
         "Do not download, extract, or open any attachments."
     ]
 
+    quarantine_recommended = risk_rating in ["HIGH", "CRITICAL"] or has_disguised_file
+    sender_verification_required = (
+        header_analysis.display_name_spoof or
+        header_analysis.reply_to_mismatch or
+        header_analysis.spf_status == "fail" or
+        header_analysis.dmarc_status == "fail"
+    )
+    safe_viewer_recommended = len(attachments) > 0
+
     if risk_rating in ["HIGH", "CRITICAL"]:
         action = "CRITICAL_THREAT_DO_NOT_ENGAGE" if risk_rating == "CRITICAL" else "DO_NOT_ENGAGE"
-        headline = "Isolate Message — Do Not Interact With Links or Files"
+        headline = "Isolate Message — Quarantine & Official Channel Verification Required"
+        recommendations.append("Quarantine payload immediately: move email to isolated junk/quarantine store.")
+        recommendations.append("Verify the sender through an official out-of-band corporate directory before taking any action.")
 
         if has_suspicious_url:
             things_to_avoid.append("Do not navigate to any web address listed in the message body.")
             recommendations.append("If you need to access this service, manually navigate to the known authentic domain by typing it into your browser.")
 
         if attachments:
-            things_to_avoid.append("Do not open attachments, even in sandboxed viewers or virtual environments.")
+            things_to_avoid.append("Do not open attachments on your host operating system.")
+            recommendations.append("Inspect file metadata in an isolated safe viewer or offline static analyzer only.")
 
         if has_disguised_file:
-            recommendations.append("File extension or format deception was detected. Alert system administrators immediately to block the sender domain at the mail gateway.")
+            recommendations.append("File format deception was detected. Alert security administrators immediately to block the sender domain.")
 
         if any(att.has_vba_macros for att in attachments):
-            things_to_avoid.append("If an Office document was already opened, NEVER click 'Enable Macros' or 'Enable Content'.")
+            things_to_avoid.append("If an Office document was opened, NEVER click 'Enable Macros' or 'Enable Content'.")
 
         if has_zip_pw_match:
-            recommendations.append("The sender provided a password to bypass automated gateway scanning. This is a high-confidence marker of evasion.")
+            recommendations.append("Sender supplied an archive password to evade gateway security. Do not decrypt.")
 
     elif risk_rating == "MEDIUM":
         action = "SUSPICIOUS_VERIFY_FIRST"
         headline = "Exercise Caution — Independent Confirmation Recommended"
-        recommendations.append("Compare the visible sender address with your organization's known contacts.")
-        recommendations.append("Inspect whether the requested action is routine or out of the ordinary.")
-        things_to_avoid.append("Avoid clicking links until the sender's identity has been confirmed via phone or chat.")
+        recommendations.append("Verify the sender through an official channel (phone/Slack) before responding or clicking.")
+        recommendations.append("Inspect any attached file using an appropriate safe plain-text viewer or isolated sandbox.")
+        recommendations.append("Compare visible sender address with your organization's known contacts.")
+        things_to_avoid.append("Avoid clicking links until the sender's identity has been confirmed.")
 
     else:
         action = "SAFE_TO_PROCEED"
         headline = "Low Risk Profile — Standard Hygiene Applies"
         recommendations.append("The email passed static safety checks. Always maintain general cybersecurity awareness.")
+        recommendations.append("Standard safe document viewing is appropriate.")
         things_to_avoid = [
             "Never share passwords over email regardless of sender legitimacy."
         ]
@@ -245,5 +278,8 @@ def _generate_safe_guidance(
         headline=headline,
         verification_steps=verification_steps,
         recommendations=recommendations,
-        things_to_avoid=things_to_avoid
+        things_to_avoid=things_to_avoid,
+        quarantine_recommended=quarantine_recommended,
+        sender_verification_required=sender_verification_required,
+        safe_viewer_recommended=safe_viewer_recommended
     )
