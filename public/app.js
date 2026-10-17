@@ -991,10 +991,10 @@ function renderLiveApiResponse(a) {
       `;
       sigContainer.appendChild(item);
     });
-
-    // Cache in session history
-    saveScanToHistory(data.subject, 'EMAIL', data.verdict.score, data.verdict.label);
   }
+
+  // Cache in session history
+  saveScanToHistory(h.subject || 'Live Ingestion Sample', 'EMAIL', score, rating);
 
   // Actionable Guidance Steps (Requirement 3)
   const guideSteps = document.getElementById('triage-guidance-steps');
