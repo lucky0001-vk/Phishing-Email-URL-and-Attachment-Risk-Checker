@@ -46,7 +46,7 @@ safex-server = "safex.web.app:start_server"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["safex*"]
-exclude = ["api*", "public*", "tests*", "docs*"]
+exclude = ["api*", "public*", "tests*", "docs*", "test_samples*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "safex/tests"]

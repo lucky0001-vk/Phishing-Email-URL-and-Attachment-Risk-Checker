@@ -1,0 +1,19 @@
+From: Acme Security Team <security-training@acme-corp.com>
+To: employee@acme-corp.com
+Subject: ACTION REQUIRED: Mandatory Compliance Training Deadline in 24 Hours
+Date: Fri, 16 Oct 2026 09:00:00 +0000
+Authentication-Results: spf=pass smtp.mailfrom=acme-corp.com; dkim=pass header.d=acme-corp.com; dmarc=pass
+Message-ID: <compliance-2026-1016@acme-corp.com>
+
+Dear Colleague,
+
+This is a final notice that your annual cybersecurity awareness training is overdue. Immediate action required before the portal closes within 24 hours to maintain active intranet access.
+
+Please access your assigned module here:
+https://lms.acme-corp.com/learn/track?session=98471298417294812&utm_source=internal_mailer&utm_campaign=annual_compliance_q4&lang=en-US
+
+If you have already completed the course, please disregard this automated notification.
+
+Regards,
+Information Security Office
+Acme Corporation

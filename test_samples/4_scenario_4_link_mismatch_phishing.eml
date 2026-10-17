@@ -1,0 +1,12 @@
+From: "PayPal Account Security" <alert-no-reply@mailer-relay99.xyz>
+Reply-To: security-tickets@attacker-collector.top
+To: victim@gmail.com
+Subject: Critical Alert: Your PayPal Account Has Been Suspended
+Authentication-Results: spf=fail; dkim=fail; dmarc=fail
+
+<html><body>
+<p>Dear Customer,</p>
+<p>We detected unauthorized access to your wallet from an unfamiliar IP address. Immediate verification required within 24 hours.</p>
+<p><a href="http://paypal.com.account-verify-portal.xyz/login">https://www.paypal.com/signin</a></p>
+<p>Failure to verify will lead to permanent account suspension.</p>
+</body></html>
