@@ -61,7 +61,7 @@ User Browser / API Client
   Vercel Edge Gateway (vercel.json)
     ├── /api/*   ──────► api/index.py (FastAPI ASGI Serverless Function)
     │                         └── safex.core.analyzer (In-Memory Heuristics)
-    └── /*       ──────► safex/web/static/* (Material Design 3 Dashboard)
+    └── /*       ──────► public/* (Material Design 3 Dashboard served by Edge CDN)
 ```
 
 ---
@@ -69,8 +69,13 @@ User Browser / API Client
 ## 4. Troubleshooting & Traps to Avoid
 
 1. **"Invalid configuration: should not have additional property 'public'":**
-   - **Resolved**: Top-level `"public"` is prohibited in Vercel v2 schema. `vercel.json` has already been updated to comply with Vercel v2 schema.
-2. **Missing `api/index.py`:**
-   - **Resolved**: `api/index.py` exports `handler = app` specifically for Vercel's Python runtime.
-3. **Do not create a `package.json` file:**
-   - Creating an empty `package.json` causes Vercel to assume the project is Node.js, overriding the Python runtime.
+   - **Resolved**: Top-level `"public"` boolean property in `vercel.json` was removed in accordance with Vercel v2 schema.
+2. **Missing static asset resolution / rewrite 404s:**
+   - **Resolved**: Static assets (`index.html`, `app.js`, `styles.css`) are located in the standard root `public/` folder for instant CDN serving, with clean fallback routing in `vercel.json`.
+3. **C-extension compilation failure:**
+   - **Resolved**: `requirements.txt` specifies standard `uvicorn` rather than `uvicorn[standard]` to prevent build timeouts or C-compiler errors on Lambda environments.
+4. **Missing `api/index.py`:**
+   - **Resolved**: `api/index.py` exports `app` and `handler = app` specifically for Vercel's Python ASGI runtime.
+5. **Do not create a `package.json` file:**
+   - Creating a `package.json` causes Vercel to assume the project is Node.js, overriding the Python runtime.
+

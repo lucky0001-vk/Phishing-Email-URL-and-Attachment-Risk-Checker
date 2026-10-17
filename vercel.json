@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "rewrites": [
     {
@@ -6,20 +7,12 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/",
-      "destination": "/safex/web/static/index.html"
-    },
-    {
-      "source": "/app.js",
-      "destination": "/safex/web/static/app.js"
-    },
-    {
-      "source": "/styles.css",
-      "destination": "/safex/web/static/styles.css"
+      "source": "/api",
+      "destination": "/api/index.py"
     },
     {
       "source": "/(.*)",
-      "destination": "/safex/web/static/$1"
+      "destination": "/index.html"
     }
   ]
 }

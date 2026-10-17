@@ -40,7 +40,21 @@ async def add_security_headers(request, call_next):
     return response
 
 
+# Current file directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+if not os.path.exists(STATIC_DIR):
+    root_public = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "public")
+    if os.path.exists(root_public):
+        STATIC_DIR = root_public
+
+# Mount static files safely if directory exists
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
 @app.get("/api/health")
+@app.get("/health")
 async def health_check():
     """Engine health status and static security telemetry."""
     return {
@@ -53,13 +67,6 @@ async def health_check():
         "active_heuristic_rules": 48,
         "max_attachment_size_mb": 25
     }
-
-# Current file directory
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-
-# Mount static files
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -83,6 +90,7 @@ async def serve_styles_css():
 
 
 @app.get("/api/samples")
+@app.get("/samples")
 async def list_samples():
     """Returns catalog of pre-configured test scenarios."""
     samples = get_test_samples()
@@ -101,6 +109,7 @@ async def list_samples():
 
 
 @app.get("/api/sample/{sample_id}")
+@app.get("/sample/{sample_id}")
 async def run_sample_analysis(sample_id: int):
     """Run static analysis on one of the 9 pre-configured test scenarios."""
     samples = get_test_samples()
@@ -126,6 +135,7 @@ async def run_sample_analysis(sample_id: int):
 
 
 @app.post("/api/analyze")
+@app.post("/analyze")
 async def analyze_custom_input(
     email_text: Optional[str] = Form(None),
     eml_file: Optional[UploadFile] = File(None),
@@ -164,6 +174,7 @@ async def analyze_custom_input(
 
 
 @app.post("/api/analyze-link")
+@app.post("/analyze-link")
 async def analyze_standalone_url(
     url: str = Form(...),
     anchor_text: Optional[str] = Form("")
@@ -183,6 +194,7 @@ async def analyze_standalone_url(
 
 
 @app.get("/api/benchmark")
+@app.get("/benchmark")
 async def get_benchmark_comparison():
     """
     Evaluates rule-based engine vs simulated ML classifier on 20 benchmark test samples.
@@ -194,6 +206,7 @@ async def get_benchmark_comparison():
 
 
 @app.get("/api/feedback")
+@app.get("/feedback")
 async def get_user_feedback():
     """Get aggregated feedback statistics and recent submissions."""
     from safex.core.feedback_store import get_feedback_stats
@@ -201,6 +214,7 @@ async def get_user_feedback():
 
 
 @app.post("/api/feedback")
+@app.post("/feedback")
 async def submit_user_feedback(
     sample_id: str = Form("custom"),
     sample_name: str = Form("User Ingestion"),
