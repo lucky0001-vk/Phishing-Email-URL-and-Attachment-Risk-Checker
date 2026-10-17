@@ -18,6 +18,10 @@ app = FastAPI(
     version="2.0.0"
 )
 
+import time
+
+START_TIME = time.time()
+
 # Enable CORS for file:// and cross-origin access
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +30,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+
+@app.get("/api/health")
+async def health_check():
+    """Engine health status and static security telemetry."""
+    return {
+        "status": "healthy",
+        "service": "SafeX Threat Defense Engine",
+        "version": "2.0.0",
+        "uptime_seconds": round(time.time() - START_TIME, 2),
+        "execution_mode": "strictly_static_in_memory",
+        "live_dns_lookups": False,
+        "active_heuristic_rules": 48,
+        "max_attachment_size_mb": 25
+    }
 
 # Current file directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

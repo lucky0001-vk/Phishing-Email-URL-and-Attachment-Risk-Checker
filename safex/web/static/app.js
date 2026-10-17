@@ -700,6 +700,9 @@ async function runStandaloneLinkCheck() {
     switchContentTab('links');
     if (discCard) discCard.scrollIntoView({ behavior: 'smooth' });
 
+    // Cache in session history
+    saveScanToHistory(la.url, 'URL', la.risk_score, la.risk_level);
+
   } catch (err) {
     alert('Failed to analyze link: ' + err.message);
   } finally {
@@ -988,6 +991,9 @@ function renderLiveApiResponse(a) {
       `;
       sigContainer.appendChild(item);
     });
+
+    // Cache in session history
+    saveScanToHistory(data.subject, 'EMAIL', data.verdict.score, data.verdict.label);
   }
 
   // Actionable Guidance Steps (Requirement 3)
@@ -1538,6 +1544,164 @@ document.addEventListener('keydown', (event) => {
     closeMoreMenu();
   }
 });
+
+// ========================================================
+// Scan History & Audit Log (Requirement 6)
+// ========================================================
+const HISTORY_KEY = 'safex_scan_history_v2';
+
+function getScanHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveScanToHistory(title, type, score, rating, details) {
+  try {
+    const history = getScanHistory();
+    const entry = {
+      id: 'scan_' + Date.now(),
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      title: title || 'Quick Scan',
+      type: type || 'EMAIL',
+      score: score || 0,
+      rating: rating || 'LOW',
+      details: details || {}
+    };
+    history.unshift(entry);
+    if (history.length > 50) history.pop();
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    updateHistoryBadge();
+  } catch (e) {
+    console.warn('History save error:', e);
+  }
+}
+
+function updateHistoryBadge() {
+  const badge = document.getElementById('history-count-badge');
+  if (badge) {
+    const count = getScanHistory().length;
+    badge.textContent = count;
+  }
+}
+
+function openHistoryModal() {
+  renderScanHistory();
+  openModal('modal-history');
+}
+
+function renderScanHistory() {
+  const container = document.getElementById('history-items-container');
+  const summary = document.getElementById('history-summary-text');
+  if (!container) return;
+
+  const history = getScanHistory();
+  if (summary) summary.textContent = `Showing ${history.length} locally saved threat evaluation${history.length === 1 ? '' : 's'}`;
+
+  if (!history.length) {
+    container.innerHTML = `
+      <div class="p-6 rounded-xl bg-[#0c0e14] border border-[#232d40] text-center text-xs text-slate-400">
+        No previous scans found in your session. Scans will be cached here automatically.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = history.map((item, idx) => {
+    let scoreColor = 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30';
+    if (item.score >= 70) scoreColor = 'text-rose-400 bg-rose-500/15 border-rose-500/30';
+    else if (item.score >= 40) scoreColor = 'text-amber-400 bg-amber-500/15 border-amber-500/30';
+
+    return `
+      <div class="p-3 rounded-xl bg-[#0c0e14] border border-[#232d40] flex items-center justify-between gap-3 hover:border-slate-600 transition-colors">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${scoreColor}">
+              ${item.score}/100 [${escapeHtml(item.rating)}]
+            </span>
+            <span class="text-xs font-semibold text-white truncate">${escapeHtml(item.title)}</span>
+          </div>
+          <div class="flex items-center gap-3 text-[11px] text-slate-400 mt-1 font-mono">
+            <span>Type: ${escapeHtml(item.type)}</span>
+            <span>•</span>
+            <span>${escapeHtml(item.timestamp)}</span>
+          </div>
+        </div>
+        <div class="shrink-0 flex items-center gap-1.5">
+          <button onclick="deleteHistoryItem(${idx})" class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-[#161b26] transition-colors" title="Delete record">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function deleteHistoryItem(idx) {
+  const history = getScanHistory();
+  history.splice(idx, 1);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  updateHistoryBadge();
+  renderScanHistory();
+}
+
+function clearScanHistory() {
+  if (confirm('Clear all local scan history?')) {
+    localStorage.removeItem(HISTORY_KEY);
+    updateHistoryBadge();
+    renderScanHistory();
+  }
+}
+
+function exportHistoryJSON() {
+  const history = getScanHistory();
+  if (!history.length) {
+    alert('No scan history to export yet.');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(history, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `safex_audit_export_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ========================================================
+// Testing & Validation Lab Helpers (Requirement 4)
+// ========================================================
+async function testLiveUrl(url, anchor) {
+  switchTopInput('url');
+  const urlInput = document.getElementById('standalone-url-input');
+  const anchorInput = document.getElementById('standalone-anchor-input');
+  if (urlInput) urlInput.value = url;
+  if (anchorInput) anchorInput.value = anchor || '';
+  await runStandaloneLinkCheck();
+}
+
+async function testEdgeCase(type) {
+  switchTopInput('email');
+  const textInput = document.getElementById('live-email-input');
+  if (!textInput) return;
+
+  if (type === 'empty') {
+    textInput.value = ' ';
+    alert('Empty email input loaded. Click "Scan Email / Files" or watch baseline 0 score handling.');
+  } else if (type === 'missing_headers') {
+    textInput.value = 'Subject: Corporate Update Without Sender\nDate: Sat, 17 Oct 2026 00:00:00 +0000\n\nThis is a body without From, Reply-To, or Return-Path.';
+    await executeLiveAnalysis();
+  }
+}
+
+// Initialize history badge on load
+document.addEventListener('DOMContentLoaded', () => {
+  updateHistoryBadge();
+});
+
 
 
 

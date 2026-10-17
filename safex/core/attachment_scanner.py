@@ -131,13 +131,15 @@ def human_size(bytes_val: int) -> str:
 
 def scan_attachment(
     attachment_dict: Dict[str, Any],
-    body_passwords: List[str],
+    body_passwords: Optional[List[str]] = None,
     attachment_index: int = 1
 ) -> AttachmentInventory:
     """
     Perform purely static inspection of a single attachment in-memory.
     Never executes, renders, or writes to disk.
     """
+    if body_passwords is None:
+        body_passwords = []
     raw_filename = attachment_dict.get("filename", f"attachment_{attachment_index}")
     data = attachment_dict.get("data", b"")
     declared_type = attachment_dict.get("declared_mime_type", "application/octet-stream")
