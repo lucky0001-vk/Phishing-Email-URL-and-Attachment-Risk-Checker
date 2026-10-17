@@ -1,7 +1,7 @@
 # SafeX - AI Powered Phishing Email, URL and Attachment Risk Detection Platform
 
 <div align="center">
-
+[Live Web Interface](http://127.0.0.1:8000)
 ![SafeX Banner](https://img.shields.io/badge/SafeX-Cyber_Defense_Platform-0c0e14?style=for-the-badge&logo=shield&logoColor=38bdf8)
 [![CI Tests](https://img.shields.io/badge/Tests-38%2F38%20Passed-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](tests/)
 [![Audit Checks](https://img.shields.io/badge/Compliance_Audit-113%2F113%20Passed-10b981?style=for-the-badge)](safex/tests/audit_all_requirements.py)
