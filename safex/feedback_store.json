@@ -66,6 +66,17 @@
       "assigned_score": 88,
       "assigned_rating": "CRITICAL",
       "flagged_components": []
+    },
+    {
+      "id": "fb-0007",
+      "timestamp": "2026-10-17 01:31:01 UTC",
+      "sample_id": "2",
+      "sample_name": "URGENT: Past Due Invoice #INV-98201 - Immediate Suspension Warning",
+      "user_verdict": "FALSE_POSITIVE",
+      "notes": "Quick inline triage feedback: marked as FALSE_POSITIVE",
+      "assigned_score": 88,
+      "assigned_rating": "DANGEROUS SCAM",
+      "flagged_components": []
     }
   ]
 }

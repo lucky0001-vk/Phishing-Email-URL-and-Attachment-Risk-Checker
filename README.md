@@ -260,9 +260,9 @@ python safex_cli.py safex/samples/2_scenario_2_disguised_executable.eml
 
 ---
 
-## 13. Testing Methodology
+## 13. Testing Methodology & Sample Test Cases
 
-SafeX includes an automated test package covering 38 unit tests and an exhaustive 113-point requirements audit:
+SafeX includes an automated test package covering **38 unit tests** and an exhaustive **113-point requirements audit**:
 
 ```bash
 # Run Master Validation Suite & generate docs/TESTING_REPORT.md
@@ -275,11 +275,68 @@ python -m unittest discover -s safex/tests
 python -m safex.tests.audit_all_requirements
 ```
 
-### Test Package Matrix
+### Automated Test Matrix
 - `tests/test_emails.py`: Obvious credential phishing, subtle lookalikes, legitimate urgent messages.
 - `tests/test_urls.py`: Shortened links, long parameterized redirects, IP literals, ports, homoglyphs.
 - `tests/test_attachments.py`: Renamed `.exe` inside `.pdf`, Office VBA macros, password-protected ZIPs, RTLO.
 - `tests/test_edge_cases.py`: Empty strings, missing headers, broken URLs, corrupted archive handling.
+
+### Concrete Sample Test Cases
+
+#### Test Case 1: Obvious Credential Phishing Email
+- **Input Headers & Body**:
+  ```http
+  From: "IT Support" <security@account-update-alert.xyz>
+  Authentication-Results: spf=fail; dkim=fail; dmarc=fail
+  Subject: URGENT: Your corporate account is suspended immediately!
+  Body: Your password has expired. Click http://192.168.1.100:8080/owa/auth/login.html
+  ```
+- **Execution**: `python -m unittest tests.test_emails.TestPhishingEmailDetection.test_obvious_phishing_credential_harvesting`
+- **Expected Outcome**:
+  - `Risk Score`: **88 / 100** (CRITICAL)
+  - `Signals Triggered`: `SPF Authentication Fail`, `IP-Literal Destination`, `Non-Standard Port :8080`, `Urgency Pressure`
+  - `Recommended Action`: *Do not open, click, or reply. Verify sender through an official phone channel.*
+
+#### Test Case 2: Optical Anchor Link Mismatch
+- **Input**:
+  - Visible Text: `https://chase.com/secure/login`
+  - Destination Target: `http://185.220.101.5:8080/portal`
+- **Execution via cURL**:
+  ```bash
+  curl -X POST http://127.0.0.1:8000/api/analyze-link \
+    -F "url=http://185.220.101.5:8080/portal" \
+    -F "anchor_text=https://chase.com/secure/login"
+  ```
+- **Expected Outcome**:
+  - `Risk Score`: **52 / 100** (HIGH)
+  - `Signals`: `Optical Anchor Mismatch`, `IP Literal Host`, `Non-Standard Port`
+
+#### Test Case 3: Disguised Executable Masquerading as PDF
+- **Input File**: `invoice_9481.pdf` (Raw bytes starting with `0x4D 0x5A` / `MZ` header)
+- **Execution**: `python -m unittest tests.test_attachments.TestAttachmentSecurityDetection.test_renamed_executable_masquerading_as_pdf`
+- **Expected Outcome**:
+  - `Declared MIME`: `application/pdf`
+  - `Detected MIME`: `application/x-dosexec` (PE Executable)
+  - `Risk Score`: **85+ / 100** (CRITICAL)
+  - `Recommended Action`: *QUARANTINE IMMEDIATELY — DO NOT OPEN.*
+
+#### Test Case 4: Legitimate Urgent Company Notice (False-Positive Benchmark)
+- **Input Headers & Body**:
+  ```http
+  From: "HR Department" <hr@company.com>
+  Authentication-Results: spf=pass; dkim=pass; dmarc=pass
+  Subject: URGENT: Open Enrollment deadline ends today at 5:00 PM
+  ```
+- **Execution**: `python -m unittest tests.test_emails.TestPhishingEmailDetection.test_legitimate_urgent_company_email`
+- **Expected Outcome**:
+  - `Risk Score`: **< 30 / 100** (LOW)
+  - `Verdict`: *Low Risk / Likely Benign — Safe to process normally.* (Ensures zero disruption to real business operations).
+
+#### Test Case 5: Fault-Tolerance & Edge Cases
+- **Input**: Empty byte buffer `b""` or missing `From:` headers
+- **Execution**: `python -m unittest tests.test_edge_cases.TestEdgeCasesAndRobustness`
+- **Expected Outcome**:
+  - Handled gracefully with zero unhandled exceptions (`Score: 0`, `Status: SCANNED/UNKNOWN`).
 
 ---
 
@@ -315,8 +372,18 @@ Evaluated across a balanced corpus of 20 realistic enterprise benchmark samples:
 
 ---
 
-## 17. AI Tools Disclosure
-In full compliance with hackathon rules, all AI assistance (architecture ideation, test scaffolding) is documented with granular human-vs-AI contribution percentages in **[AI_USAGE.md](AI_USAGE.md)**.
+## 17. AI Tools & Ethics Disclosure
+
+In strict compliance with hackathon rules and ethical engineering guidelines, all AI tool usage is fully documented. Complete details are available in **[AI_USAGE.md](AI_USAGE.md)**.
+
+| Category | Human Engineering (85%) | AI Assistance (15%) |
+| :--- | :--- | :--- |
+| **System Architecture** | Zero-execution static RAM model, offline auth parsing, compound risk formulas | Scaffolding initial boilerplate |
+| **Security Parsers** | Binary PE header logic (`MZ`), OpenXML ZIP parsing, PDF object tokenization | Regex syntax verification |
+| **Testing & Evaluation** | 38 automated test cases, 113-point compliance audit suite | Synthetic mock email text drafts |
+| **User Interface** | Obsidian dark theme design, triage layout, localStorage history | Tailwind CSS class suggestions |
+
+> **Ethical & Safety Guarantee**: SafeX contains **zero weaponized malware binaries**. All threat signatures use harmless simulated test patterns (such as standard DOS stubs and EICAR reference hashes). No private or sensitive user emails were ingested or used in training.
 
 ---
 
