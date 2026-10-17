@@ -25,3 +25,24 @@ htmlcov/
 *.log
 .DS_Store
 Thumbs.db
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+*.pfx
+
+# IDE & Editor caches
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage and test runs
+.pytest_cache/
+.coverage
+htmlcov/
+

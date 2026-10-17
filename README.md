@@ -252,11 +252,23 @@ python safex_cli.py safex/samples/2_scenario_2_disguised_executable.eml
 ### 1. Unified Threat Triage Dashboard
 *Featuring the central risk score gauge, 4-way sub-score breakdown, optical anchor discrepancy card, and actionable verification steps.*
 
-### 2. Attachment Report Card & Safe Guidance
-*Displaying detected magic byte signatures, double extension alerts, SHA-256 hashes, and quarantine action buttons.*
+<div align="center">
+  <img src="docs/screenshots/dashboard_main.png" alt="SafeX Unified Threat Triage Dashboard" width="900" />
+</div>
+
+### 2. Interactive Testing & Validation Lab
+*Dedicated 4-category live testing suite for phishing emails, URLs, disguised attachments, and fault-tolerance edge cases.*
+
+<div align="center">
+  <img src="docs/screenshots/testing_lab.png" alt="SafeX Testing and Validation Lab" width="900" />
+</div>
 
 ### 3. ML vs Rule-Based Benchmark & Confusion Matrix
-*Transparent comparison of deterministic static rules against probabilistic ML models.*
+*Side-by-side performance evaluation on 20 verified samples comparing heuristic accuracy against statistical ML.*
+
+<div align="center">
+  <img src="docs/screenshots/ml_benchmark.png" alt="Security Rules vs AI Machine Learning Comparison" width="900" />
+</div>
 
 ---
 
