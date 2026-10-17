@@ -1,7 +1,22 @@
 {
   "version": 2,
-  "public": false,
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/",
+      "destination": "/safex/web/static/index.html"
+    },
+    {
+      "source": "/app.js",
+      "destination": "/safex/web/static/app.js"
+    },
+    {
+      "source": "/styles.css",
+      "destination": "/safex/web/static/styles.css"
+    },
     {
       "source": "/(.*)",
       "destination": "/safex/web/static/$1"

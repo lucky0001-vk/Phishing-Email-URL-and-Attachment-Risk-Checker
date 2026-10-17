@@ -205,6 +205,16 @@ curl http://127.0.0.1:8000/api/health
 python safex_cli.py safex/samples/2_scenario_2_disguised_executable.eml
 ```
 
+### Method D: 1-Click Vercel Deployment (Cloud Serverless)
+SafeX includes zero-config serverless support via `vercel.json` and `api/index.py`:
+
+1. Go to [vercel.com/new](https://vercel.com/new) and import this GitHub repository.
+2. Configure settings:
+   - **Framework Preset**: `Other`
+   - **Root Directory**: `./` (default)
+   - **Build Command**: leave empty (handled automatically)
+3. Click **Deploy**. Vercel will install dependencies from `requirements.txt`, configure the Python ASGI serverless runtime, and publish your live SafeX platform instantly!
+
 ---
 
 ## 11. API Documentation
