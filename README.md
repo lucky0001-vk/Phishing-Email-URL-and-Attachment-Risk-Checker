@@ -206,14 +206,21 @@ python safex_cli.py safex/samples/2_scenario_2_disguised_executable.eml
 ```
 
 ### Method D: 1-Click Vercel Deployment (Cloud Serverless)
-SafeX includes zero-config serverless support via `vercel.json` and `api/index.py`:
+SafeX includes zero-config serverless support via `vercel.json` and `api/index.py`. Complete guide: [VERCEL_DEPLOYMENT.md](file:///c:/Users/Dell/Desktop/anti/docs/VERCEL_DEPLOYMENT.md).
 
-1. Go to [vercel.com/new](https://vercel.com/new) and import this GitHub repository.
-2. Configure settings:
-   - **Framework Preset**: `Other`
-   - **Root Directory**: `./` (default)
-   - **Build Command**: leave empty (handled automatically)
-3. Click **Deploy**. Vercel will install dependencies from `requirements.txt`, configure the Python ASGI serverless runtime, and publish your live SafeX platform instantly!
+1. Import this repository into [vercel.com/new](https://vercel.com/new).
+2. Use the following exact deployment settings:
+
+| Setting | Exact Value to Enter |
+| :--- | :--- |
+| **Framework Preset** | **`Other`** |
+| **Root Directory** | **`./`** (Must remain root) |
+| **Build Command** | *Leave Empty / Toggle OFF* |
+| **Output Directory** | *Leave Empty / Toggle OFF* |
+| **Install Command** | *Leave Empty / Toggle OFF* (`pip install -r requirements.txt`) |
+| **Environment Variables** | *None required / Leave Empty* |
+
+3. Click **Deploy**. Vercel will install dependencies from `requirements.txt`, configure the Python ASGI serverless runtime, and launch SafeX live.
 
 ---
 
