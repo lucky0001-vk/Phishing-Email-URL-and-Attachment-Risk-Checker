@@ -698,7 +698,6 @@ async function runStandaloneLinkCheck() {
 
     // Show links tab & scroll to results
     switchContentTab('links');
-    const discCard = document.getElementById('url-discrepancy-card');
     if (discCard) discCard.scrollIntoView({ behavior: 'smooth' });
 
   } catch (err) {
