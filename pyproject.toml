@@ -24,7 +24,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.110.0,<1.0.0",
-    "uvicorn[standard]>=0.29.0,<1.0.0",
+    "uvicorn>=0.29.0,<1.0.0",
     "pydantic>=2.6.0,<3.0.0",
     "python-multipart>=0.0.9",
     "python-dotenv>=1.0.1",
@@ -43,9 +43,15 @@ dev = [
 safex = "safex.cli:main"
 safex-server = "safex.web.app:start_server"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["safex*"]
+exclude = ["api*", "public*", "tests*", "docs*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "safex/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
+
