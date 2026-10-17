@@ -1,7 +1,7 @@
 # SafeX - AI Powered Phishing Email, URL and Attachment Risk Detection Platform
 
 <div align="center">
-[Live Web Interface](http://127.0.0.1:8000)
+
 ![SafeX Banner](https://img.shields.io/badge/SafeX-Cyber_Defense_Platform-0c0e14?style=for-the-badge&logo=shield&logoColor=38bdf8)
 [![CI Tests](https://img.shields.io/badge/Tests-38%2F38%20Passed-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](tests/)
 [![Audit Checks](https://img.shields.io/badge/Compliance_Audit-113%2F113%20Passed-10b981?style=for-the-badge)](safex/tests/audit_all_requirements.py)
@@ -32,7 +32,7 @@ Over **91% of modern cyber attacks and corporate data breaches originate from ph
 - **The Privacy Dilemma**: Enterprise organizations cannot upload confidential customer emails or contracts to public cloud threat feeds without violating GDPR, HIPAA, and corporate privacy mandates.
 - **The Sandbox Bottleneck**: Traditional sandboxes take 5 to 15 minutes to detonate files, stall business operations, and remain vulnerable to sandbox evasion and escape exploits.
 
----
+---[Live Web Interface](http://127.0.0.1:8000)
 
 ## 3. Solution Overview
 **SafeX** is an air-gapped, zero-execution static threat analysis platform designed for human-in-the-loop email security triage. SafeX decomposes RFC822 messages, HTML DOM trees, URLs, and file binaries in ephemeral RAM in **under 90 milliseconds**:
